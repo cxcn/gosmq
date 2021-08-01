@@ -16,12 +16,20 @@ func main() {
 	var fpm string
 	var fpt string
 	var fpo string
+	var help bool
 	// var isCode *bool
 
 	flag.StringVar(&fpm, "m", "", "码表路径")
 	flag.StringVar(&fpt, "t", "", "文本路径")
 	flag.StringVar(&fpo, "o", "", "输出路径")
+	flag.BoolVar(&help, "h", false, "帮助")
 	flag.Parse()
+
+	if help {
+		fmt.Println("saimaqi version: 0.1.1\n\nUsage: saimaqi.exe [-m mb] [-t text] [-o output]")
+		flag.PrintDefaults()
+		return
+	}
 
 	if fpm == "" || fpt == "" {
 		fmt.Println("缺少路径")
@@ -30,7 +38,7 @@ func main() {
 
 	res := cacl(fpm, fpt)
 	if fpo != "" {
-		fmt.Println(fpo)
+		// fmt.Println(fpo)
 		err := ioutil.WriteFile(fpo, []byte(res.codeSep), 0777)
 		errHandler(err)
 	}
