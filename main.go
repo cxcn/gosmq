@@ -4,14 +4,15 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"time"
 )
 
 func main() {
-	// start := time.Now()
-	// defer func() {
-	// 	cost := time.Since(start)
-	// 	fmt.Println("main cost time = ", cost)
-	// }()
+	start := time.Now()
+	defer func() {
+		cost := time.Since(start)
+		fmt.Println("main cost time = ", cost)
+	}()
 
 	var fpm string
 	var fpt string
@@ -36,7 +37,7 @@ func main() {
 		return
 	}
 
-	res := cacl(fpm, fpt)
+	cacl(fpm, fpt)
 	if fpo != "" {
 		// fmt.Println(fpo)
 		err := ioutil.WriteFile(fpo, []byte(res.codeSep), 0777)
@@ -56,17 +57,19 @@ func main() {
 		"\n打词数：", res.countWord,
 		"\n打词率（上屏）：", res.rateWord,
 		"\n打词字数：", res.lenWord,
-		"\n打词率（字数）：", res.rLenWord,
+		"\n打词率（字数）：", res.rateLenWord,
 		"\n选重数：", res.countChoose,
 		"\n选重率（上屏）：", res.rateChoose,
 		"\n选重字数：", res.lenChoose,
-		"\n选重率（字数）：", res.rLenChoose,
-		"\n键数：", res.stat,
+		"\n选重率（字数）：", res.rateLenChoose,
+		"\n键数：", res.statCode,
+		"\n词长：", res.statWord,
 	)
-	test()
 	// time.Sleep(5 * time.Second)
 }
 
-func test() {
-
+func errHandler(err error) {
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
 }

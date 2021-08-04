@@ -4,86 +4,31 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 )
 
-func readText(fp string) []rune {
-	var res []rune
-	// 读文件
-	fb, err := ioutil.ReadFile(fp)
-	if err != nil {
-		fmt.Println(err)
-		return res
-	}
-	// 去除空白字符
-	fs := string(fb)
-	// for _, v := range fs {
-	// 	if !unicode.IsSpace(v) {
-	// 		res = append(res, v)
-	// 	}
-	// }
-	str := "\r\n\t "
-	for _, v := range str {
-		fs = strings.Replace(fs, string(v), "", -1)
-	}
-	res = []rune(fs)
-	return res
-}
-
 type Dict map[string]string
 
-func readMB(fp string) map[int]Dict {
+var smb = make(map[int]Dict)
 
-	res := make(map[int]Dict)
+func read(fp string) map[int]Dict {
 
-	// 读取符号配置文件
-	// b, err := ioutil.ReadFile("conf.yaml")
-	// errHandler(err)
-	// conf := make(map[string]Dict)
-	// err = yaml.Unmarshal(b, &conf)
-	// errHandler(err)
+	addPunct()
+	readConf(fp)
 
-	punct := Dict{
-		"·": "`",
-		"【": "[",
-		"】": "]",
-		"；": ";",
-		"‘": "\"",
-		"’": "\"",
-		"，": ",",
-		"。": ".",
-		"、": "/",
-		// 用~表示换挡
-		"——": "~-",
-		"：":  "~;",
-		"“":  "~\"",
-		"”":  "~\"",
-		"《":  "~,",
-		"》":  "~.",
-		"？":  "~/",
+	if conf.isConf {
+		fmt.Println("检测到普通码表", conf)
+	} else {
+		fmt.Println("检测到赛码表")
 	}
-
-	// 符号
-	for k, v := range punct {
-		l := len([]rune(k))
-		if res[l] == nil {
-			res[l] = make(Dict)
-		}
-		res[l][k] = v
-	}
-
-	// start := time.Now()
-	// defer func() {
-	// 	cost := time.Since(start)
-	// 	fmt.Println("readMB cost time = ", cost)
-	// }()
 
 	f, err := os.Open(fp)
 	errHandler(err)
 	defer f.Close()
 
+	freq := make(map[string]int)
 	buff := bufio.NewReader(f)
 	// 生成字典
 	for {
@@ -95,17 +40,56 @@ func readMB(fp string) map[int]Dict {
 		if len(el) != 2 {
 			continue
 		}
-		l := len([]rune(el[0]))
-		if res[l] == nil {
-			res[l] = make(Dict)
+
+		word, code := el[0], el[1]
+		if conf.isConf {
+			freq[code] += 1
+			key := ""
+			if freq[code] == 1 {
+				if len(code) < conf.as {
+					key = "_"
+				}
+			} else {
+				key = strconv.Itoa(freq[code])
+			}
+			addWord(word, code+key)
+		} else {
+			addWord(word, code)
 		}
-		res[l][el[0]] = el[1]
 	}
-	return res
+	return smb
 }
 
-func errHandler(err error) {
-	if err != nil {
-		fmt.Println("error: ", err)
+func addWord(w, c string) {
+	l := len([]rune(w))
+	if smb[l] == nil {
+		smb[l] = make(Dict)
+	}
+	smb[l][w] = c
+}
+
+func addPunct() {
+	// 符号
+	punct := Dict{
+		"·": "`",
+		"【": "[",
+		"】": "]",
+		"；": ";",
+		"‘": "\"",
+		"’": "\"",
+		"，": ",",
+		"。": ".",
+		"、": "/",
+		// 用 ~ 表示换挡
+		"——": "~-",
+		"：":  "~;",
+		"“":  "~\"",
+		"”":  "~\"",
+		"《":  "~,",
+		"》":  "~.",
+		"？":  "~/",
+	}
+	for k, v := range punct {
+		addWord(k, v)
 	}
 }
