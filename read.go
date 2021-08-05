@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -22,6 +23,8 @@ func read(fp string) map[int]Dict {
 		fmt.Println("检测到普通码表", conf)
 	} else {
 		fmt.Println("检测到赛码表")
+		readSMB(fp)
+		return smb
 	}
 
 	f, err := os.Open(fp)
@@ -36,28 +39,37 @@ func read(fp string) map[int]Dict {
 		if eof == io.EOF {
 			break
 		}
-		el := strings.Split(string(b), "\t")
-		if len(el) != 2 {
+		wc := strings.Split(string(b), "\t")
+		if len(wc) != 2 {
 			continue
 		}
-
-		word, code := el[0], el[1]
-		if conf.isConf {
-			freq[code] += 1
-			key := ""
-			if freq[code] == 1 {
-				if len(code) < conf.as {
-					key = "_"
-				}
-			} else {
-				key = strconv.Itoa(freq[code])
+		word, code := wc[0], wc[1]
+		freq[code] += 1
+		key := ""
+		if freq[code] == 1 {
+			if len(code) < conf.as {
+				key = "_"
 			}
-			addWord(word, code+key)
 		} else {
-			addWord(word, code)
+			key = strconv.Itoa(freq[code])
 		}
+		addWord(word, code+key)
 	}
 	return smb
+}
+
+func readSMB(fp string) {
+	f, err := ioutil.ReadFile(fp)
+	errHandler(err)
+	fs := string(f)
+	fs = strings.ReplaceAll(fs, "\r", "")
+	words := strings.Split(fs, "\n")
+	for _, v := range words {
+		wc := strings.Split(v, "\t")
+		if len(wc) == 2 {
+			addWord(wc[0], wc[1])
+		}
+	}
 }
 
 func addWord(w, c string) {
