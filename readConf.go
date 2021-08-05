@@ -10,21 +10,20 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Conf struct {
+type config struct {
 	ak     map[int]string
 	as     int  // auto_select
 	isConf bool // 是否有配置，没有就当作赛码表
 }
 
-var conf Conf
-
-func readConf(fp string) Conf {
+func readConf(fp string) config {
 
 	f, err := os.Open(fp)
 	errHandler(err)
 	defer f.Close()
 
 	// 读文件头
+	var conf config
 	conf.ak = make(map[int]string)
 	buff := bufio.NewReader(f)
 	conf.isConf = false

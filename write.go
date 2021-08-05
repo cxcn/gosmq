@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func write() {
+func (res *result) write() {
 	res.code = strings.Replace(res.codeSep, " ", "", -1)
 	res.codeSlice = strings.Split(res.codeSep, " ")
 	res.lenCode = len(res.code)

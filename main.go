@@ -18,7 +18,6 @@ func main() {
 	var fpt string
 	var fpo string
 	var help bool
-	// var isCode *bool
 
 	flag.StringVar(&fpm, "m", "", "码表路径")
 	flag.StringVar(&fpt, "t", "", "文本路径")
@@ -37,7 +36,7 @@ func main() {
 		return
 	}
 
-	cacl(fpm, fpt)
+	res := calc(fpm, fpt)
 	if fpo != "" {
 		// fmt.Println(fpo)
 		err := ioutil.WriteFile(fpo, []byte(res.codeSep), 0777)

@@ -46,39 +46,10 @@ type result struct {
 	statWord map[int]int
 }
 
-var res result
-var buf bytes.Buffer
-
-func part(w, c string) {
-
-	num := c[len(c)-1]
-	if 48 <= num && num <= 57 {
-		res.choose[w] = struct{}{}
-		if conf.isConf {
-			s, err := strconv.Atoi(string(num))
-			if err != nil {
-				errHandler(err)
-			}
-			key, ok := conf.ak[s]
-			if ok {
-				c = c[:len(c)-1] + key
-			}
-		}
-	}
-	buf.WriteString(c + " ")
-
-	tmp := res.mapFreq[w]
-	if tmp.code == "" {
-		tmp.code = c
-	}
-	tmp.times++
-	res.mapFreq[w] = tmp
-
-}
-
-func cacl(fpm, fpt string) {
+func calc(fpm, fpt string) result {
 	text := readText(fpt)
-	read(fpm)
+	dict := read(fpm)
+	conf := readConf(fpm)
 
 	start := time.Now()
 	defer func() {
@@ -86,9 +57,37 @@ func cacl(fpm, fpt string) {
 		fmt.Println("cacl cost time = ", cost)
 	}()
 
+	res := new(result)
 	res.lenText = len(text)
 	res.mapFreq = make(map[string]freq)
 	res.choose = make(map[string]struct{})
+	var buf bytes.Buffer
+
+	part := func(w, c string) {
+		// 选重
+		num := c[len(c)-1]
+		if 48 <= num && num <= 57 {
+			res.choose[w] = struct{}{}
+			if conf.isConf {
+				s, err := strconv.Atoi(string(num))
+				if err != nil {
+					errHandler(err)
+				}
+				key, ok := conf.ak[s]
+				if ok {
+					c = c[:len(c)-1] + key
+				}
+			}
+		}
+		buf.WriteString(c + " ")
+
+		tmp := res.mapFreq[w]
+		if tmp.code == "" {
+			tmp.code = c
+		}
+		tmp.times++
+		res.mapFreq[w] = tmp
+	}
 
 	p := 0 // point
 	for p < res.lenText {
@@ -111,11 +110,11 @@ func cacl(fpm, fpt string) {
 				res.countLack++
 			}
 		}
-
+		// 最长匹配
 		var a, b Trie
 		b = dict
 		i, j := 0, 0
-		for {
+		for p+j < res.lenText {
 			if b.children[text[p+j]] == nil {
 				break
 			}
@@ -125,9 +124,6 @@ func cacl(fpm, fpt string) {
 				i = j
 			}
 			j++
-			if p+j >= res.lenText {
-				break
-			}
 		}
 
 		word := string(text[p : p+i+1])
@@ -139,6 +135,8 @@ func cacl(fpm, fpt string) {
 		}
 		p += i + 1
 	}
+
 	res.codeSep = buf.String()
-	write()
+	res.write()
+	return *res
 }

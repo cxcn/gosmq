@@ -11,14 +11,11 @@ import (
 	"time"
 )
 
-type Dict map[string]string
+func read(fp string) Trie {
 
-var dict = Constructor()
-
-func read(fp string) {
-
-	addPunct()
-	readConf(fp)
+	var dict = Constructor()
+	dict.addPunct()
+	conf := readConf(fp)
 
 	start := time.Now()
 	defer func() {
@@ -30,8 +27,8 @@ func read(fp string) {
 		fmt.Println("检测到普通码表", conf)
 	} else {
 		fmt.Println("检测到赛码表")
-		readSMB(fp)
-		return
+		dict.readSMB(fp)
+		return dict
 	}
 
 	f, err := os.Open(fp)
@@ -62,9 +59,10 @@ func read(fp string) {
 		}
 		dict.Insert(word, code+key)
 	}
+	return dict
 }
 
-func readSMB(fp string) {
+func (t Trie) readSMB(fp string) {
 	f, err := ioutil.ReadFile(fp)
 	errHandler(err)
 	fs := string(f)
@@ -73,14 +71,14 @@ func readSMB(fp string) {
 	for _, v := range words {
 		wc := strings.Split(v, "\t")
 		if len(wc) == 2 {
-			dict.Insert(wc[0], wc[1])
+			t.Insert(wc[0], wc[1])
 		}
 	}
 }
 
-func addPunct() {
+func (t Trie) addPunct() {
 	// 符号
-	punct := Dict{
+	punct := map[string]string{
 		"·": "`",
 		"【": "[",
 		"】": "]",
@@ -100,6 +98,6 @@ func addPunct() {
 		"？":  "~/",
 	}
 	for k, v := range punct {
-		dict.Insert(k, v)
+		t.Insert(k, v)
 	}
 }
