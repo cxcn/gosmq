@@ -91,10 +91,7 @@ func cacl(fpm, fpt string) {
 	res.choose = make(map[string]struct{})
 
 	p := 0 // point
-	for {
-		if p >= res.lenText {
-			break
-		}
+	for p < res.lenText {
 		// 非汉字
 		if !unicode.Is(unicode.Han, text[p]) {
 			res.countNotHan++
@@ -108,7 +105,7 @@ func cacl(fpm, fpt string) {
 			}
 			p++
 			continue
-		} else if !dict.children[text[p]].isWord { // 有词没字
+		} else if !dict.children[text[p]].isWord { // 缺字 有词没字
 			if !strings.Contains(res.lack, string(text[p])) {
 				res.lack += string(text[p])
 				res.countLack++
