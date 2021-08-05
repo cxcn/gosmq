@@ -62,7 +62,7 @@ func readSMB(fp string) {
 	f, err := ioutil.ReadFile(fp)
 	errHandler(err)
 	fs := string(f)
-	fs = strings.ReplaceAll(fs, "\r", "")
+	fs = strings.Replace(fs, "\r", "", -1)
 	words := strings.Split(fs, "\n")
 	for _, v := range words {
 		wc := strings.Split(v, "\t")
