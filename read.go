@@ -49,15 +49,15 @@ func read(fp string) Trie {
 		}
 		word, code := wc[0], wc[1]
 		freq[code] += 1
-		key := ""
-		if freq[code] == 1 {
-			if len(code) < conf.as {
-				key = "_"
-			}
+		var key string
+		if freq[code] != 1 {
+			key = code + strconv.Itoa(freq[code])
+		} else if len(code) < conf.as {
+			key = code + "_"
 		} else {
-			key = strconv.Itoa(freq[code])
+			key = code
 		}
-		dict.Insert(word, code+key)
+		dict.Insert(word, key)
 	}
 	return dict
 }

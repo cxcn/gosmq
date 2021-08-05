@@ -42,8 +42,8 @@ type result struct {
 	rateChoose    float64 //选重率（上屏）
 	rateLenChoose float64 //选重率（字数）
 
-	statCode map[int]int
-	statWord map[int]int
+	statCode map[int]int //码长统计
+	statWord map[int]int //词长统计
 }
 
 func calc(fpm, fpt string) result {
@@ -54,7 +54,7 @@ func calc(fpm, fpt string) result {
 	start := time.Now()
 	defer func() {
 		cost := time.Since(start)
-		fmt.Println("cacl cost time = ", cost)
+		fmt.Println("calc cost time = ", cost)
 	}()
 
 	res := new(result)
