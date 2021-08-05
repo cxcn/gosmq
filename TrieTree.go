@@ -7,7 +7,6 @@ type Trie struct {
 	isWord bool
 }
 
-/** Initialize your data structure here. */
 func Constructor() Trie {
 	root := new(Trie)
 	root.children = make(map[rune]*Trie)
@@ -31,12 +30,12 @@ func (trie *Trie) Insert(word, code string) {
 	trie.isWord = true
 }
 
-func (trie *Trie) Search(word string) (bool, string) {
-	for _, v := range word {
-		if trie.children[v] == nil {
-			return false, ""
-		}
-		trie = trie.children[v]
-	}
-	return trie.isWord, trie.code
-}
+// func (trie *Trie) Search(word string) (bool, string) {
+// 	for _, v := range word {
+// 		if trie.children[v] == nil {
+// 			return false, ""
+// 		}
+// 		trie = trie.children[v]
+// 	}
+// 	return trie.isWord, trie.code
+// }

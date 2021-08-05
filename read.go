@@ -8,23 +8,30 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Dict map[string]string
 
-var smb = make(map[int]Dict)
+var dict = Constructor()
 
-func read(fp string) map[int]Dict {
+func read(fp string) {
 
 	addPunct()
 	readConf(fp)
+
+	start := time.Now()
+	defer func() {
+		cost := time.Since(start)
+		fmt.Println("read cost time = ", cost)
+	}()
 
 	if conf.isConf {
 		fmt.Println("检测到普通码表", conf)
 	} else {
 		fmt.Println("检测到赛码表")
 		readSMB(fp)
-		return smb
+		return
 	}
 
 	f, err := os.Open(fp)
@@ -53,9 +60,8 @@ func read(fp string) map[int]Dict {
 		} else {
 			key = strconv.Itoa(freq[code])
 		}
-		addWord(word, code+key)
+		dict.Insert(word, code+key)
 	}
-	return smb
 }
 
 func readSMB(fp string) {
@@ -67,17 +73,9 @@ func readSMB(fp string) {
 	for _, v := range words {
 		wc := strings.Split(v, "\t")
 		if len(wc) == 2 {
-			addWord(wc[0], wc[1])
+			dict.Insert(wc[0], wc[1])
 		}
 	}
-}
-
-func addWord(w, c string) {
-	l := len([]rune(w))
-	if smb[l] == nil {
-		smb[l] = make(Dict)
-	}
-	smb[l][w] = c
 }
 
 func addPunct() {
@@ -102,6 +100,6 @@ func addPunct() {
 		"？":  "~/",
 	}
 	for k, v := range punct {
-		addWord(k, v)
+		dict.Insert(k, v)
 	}
 }

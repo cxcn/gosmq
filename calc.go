@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -76,57 +78,69 @@ func part(w, c string) {
 
 func cacl(fpm, fpt string) {
 	text := readText(fpt)
-	dict := read(fpm)
+	read(fpm)
 
-	// start := time.Now()
-	// defer func() {
-	// 	cost := time.Since(start)
-	// 	fmt.Println("cacl cost time = ", cost)
-	// }()
+	start := time.Now()
+	defer func() {
+		cost := time.Since(start)
+		fmt.Println("cacl cost time = ", cost)
+	}()
 
 	res.lenText = len(text)
 	res.mapFreq = make(map[string]freq)
 	res.choose = make(map[string]struct{})
-	max := 0 // 最大词长
-	for k := range dict {
-		if k > max {
-			max = k
-		}
-	}
 
 	p := 0 // point
-	for p < res.lenText {
-		if max > res.lenText-p {
-			max = res.lenText - p
+	for {
+		if p >= res.lenText {
+			break
 		}
-		for i := max; i > 0; i-- {
-			word := string(text[p : p+i])
-			code, ok := dict[i][word]
-			if i == 1 {
-				// 非汉字
-				if !unicode.Is(unicode.Han, text[p]) {
-					res.countNotHan++
-					if !strings.Contains(res.notHan, word) {
-						res.notHan += word
-					}
-					if ok { // 码表中的非汉字
-						part(word, code)
-					} else {
-						part(word, word)
-					}
-				} else if ok { // 码表中的汉字
-					part(word, code)
-				} else if !strings.Contains(res.lack, word) { // 缺字
-					res.lack += word
-					res.countLack++
-				}
-				p++
-			} else if ok { // 码表中的词
-				part(word, code)
-				p += i
+		// 非汉字
+		if !unicode.Is(unicode.Han, text[p]) {
+			res.countNotHan++
+			if !strings.Contains(res.notHan, string(text[p])) {
+				res.notHan += string(text[p])
+			}
+		} else if dict.children[text[p]] == nil { // 缺字
+			if !strings.Contains(res.lack, string(text[p])) {
+				res.lack += string(text[p])
+				res.countLack++
+			}
+			p++
+			continue
+		} else if !dict.children[text[p]].isWord { // 有词没字
+			if !strings.Contains(res.lack, string(text[p])) {
+				res.lack += string(text[p])
+				res.countLack++
+			}
+		}
+
+		var a, b Trie
+		b = dict
+		i, j := 0, 0
+		for {
+			if b.children[text[p+j]] == nil {
+				break
+			}
+			b = *b.children[text[p+j]]
+			if b.isWord {
+				a = b
+				i = j
+			}
+			j++
+			if p+j >= res.lenText {
 				break
 			}
 		}
+
+		word := string(text[p : p+i+1])
+		code := a.code
+		if len(code) != 0 {
+			part(word, code)
+		} else {
+			part(word, word)
+		}
+		p += i + 1
 	}
 	res.codeSep = buf.String()
 	write()
