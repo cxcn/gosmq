@@ -86,7 +86,7 @@ func calc(fpm, fpt string) result {
 		tmp.code = code
 		tmp.times++
 		res.mapFreq[word] = tmp
-
+		res.countCode++
 		p += i + 1
 	}
 
