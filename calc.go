@@ -9,43 +9,6 @@ import (
 	"unicode"
 )
 
-type freq struct {
-	code  string
-	times int
-}
-
-type result struct {
-	lenText     int    //文本字数
-	notHan      string //非汉字
-	countNotHan int    //非汉字数
-	lack        string //缺字
-	countLack   int    //缺字数
-
-	codeSep string //空格间隔的全部编码
-	mapFreq map[string]freq
-	choose  map[string]struct{} //选重
-
-	//以下可由上面计算得
-	code       string   //全部编码
-	codeSlice  []string //编码切片
-	lenCode    int      //总键数
-	avlCode    float64  //码长
-	countSpace int      //空格数
-
-	countWord   int     //打词数
-	lenWord     int     //打词字数
-	rateWord    float64 //打词率（上屏）
-	rateLenWord float64 //打词率（字数）
-
-	countChoose   int     //选重数
-	lenChoose     int     //选重字数
-	rateChoose    float64 //选重率（上屏）
-	rateLenChoose float64 //选重率（字数）
-
-	statCode map[int]int //码长统计
-	statWord map[int]int //词长统计
-}
-
 func calc(fpm, fpt string) result {
 	text := readText(fpt)
 	dict := read(fpm)
@@ -137,6 +100,6 @@ func calc(fpm, fpt string) result {
 	}
 
 	res.codeSep = buf.String()
-	res.write()
+	res.stat()
 	return *res
 }
