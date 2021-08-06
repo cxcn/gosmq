@@ -8,6 +8,10 @@ import (
 )
 
 func main() {
+
+	// defer profile.Start().Stop()
+	// defer profile.Start(profile.MemProfile, profile.MemProfileRate(1)).Stop()
+
 	start := time.Now()
 	defer func() {
 		cost := time.Since(start)

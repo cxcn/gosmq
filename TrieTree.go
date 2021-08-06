@@ -10,7 +10,7 @@ type Trie struct {
 func Constructor() Trie {
 	root := new(Trie)
 	root.children = make(map[rune]*Trie)
-	root.isWord = false
+	// root.isWord = false
 	return *root
 }
 
@@ -21,7 +21,7 @@ func (trie *Trie) Insert(word, code string) {
 			//子节点
 			node.children = make(map[rune]*Trie)
 			//初始化节点单词标志为假
-			node.isWord = false
+			// node.isWord = false
 			trie.children[v] = node
 		}
 		trie = trie.children[v]

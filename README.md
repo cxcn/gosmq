@@ -4,7 +4,7 @@ go 写的赛码器
 
 ## 使用
 
-所以文件使用 `utf8` 编码
+所有文件使用 `utf8` 编码
 
 ```shell
 saimaqi.exe [-m mb] [-t text] [-o output]

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"strconv"
 	"strings"
@@ -24,12 +23,12 @@ func calc(fpm, fpt string) result {
 	res.lenText = len(text)
 	res.mapFreq = make(map[string]freq)
 	res.choose = make(map[string]struct{})
-	var buf bytes.Buffer
+	var builder strings.Builder
+	builder.Grow(res.lenText / 4)
 
 	part := func(w, c string) {
 		// 选重
-		num := c[len(c)-1]
-		if 48 <= num && num <= 57 {
+		if num := c[len(c)-1]; 48 <= num && num <= 57 {
 			res.choose[w] = struct{}{}
 			if conf.isConf {
 				s, err := strconv.Atoi(string(num))
@@ -42,12 +41,11 @@ func calc(fpm, fpt string) result {
 				}
 			}
 		}
-		buf.WriteString(c + " ")
+		builder.WriteString(c)
+		builder.WriteString(" ")
 
 		tmp := res.mapFreq[w]
-		if tmp.code == "" {
-			tmp.code = c
-		}
+		tmp.code = c
 		tmp.times++
 		res.mapFreq[w] = tmp
 	}
@@ -99,7 +97,7 @@ func calc(fpm, fpt string) result {
 		p += i + 1
 	}
 
-	res.codeSep = buf.String()
+	res.codeSep = builder.String()
 	res.stat()
 	return *res
 }

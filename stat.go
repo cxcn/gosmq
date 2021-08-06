@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"strings"
+	"time"
 )
 
 type freq struct {
@@ -16,13 +18,12 @@ type result struct {
 	lack        string //缺字
 	countLack   int    //缺字数
 
-	codeSep string //空格间隔的全部编码
-	mapFreq map[string]freq
+	codeSep string              //空格间隔的全部编码
+	mapFreq map[string]freq     //词：频率
 	choose  map[string]struct{} //选重
 
 	//以下可由上面计算得
-	code string //全部编码
-	// codeSlice  []string //编码切片
+	code       string  //全部编码
 	lenCode    int     //总键数
 	avlCode    float64 //码长
 	countSpace int     //空格数
@@ -49,7 +50,13 @@ type result struct {
 }
 
 func (res *result) stat() {
-	res.code = strings.Replace(res.codeSep, " ", "", -1)
+	start := time.Now()
+	defer func() {
+		cost := time.Since(start)
+		fmt.Println("stat cost time = ", cost)
+	}()
+
+	res.code = strings.ReplaceAll(res.codeSep, " ", "")
 	countCode := len(strings.Split(res.codeSep, " ")) // 上屏数
 	res.lenCode = len(res.code)
 	res.avlCode = float64(res.lenCode) / float64(res.lenText)
@@ -80,17 +87,17 @@ func (res *result) stat() {
 
 func (res *result) fingering() {
 	loc := make(map[rune]bool)
-	for _, v := range "12345qwertasdfgzxcvb" {
+	for _, v := range "`12345qwertasdfgzxcvb" {
 		loc[v] = true // 左手 true
 	}
-	for _, v := range "67890yuiophjkl;'nm,./" {
-		loc[v] = false // 右手 false
-	}
+	// for _, v := range "67890yuiophjkl;'nm,./" {
+	// 	loc[v] = false // 右手 false
+	// }
 	rcode := []rune(res.code)
 	res.countKey = make([]int, 10)
 	var countDiffHand, countSameFin, countDiffFin int
-	i := 0
-	for {
+
+	for i := range rcode {
 		switch rcode[i] {
 		case 'q', 'a', 'z', '1':
 			res.countKey[0]++
@@ -123,7 +130,6 @@ func (res *result) fingering() {
 		} else {
 			countDiffHand++
 		}
-		i++
 	}
 	res.rateDiffHand = float64(countDiffHand) / float64(res.lenCode)
 	res.rateSameFin = float64(countSameFin) / float64(res.lenCode)
