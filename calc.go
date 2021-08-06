@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -26,28 +25,18 @@ func calc(fpm, fpt string) result {
 	var builder strings.Builder
 	builder.Grow(res.lenText / 4)
 
-	part := func(w, c string) {
-		// 选重
-		if num := c[len(c)-1]; 48 <= num && num <= 57 {
+	// 选重，替换选重键
+	replace := func(w, c string) string {
+		if i := c[len(c)-1]; 48 <= i && i <= 57 {
 			res.choose[w] = struct{}{}
 			if conf.isConf {
-				s, err := strconv.Atoi(string(num))
-				if err != nil {
-					errHandler(err)
-				}
-				key, ok := conf.ak[s]
+				key, ok := conf.ak[int(i-48)]
 				if ok {
 					c = c[:len(c)-1] + key
 				}
 			}
 		}
-		builder.WriteString(c)
-		builder.WriteString(" ")
-
-		tmp := res.mapFreq[w]
-		tmp.code = c
-		tmp.times++
-		res.mapFreq[w] = tmp
+		return c
 	}
 
 	p := 0 // point
@@ -72,28 +61,32 @@ func calc(fpm, fpt string) result {
 			}
 		}
 		// 最长匹配
-		var a, b Trie
-		b = dict
-		i, j := 0, 0
-		for p+j < res.lenText {
+		var a Trie
+		var i int
+		for b, j := dict, 0; p+j < res.lenText; j++ {
 			if b.children[text[p+j]] == nil {
 				break
 			}
 			b = *b.children[text[p+j]]
 			if b.isWord {
-				a = b
-				i = j
+				a, i = b, j
 			}
-			j++
 		}
 
 		word := string(text[p : p+i+1])
-		code := a.code
-		if len(code) != 0 {
-			part(word, code)
+		var code string
+		if len(a.code) == 0 {
+			code = word
 		} else {
-			part(word, word)
+			code = replace(word, a.code)
 		}
+		builder.WriteString(code)
+		builder.WriteString(" ")
+		tmp := res.mapFreq[word]
+		tmp.code = code
+		tmp.times++
+		res.mapFreq[word] = tmp
+
 		p += i + 1
 	}
 
