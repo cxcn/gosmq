@@ -19,18 +19,22 @@ func main() {
 	}()
 
 	var fpm string
+	var ding int
 	var fpt string
+	var csk string
 	var fpo string
 	var help bool
 
-	flag.StringVar(&fpm, "m", "", "码表路径")
-	flag.StringVar(&fpt, "t", "", "文本路径")
+	flag.BoolVar(&help, "h", false, "显示帮助")
+	flag.StringVar(&fpm, "i", "", "码表路径，可以是rime格式码表 或 极速跟打器赛码表")
+	flag.IntVar(&ding, "d", 0, "普通码表起顶码长，码长大于等于此数，首选不会追加空格")
+	flag.StringVar(&fpt, "t", "", "文本路径，utf8编码格式文本，会自动去除空白符")
+	flag.StringVar(&csk, "s", ";'", "custom_select_key: 自定义选重键(2重开始)")
 	flag.StringVar(&fpo, "o", "", "输出路径")
-	flag.BoolVar(&help, "h", false, "帮助")
 	flag.Parse()
 
 	if help {
-		fmt.Println("saimaqi version: 0.3\n\nUsage: saimaqi.exe [-m mb] [-t text] [-o output]")
+		fmt.Print("saimaqi version: 0.4\n\nUsage: saimaqi.exe [-i mb] [-d int] [-t text] [-s string] [-o output]\n\n")
 		flag.PrintDefaults()
 		return
 	}
@@ -40,7 +44,10 @@ func main() {
 		return
 	}
 
-	res := calc(fpm, fpt)
+	dict := read(fpm, ding)
+	text := readText(fpt)
+	res := calc(dict, text, csk)
+	res.fingering()
 	if fpo != "" {
 		// fmt.Println(fpo)
 		err := ioutil.WriteFile(fpo, []byte(res.codeSep), 0777)
@@ -48,31 +55,30 @@ func main() {
 	}
 	out := ""
 	out += fmt.Sprintln("----------------------")
-	out += fmt.Sprintf("文本字数：%d\n", res.lenText)
+	out += fmt.Sprintf("文本字数：%d\n", res.textLen)
 	out += fmt.Sprintf("非汉字：%s\n", res.notHan)
-	out += fmt.Sprintf("非汉字数：%d\n", res.countNotHan)
+	out += fmt.Sprintf("非汉字数：%d\n", res.notHanCount)
 	out += fmt.Sprintf("缺字：%s\n", res.lack)
-	out += fmt.Sprintf("缺字数：%d\n", res.countLack)
+	out += fmt.Sprintf("缺字数：%d\n", res.lackCount)
 	out += fmt.Sprintln("------------")
-	out += fmt.Sprintf("总键数：%d\n", res.lenCode)
-	out += fmt.Sprintf("码长：%.4f\n", res.avlCode)
-	// out += fmt.Sprintf("空格数：%d\n", res.countSpace)
-	out += fmt.Sprintf("打词：    %d\t%.3f%%\n", res.countWord, 100*res.rateWord)
-	out += fmt.Sprintf("打词字数：%d\t%.3f%%\n", res.lenWord, 100*res.rateLenWord)
-	out += fmt.Sprintf("选重：    %d\t%.3f%%\n", res.countChoose, 100*res.rateChoose)
-	out += fmt.Sprintf("选重字数：%d\t%.3f%%\n", res.lenChoose, 100*res.rateLenChoose)
-	out += fmt.Sprintf("码长统计：%v\n", res.statCode)
-	out += fmt.Sprintf("词长统计：%v\n", res.statWord)
+	out += fmt.Sprintf("总键数：%d\n", res.codeLen)
+	out += fmt.Sprintf("码长：%.4f\n", res.codeAvg)
+	out += fmt.Sprintf("打词：    %d\t%.3f%%\n", res.wordCount, 100*res.wordRate)
+	out += fmt.Sprintf("打词字数：%d\t%.3f%%\n", res.wordLen, 100*res.wordLenRate)
+	out += fmt.Sprintf("选重：    %d\t%.3f%%\n", res.repeatCount, 100*res.repeatRate)
+	out += fmt.Sprintf("选重字数：%d\t%.3f%%\n", res.repeatLen, 100*res.repeatLenRate)
+	out += fmt.Sprintf("码长统计：%v\n", res.codeStat)
+	out += fmt.Sprintf("词长统计：%v\n", res.wordStat)
 	out += fmt.Sprintln("------------")
-	out += fmt.Sprintf("左右：%d\t%.3f%%\n", res.countPos[0], 100*res.ratePos[0])
-	out += fmt.Sprintf("右左：%d\t%.3f%%\n", res.countPos[1], 100*res.ratePos[1])
-	out += fmt.Sprintf("左左：%d\t%.3f%%\n", res.countPos[2], 100*res.ratePos[2])
-	out += fmt.Sprintf("右右：%d\t%.3f%%\n", res.countPos[3], 100*res.ratePos[3])
-	out += fmt.Sprintf("异手：%.3f%%\n", 100*res.rateDiffHand)
-	out += fmt.Sprintf("同指：%.3f%%\n", 100*res.rateSameFin)
-	out += fmt.Sprintf("异指：%.3f%%\n", 100*res.rateDiffFin)
-	for i, v := range res.countKey {
-		out += fmt.Sprintf("第%d列：%d\t%.3f%%\n", i+1, v, 100*res.rateKey[i])
+	out += fmt.Sprintf("左右：%d\t%.3f%%\n", res.posCount[0], 100*res.posRate[0])
+	out += fmt.Sprintf("右左：%d\t%.3f%%\n", res.posCount[1], 100*res.posRate[1])
+	out += fmt.Sprintf("左左：%d\t%.3f%%\n", res.posCount[2], 100*res.posRate[2])
+	out += fmt.Sprintf("右右：%d\t%.3f%%\n", res.posCount[3], 100*res.posRate[3])
+	out += fmt.Sprintf("异手：%.3f%%\n", 100*res.diffHandRate)
+	out += fmt.Sprintf("同指：%.3f%%\n", 100*res.sameFinRate)
+	out += fmt.Sprintf("异指：%.3f%%\n", 100*res.diffFinRate)
+	for i, v := range res.keyCount {
+		out += fmt.Sprintf("第%d列：%d\t%.3f%%\n", i, v, 100*res.keyRate[i])
 	}
 	out += fmt.Sprintln("----------------------")
 	fmt.Print(out)

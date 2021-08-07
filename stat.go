@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -12,136 +11,140 @@ type freq struct {
 }
 
 type result struct {
-	lenText     int    //文本字数
+	textLen     int    //文本字数
 	notHan      string //非汉字
-	countNotHan int    //非汉字数
+	notHanCount int    //非汉字数
 	lack        string //缺字
-	countLack   int    //缺字数
+	lackCount   int    //缺字数
 
-	codeSep   string              //空格间隔的全部编码
-	choose    map[string]struct{} //选重
-	countCode int                 //上屏数
-	mapFreq   map[string]freq     //词：频率
+	repeat   map[string]struct{} //选重
+	freqStat map[string]freq     //字词：频率
+
+	codeSep   string //空格间隔的全部编码
+	code      string //全部编码
+	unitCount int    //上屏数
 
 	//以下可由上面计算得
-	code    string  //全部编码
-	lenCode int     //总键数
-	avlCode float64 //码长
+	codeLen int     //总键数
+	codeAvg float64 //码长
 
-	countWord   int     //打词数
-	lenWord     int     //打词字数
-	rateWord    float64 //打词率（上屏）
-	rateLenWord float64 //打词率（字数）
+	wordCount   int     //打词数
+	wordLen     int     //打词字数
+	wordRate    float64 //打词率（上屏）
+	wordLenRate float64 //打词率（字数）
 
-	countChoose   int     //选重数
-	lenChoose     int     //选重字数
-	rateChoose    float64 //选重率（上屏）
-	rateLenChoose float64 //选重率（字数）
+	repeatCount   int     //选重数
+	repeatLen     int     //选重字数
+	repeatRate    float64 //选重率（上屏）
+	repeatLenRate float64 //选重率（字数）
 
-	statCode map[int]int //码长统计
-	statWord map[int]int //词长统计
+	codeStat map[int]int //码长统计
+	wordStat map[int]int //词长统计
 
-	countKey []int
-	rateKey  []float64
-	countPos []int     // LR RL LL RR
-	ratePos  []float64 // LR RL LL RR
+	keyCount []int
+	keyRate  []float64
+	posCount []int     // LR RL LL RR
+	posRate  []float64 // LR RL LL RR
 
-	rateDiffHand float64 // 异手
-	rateSameFin  float64 // 同指
-	rateDiffFin  float64 // 同手异指
+	diffHandRate float64 // 异手
+	sameFinRate  float64 // 同指
+	diffFinRate  float64 // 同手异指
+}
+
+func div(x, y int) float64 {
+	return float64(x) / float64(y)
 }
 
 func (res *result) stat() {
-	start := time.Now()
-	defer func() {
-		cost := time.Since(start)
-		fmt.Println("stat cost time = ", cost)
-	}()
 
-	res.code = strings.ReplaceAll(res.codeSep, " ", "")
-	res.lenCode = len(res.code)
+	res.codeLen = len(res.code)
 
-	rateCode := func(x int) float64 {
-		return float64(x) / float64(res.countCode)
-	}
-	rateText := func(x int) float64 {
-		return float64(x) / float64(res.lenText)
-	}
+	res.codeAvg = div(res.codeLen, res.textLen)
 
-	res.avlCode = rateText(res.lenCode)
-
-	res.statCode = make(map[int]int)
-	res.statWord = make(map[int]int)
-	for k, v := range res.mapFreq {
+	res.codeStat = make(map[int]int)
+	res.wordStat = make(map[int]int)
+	for k, v := range res.freqStat {
 		l := len([]rune(k))
 		if l > 1 {
-			res.countWord += v.times
-			res.lenWord += l * v.times
+			res.wordCount += v.times
+			res.wordLen += l * v.times
 		}
-		res.statCode[len(v.code)] += v.times
-		res.statWord[l] += v.times
+		res.codeStat[len(v.code)] += v.times
+		res.wordStat[l] += v.times
 	}
-	res.rateWord = rateCode(res.countWord)
-	res.rateLenWord = rateText(res.lenWord)
-	for k := range res.choose {
+	res.wordRate = div(res.wordCount, res.unitCount)
+	res.wordLenRate = div(res.wordLen, res.textLen)
+	for k := range res.repeat {
 		l := len([]rune(k))
-		res.countChoose += res.mapFreq[k].times
-		res.lenChoose += l * res.mapFreq[k].times
+		res.repeatCount += res.freqStat[k].times
+		res.repeatLen += l * res.freqStat[k].times
 	}
-	res.rateChoose = rateCode(res.countChoose)
-	res.rateLenChoose = rateText(res.lenChoose)
-	res.fingering()
+	res.repeatRate = div(res.repeatCount, res.unitCount)
+	res.repeatLenRate = div(res.repeatLen, res.textLen)
 }
 
 func (res *result) fingering() {
+	start := time.Now()
+	defer func() {
+		cost := time.Since(start)
+		fmt.Println("fingering cost time = ", cost)
+	}()
 
 	pos := make(map[byte]int)
 	aaa := "`1qaz2wsx3edc4rfv5tgb_6yhn7ujm8ik,9ol.0p;/'"
-	bbb := "0000011112222333333334666666667777888899999"
+	bbb := "1111122223333444444445666666667777888899999"
 	for i := range aaa {
 		v := int(bbb[i] - 48)
 		pos[aaa[i]] = v
 	}
-	fmt.Println(pos)
-	res.countKey = make([]int, 10)
-	res.countPos = make([]int, 4)
+	res.keyCount = make([]int, 10)
+	res.posCount = make([]int, 4)
 	var countSameFin int
 	a := pos[res.code[0]]
-	res.countKey[a]++
+	res.keyCount[a]++
+
+	L := func(x int) bool {
+		return x < 5
+	}
+	R := func(x int) bool {
+		return x > 5
+	}
 	for i := 1; i < len(res.code); i++ {
 		b, ok := pos[res.code[i]]
 		if !ok {
-			b = 5
+			b = 0
 		}
-		res.countKey[b]++
+		res.keyCount[b]++
 		if a == b {
 			countSameFin++
 		}
-		if a < 4 && b > 5 { // LR
-			res.countPos[0]++
-		} else if a > 5 && b < 4 { // RL
-			res.countPos[1]++
-		} else if a < 4 && b < 4 { // LL
-			res.countPos[2]++
-		} else if a > 5 && b > 5 { // RR
-			res.countPos[3]++
+
+		if L(a) && R(b) { // LR
+			res.posCount[0]++
+		} else if R(a) && L(b) { // RL
+			res.posCount[1]++
+		} else if L(a) && L(b) { // LL
+			res.posCount[2]++
+		} else if R(a) && R(b) { // RR
+			res.posCount[3]++
 		}
 		a = b
 	}
 
-	rate := func(x int) float64 {
-		return float64(x) / float64(res.lenCode)
+	res.posRate = make([]float64, 4)
+	posSum := 0
+	for _, v := range res.posCount {
+		posSum += v
+	}
+	for i, v := range res.posCount {
+		res.posRate[i] = div(v, posSum)
 	}
 
-	res.rateKey = make([]float64, 10)
-	for i, v := range res.countKey {
-		res.rateKey[i] = rate(v)
+	res.keyRate = make([]float64, 10)
+	for i, v := range res.keyCount {
+		res.keyRate[i] = div(v, res.codeLen)
 	}
-	res.ratePos = make([]float64, 4)
-	for i, v := range res.countPos {
-		res.ratePos[i] = rate(v)
-	}
-	res.rateDiffHand = res.ratePos[0] + res.ratePos[1]
-	res.rateSameFin = rate(countSameFin)
-	res.rateDiffFin = res.ratePos[2] + res.ratePos[3] - res.rateSameFin
+	res.diffHandRate = res.posRate[0] + res.posRate[1]
+	res.sameFinRate = div(countSameFin, posSum)
+	res.diffFinRate = res.posRate[2] + res.posRate[3] - res.sameFinRate
 }

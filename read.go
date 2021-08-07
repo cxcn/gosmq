@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func read(fp string) Trie {
+func read(fp string, ding int) Trie {
 
 	start := time.Now()
 	defer func() {
@@ -20,18 +20,16 @@ func read(fp string) Trie {
 
 	var dict = Constructor()
 	dict.addPunct()
-	conf := readConf(fp)
 
 	f, err := os.Open(fp)
 	errHandler(err)
 	defer f.Close()
 	buff := bufio.NewReader(f)
 
-	if conf.isConf {
-		fmt.Println("检测到普通码表", conf)
+	if ding < 1 {
+		fmt.Println("检测到普通码表")
 	} else {
 		fmt.Println("检测到赛码表")
-		// dict.readSMB(fp)
 		for {
 			b, _, eof := buff.ReadLine()
 			if eof == io.EOF {
@@ -61,7 +59,7 @@ func read(fp string) Trie {
 		var key string
 		if freq[code] != 1 {
 			key = code + strconv.Itoa(freq[code])
-		} else if len(code) < conf.as {
+		} else if len(code) < ding {
 			key = code + "_"
 		} else {
 			key = code

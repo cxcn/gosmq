@@ -7,63 +7,58 @@ import (
 	"unicode"
 )
 
-func calc(fpm, fpt string) result {
-	text := readText(fpt)
-	dict := read(fpm)
-	conf := readConf(fpm)
+func calc(dict Trie, text []rune, csk string) result {
 
 	start := time.Now()
-	defer func() {
-		cost := time.Since(start)
-		fmt.Println("calc cost time = ", cost)
-	}()
 
 	res := new(result)
-	res.lenText = len(text)
-	res.mapFreq = make(map[string]freq)
-	res.choose = make(map[string]struct{})
-	var builder strings.Builder
-	builder.Grow(res.lenText / 4)
+	res.textLen = len(text)
+	res.freqStat = make(map[string]freq)
+	res.repeat = make(map[string]struct{})
+	var builder, builderCode strings.Builder
+	builder.Grow(res.textLen / 4)
+	builderCode.Grow(res.textLen / 4)
 
 	// 选重，替换选重键
 	replace := func(w, c string) string {
-		if i := c[len(c)-1]; 48 <= i && i <= 57 {
-			res.choose[w] = struct{}{}
-			if conf.isConf {
-				key, ok := conf.ak[int(i-48)]
-				if ok {
-					c = c[:len(c)-1] + key
-				}
+		// 50: 2
+		if i := c[len(c)-1]; 50 <= i && i <= 57 {
+			res.repeat[w] = struct{}{}
+			if len(csk) > int(i-50) {
+				key := csk[int(i-50)]
+				tmp := []byte(c)
+				tmp[len(c)-1] = key
+				c = string(tmp)
 			}
 		}
 		return c
 	}
 
 	p := 0 // point
-	for p < res.lenText {
+	for p < res.textLen {
 		// 非汉字
 		if !unicode.Is(unicode.Han, text[p]) {
-			res.countNotHan++
+			res.notHanCount++
 			if !strings.Contains(res.notHan, string(text[p])) {
 				res.notHan += string(text[p])
 			}
 		} else if dict.children[text[p]] == nil { // 缺字
 			if !strings.Contains(res.lack, string(text[p])) {
 				res.lack += string(text[p])
-				res.countLack++
+				res.lackCount++
 			}
 			p++
 			continue
 		} else if !dict.children[text[p]].isWord { // 缺字 有词没字
 			if !strings.Contains(res.lack, string(text[p])) {
 				res.lack += string(text[p])
-				res.countLack++
+				res.lackCount++
 			}
 		}
 		// 最长匹配
 		var a Trie
 		var i int
-		for b, j := dict, 0; p+j < res.lenText; j++ {
+		for b, j := dict, 0; p+j < res.textLen; j++ {
 			if b.children[text[p+j]] == nil {
 				break
 			}
@@ -79,18 +74,26 @@ func calc(fpm, fpt string) result {
 			code = word
 		} else {
 			code = replace(word, a.code)
+			builderCode.WriteString(code)
 		}
 		builder.WriteString(code)
 		builder.WriteString(" ")
-		tmp := res.mapFreq[word]
+		tmp := res.freqStat[word]
 		tmp.code = code
 		tmp.times++
-		res.mapFreq[word] = tmp
-		res.countCode++
+		res.freqStat[word] = tmp
+		res.unitCount++
 		p += i + 1
 	}
 
 	res.codeSep = builder.String()
+	res.code = builderCode.String()
+
+	func() {
+		cost := time.Since(start)
+		fmt.Println("calc cost time = ", cost)
+	}()
+
 	res.stat()
 	return *res
 }
