@@ -18,7 +18,7 @@ func read(fp string, ding int) Trie {
 		fmt.Println("read cost time = ", cost)
 	}()
 
-	var dict = Constructor()
+	var dict = NewTrie()
 	dict.addPunct()
 
 	f, err := os.Open(fp)

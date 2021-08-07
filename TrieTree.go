@@ -7,7 +7,7 @@ type Trie struct {
 	isWord bool
 }
 
-func Constructor() Trie {
+func NewTrie() Trie {
 	root := new(Trie)
 	root.children = make(map[rune]*Trie)
 	// root.isWord = false
