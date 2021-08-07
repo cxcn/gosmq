@@ -26,7 +26,7 @@ func read(fp string, ding int) Trie {
 	defer f.Close()
 	buff := bufio.NewReader(f)
 
-	if ding < 1 {
+	if ding > 0 {
 		fmt.Println("检测到普通码表")
 	} else {
 		fmt.Println("检测到赛码表")
