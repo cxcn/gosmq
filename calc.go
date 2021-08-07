@@ -56,13 +56,13 @@ func calc(dict Trie, text []rune, csk string) result {
 			}
 		}
 		// 最长匹配
-		var a Trie
+		var a *Trie
 		var i int
-		for b, j := dict, 0; p+j < res.textLen; j++ {
+		for b, j := &dict, 0; p+j < res.textLen; j++ {
 			if b.children[text[p+j]] == nil {
 				break
 			}
-			b = *b.children[text[p+j]]
+			b = b.children[text[p+j]]
 			if b.isWord {
 				a, i = b, j
 			}
@@ -70,7 +70,7 @@ func calc(dict Trie, text []rune, csk string) result {
 
 		word := string(text[p : p+i+1])
 		var code string
-		if len(a.code) == 0 {
+		if a == nil {
 			code = word
 		} else {
 			code = replace(word, a.code)
