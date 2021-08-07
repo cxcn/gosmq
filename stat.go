@@ -83,7 +83,7 @@ func (res *result) stat() {
 	res.repeatLenRate = div(res.repeatLen, res.textLen)
 }
 
-func (res *result) fingering() {
+func (res *result) fingering(space bool) {
 	start := time.Now()
 	defer func() {
 		cost := time.Since(start)
@@ -104,9 +104,15 @@ func (res *result) fingering() {
 	res.keyCount[a]++
 
 	L := func(x int) bool {
+		if space {
+			return x <= 5
+		}
 		return x < 5
 	}
 	R := func(x int) bool {
+		if space {
+			return x >= 5
+		}
 		return x > 5
 	}
 	for i := 1; i < len(res.code); i++ {

@@ -18,19 +18,23 @@ func main() {
 		fmt.Println("main cost time = ", cost)
 	}()
 
-	var fpm string
-	var ding int
-	var fpt string
-	var csk string
-	var fpo string
-	var help bool
+	var (
+		fpm   string // file path mb
+		ding  int
+		fpt   string // file path text
+		space bool   // 空格是否互击
+		csk   string // custom select keys
+		fpo   string // output file path
+		help  bool
+	)
 
-	flag.BoolVar(&help, "h", false, "显示帮助")
 	flag.StringVar(&fpm, "i", "", "码表路径，可以是rime格式码表 或 极速跟打器赛码表")
 	flag.IntVar(&ding, "d", 0, "普通码表起顶码长，码长大于等于此数，首选不会追加空格")
 	flag.StringVar(&fpt, "t", "", "文本路径，utf8编码格式文本，会自动去除空白符")
-	flag.StringVar(&csk, "s", ";'", "custom_select_key: 自定义选重键(2重开始)")
+	flag.BoolVar(&space, "s", false, "空格是否互击")
+	flag.StringVar(&csk, "k", ";'", "自定义选重键(2重开始)")
 	flag.StringVar(&fpo, "o", "", "输出路径")
+	flag.BoolVar(&help, "h", false, "显示帮助")
 	flag.Parse()
 
 	if help {
@@ -47,7 +51,7 @@ func main() {
 	dict := read(fpm, ding)
 	text := readText(fpt)
 	res := calc(dict, text, csk)
-	res.fingering()
+	res.fingering(space)
 	if fpo != "" {
 		// fmt.Println(fpo)
 		err := ioutil.WriteFile(fpo, []byte(res.codeSep), 0777)
