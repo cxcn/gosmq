@@ -49,10 +49,10 @@ func main() {
 	}
 
 	dict := read(fpm, ding)
-	text := readText(fpt)
+	// text := readText(fpt)
 
 	res := new(result)
-	res.calc(dict, text, csk)
+	res.calc(dict, fpt, csk)
 	res.stat()
 	res.fingering(space)
 

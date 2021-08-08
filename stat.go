@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -18,7 +19,7 @@ type result struct {
 	lackCount   int    //缺字数
 
 	repeat   map[string]struct{} //选重
-	freqStat map[string]freq     //字词：频率
+	freqStat map[string]*freq    //字词：频率
 
 	codeSep   string //空格间隔的全部编码
 	code      string //全部编码
@@ -57,6 +58,7 @@ func div(x, y int) float64 {
 
 func (res *result) stat() {
 
+	res.code = strings.ReplaceAll(res.codeSep, " ", "")
 	res.codeLen = len(res.code)
 	res.codeAvg = div(res.codeLen, res.textLen)
 
