@@ -58,7 +58,6 @@ func div(x, y int) float64 {
 func (res *result) stat() {
 
 	res.codeLen = len(res.code)
-
 	res.codeAvg = div(res.codeLen, res.textLen)
 
 	res.codeStat = make(map[int]int)

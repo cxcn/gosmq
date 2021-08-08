@@ -7,11 +7,14 @@ import (
 	"unicode"
 )
 
-func calc(dict *Trie, text []rune, csk string) *result {
+func (res *result) calc(dict *Trie, text []rune, csk string) {
 
 	start := time.Now()
+	defer func() {
+		cost := time.Since(start)
+		fmt.Println("calc cost time = ", cost)
+	}()
 
-	res := new(result)
 	res.textLen = len(text)
 	res.freqStat = make(map[string]freq)
 	res.repeat = make(map[string]struct{})
@@ -85,15 +88,6 @@ func calc(dict *Trie, text []rune, csk string) *result {
 		res.unitCount++
 		p += i + 1
 	}
-
 	res.codeSep = builder.String()
 	res.code = builderCode.String()
-
-	func() {
-		cost := time.Since(start)
-		fmt.Println("calc cost time = ", cost)
-	}()
-
-	res.stat()
-	return res
 }

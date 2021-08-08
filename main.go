@@ -50,8 +50,12 @@ func main() {
 
 	dict := read(fpm, ding)
 	text := readText(fpt)
-	res := calc(dict, text, csk)
+
+	res := new(result)
+	res.calc(dict, text, csk)
+	res.stat()
 	res.fingering(space)
+
 	if fpo != "" {
 		// fmt.Println(fpo)
 		err := ioutil.WriteFile(fpo, []byte(res.codeSep), 0777)
