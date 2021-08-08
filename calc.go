@@ -7,7 +7,7 @@ import (
 	"unicode"
 )
 
-func calc(dict Trie, text []rune, csk string) result {
+func calc(dict *Trie, text []rune, csk string) *result {
 
 	start := time.Now()
 
@@ -58,7 +58,7 @@ func calc(dict Trie, text []rune, csk string) result {
 		// 最长匹配
 		var a *Trie
 		var i int
-		for b, j := &dict, 0; p+j < res.textLen; j++ {
+		for b, j := dict, 0; p+j < res.textLen; j++ {
 			if b.children[text[p+j]] == nil {
 				break
 			}
@@ -95,5 +95,5 @@ func calc(dict Trie, text []rune, csk string) result {
 	}()
 
 	res.stat()
-	return *res
+	return res
 }

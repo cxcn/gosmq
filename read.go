@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func read(fp string, ding int) Trie {
+func read(fp string, ding int) *Trie {
 
 	start := time.Now()
 	defer func() {

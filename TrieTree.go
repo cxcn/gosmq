@@ -7,11 +7,11 @@ type Trie struct {
 	isWord bool
 }
 
-func NewTrie() Trie {
+func NewTrie() *Trie {
 	root := new(Trie)
 	root.children = make(map[rune]*Trie)
 	// root.isWord = false
-	return *root
+	return root
 }
 
 func (trie *Trie) Insert(word, code string) {
