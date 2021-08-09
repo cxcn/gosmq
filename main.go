@@ -44,7 +44,7 @@ func main() {
 	flag.Parse()
 
 	if help {
-		fmt.Print("saimaqi version: 0.4\n\n")
+		fmt.Print("saimaqi version: 0.5\n\n")
 		fmt.Print("Usage: saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-s] [-k string] [-o output]\n\n")
 		flag.PrintDefaults()
 		return
