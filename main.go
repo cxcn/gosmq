@@ -19,19 +19,21 @@ func main() {
 	}()
 
 	var (
-		fpm   string // file path mb
-		ding  int
-		fpt   string // file path text
-		space bool   // 空格是否互击
-		csk   string // custom select keys
-		fpo   string // output file path
-		help  bool
+		fpm  string // file path mb
+		ding int
+		isW  bool   // file path write smb
+		fpt  string // file path text
+		isS  bool   // 空格是否互击
+		csk  string // custom select keys
+		fpo  string // output file path
+		help bool
 	)
 
 	flag.StringVar(&fpm, "i", "", "码表路径，可以是rime格式码表 或 极速跟打器赛码表")
 	flag.IntVar(&ding, "d", 0, "普通码表起顶码长，码长大于等于此数，首选不会追加空格")
+	flag.BoolVar(&isW, "w", false, "是否输出赛码表(保存在.\\smb文件夹下)")
 	flag.StringVar(&fpt, "t", "", "文本路径，utf8编码格式文本，会自动去除空白符")
-	flag.BoolVar(&space, "s", false, "空格是否互击")
+	flag.BoolVar(&isS, "s", false, "空格是否互击")
 	flag.StringVar(&csk, "k", ";'", "自定义选重键(2重开始)")
 	flag.StringVar(&fpo, "o", "", "输出路径")
 	flag.BoolVar(&help, "h", false, "显示帮助")
@@ -43,18 +45,20 @@ func main() {
 		return
 	}
 
-	if fpm == "" || fpt == "" {
-		fmt.Println("缺少路径")
+	dict := read(fpm, ding, isW)
+	// 空字典树
+	if len(dict.children) == 0 {
 		return
 	}
 
-	dict := read(fpm, ding)
-	// text := readText(fpt)
-
 	res := new(result)
 	res.calc(dict, fpt, csk)
+	// 空文本
+	if res.textLen == 0 {
+		return
+	}
 	res.stat()
-	res.fingering(space)
+	res.fingering(isS)
 
 	if fpo != "" {
 		// fmt.Println(fpo)

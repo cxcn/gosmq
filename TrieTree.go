@@ -11,15 +11,18 @@ func NewTrie() *Trie {
 	return root
 }
 
-func (trie *Trie) Insert(word, code string) {
+func (t *Trie) Insert(word, code string) {
 	for _, v := range word {
-		if trie.children[v] == nil {
+		if _, ok := t.children[v]; !ok {
 			//子节点
-			node := new(Trie)
-			node.children = make(map[rune]*Trie)
-			trie.children[v] = node
+			node := NewTrie()
+			t.children[v] = node
+			t = node
+		} else {
+			t = t.children[v]
 		}
-		trie = trie.children[v]
 	}
-	trie.code = code
+	if len(t.code) == 0 {
+		t.code = code
+	}
 }

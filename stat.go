@@ -84,7 +84,7 @@ func (res *result) stat() {
 	res.repeatLenRate = div(res.repeatLen, res.textLen)
 }
 
-func (res *result) fingering(space bool) {
+func (res *result) fingering(isS bool) {
 	start := time.Now()
 	defer func() {
 		cost := time.Since(start)
@@ -105,13 +105,13 @@ func (res *result) fingering(space bool) {
 	res.keyCount[a]++
 
 	L := func(x int) bool {
-		if space {
+		if isS {
 			return x <= 5
 		}
 		return x < 5
 	}
 	R := func(x int) bool {
-		if space {
+		if isS {
 			return x >= 5
 		}
 		return x > 5

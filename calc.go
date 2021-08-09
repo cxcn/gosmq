@@ -20,7 +20,7 @@ func (res *result) calc(dict *Trie, fpt string, csk string) {
 
 	f, err := os.Open(fpt)
 	if err != nil {
-		fmt.Println("text open fail:", err)
+		fmt.Println("文本读取错误:", err)
 		return
 	}
 	defer f.Close()
@@ -47,7 +47,7 @@ func (res *result) calc(dict *Trie, fpt string, csk string) {
 				if !strings.Contains(res.notHan, string(text[p])) {
 					res.notHan += string(text[p])
 				}
-			} else if dict.children[text[p]] == nil { // 缺字
+			} else if _, ok := dict.children[text[p]]; !ok { // 缺字
 				if !strings.Contains(res.lack, string(text[p])) {
 					res.lack += string(text[p])
 					res.lackCount++
@@ -64,7 +64,7 @@ func (res *result) calc(dict *Trie, fpt string, csk string) {
 			var a *Trie
 			var i int
 			for b, j := dict, 0; p+j < len(text); j++ {
-				if b.children[text[p+j]] == nil {
+				if _, ok := b.children[text[p+j]]; !ok {
 					break
 				}
 				b = b.children[text[p+j]]
