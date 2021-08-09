@@ -140,31 +140,17 @@ func main() {
 
 	t5 := table.NewWriter()
 	t5.AppendHeader(table.Row{"小指", "无名指", "中指", "食指", "大拇指", "食指", "中指", "无名指", "小指", "其他"})
-	t5.AppendRow([]interface{}{
-		fin.keyCount[1],
-		fin.keyCount[2],
-		fin.keyCount[3],
-		fin.keyCount[4],
-		fin.keyCount[5],
-		fin.keyCount[6],
-		fin.keyCount[7],
-		fin.keyCount[8],
-		fin.keyCount[9],
-		fin.keyCount[0],
-	})
+	t5_row_1 := []interface{}{}
+	t5_row_2 := []interface{}{}
+	for i := 1; i < 10; i++ {
+		t5_row_1 = append(t5_row_1, fin.keyCount[i])
+		t5_row_2 = append(t5_row_2, fmt.Sprintf("%.3f%%", 100*fin.keyRate[i]))
+	}
+	t5_row_1 = append(t5_row_1, fin.keyCount[0])
+	t5_row_2 = append(t5_row_2, fmt.Sprintf("%.3f%%", 100*fin.keyRate[0]))
+	t5.AppendRow(t5_row_1)
 	// t.AppendSeparator()
-	t5.AppendRow([]interface{}{
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[1]),
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[2]),
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[3]),
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[4]),
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[5]),
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[6]),
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[7]),
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[8]),
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[9]),
-		fmt.Sprintf("%.3f%%", 100*fin.keyRate[0]),
-	})
+	t5.AppendRow(t5_row_2)
 	t5.SetStyle(table.StyleColoredBright)
 	out += fmt.Sprintln(t5.Render())
 
