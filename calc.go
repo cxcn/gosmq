@@ -10,7 +10,7 @@ import (
 	"unicode"
 )
 
-func (res *result) calc(dict *Trie, fpt string, csk string) {
+func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 
 	start := time.Now()
 	defer func() {
@@ -18,16 +18,17 @@ func (res *result) calc(dict *Trie, fpt string, csk string) {
 		fmt.Println("calc cost time = ", cost)
 	}()
 
+	smq := new(Smq)
 	f, err := os.Open(fpt)
 	if err != nil {
 		fmt.Println("文本读取错误:", err)
-		return
+		return smq
 	}
 	defer f.Close()
 	buff := bufio.NewReader(f)
 
-	res.freqStat = make(map[string]*freq)
-	res.repeat = make(map[string]struct{})
+	smq.freqStat = make(map[string]*freq)
+	smq.repeat = make(map[string]struct{})
 	var builder strings.Builder
 
 	// 逐行读取 text
@@ -37,27 +38,27 @@ func (res *result) calc(dict *Trie, fpt string, csk string) {
 			break
 		}
 		text := []rune(strings.TrimSpace(string(line)))
-		res.textLen += len(text)
+		smq.textLen += len(text)
 
 		p := 0 // point
 		for p < len(text) {
 			// 非汉字
 			if !unicode.Is(unicode.Han, text[p]) {
-				res.notHanCount++
-				if !strings.Contains(res.notHan, string(text[p])) {
-					res.notHan += string(text[p])
+				smq.notHanCount++
+				if !strings.Contains(smq.notHan, string(text[p])) {
+					smq.notHan += string(text[p])
 				}
 			} else if _, ok := dict.children[text[p]]; !ok { // 缺字
-				if !strings.Contains(res.lack, string(text[p])) {
-					res.lack += string(text[p])
-					res.lackCount++
+				if !strings.Contains(smq.lack, string(text[p])) {
+					smq.lack += string(text[p])
+					smq.lackCount++
 				}
 				p++
 				continue
 			} else if len(dict.children[text[p]].code) == 0 { // 缺字 有词没字
-				if !strings.Contains(res.lack, string(text[p])) {
-					res.lack += string(text[p])
-					res.lackCount++
+				if !strings.Contains(smq.lack, string(text[p])) {
+					smq.lack += string(text[p])
+					smq.lackCount++
 				}
 			}
 			// 最长匹配
@@ -81,7 +82,7 @@ func (res *result) calc(dict *Trie, fpt string, csk string) {
 				c = a.code
 				// 选重，替换选重键 ascii 50: 2
 				if i := c[len(c)-1]; 50 <= i && i <= 57 {
-					res.repeat[w] = struct{}{}
+					smq.repeat[w] = struct{}{}
 					if len(csk) > int(i-50) {
 						tmp := []byte(c)
 						tmp[len(c)-1] = csk[int(i-50)]
@@ -91,14 +92,16 @@ func (res *result) calc(dict *Trie, fpt string, csk string) {
 			}
 			builder.WriteString(c)
 			builder.WriteString(" ")
-			if res.freqStat[w] == nil {
-				res.freqStat[w] = new(freq)
+			if smq.freqStat[w] == nil {
+				smq.freqStat[w] = new(freq)
 			}
-			res.freqStat[w].code = c
-			res.freqStat[w].times++
-			res.unitCount++
+			smq.freqStat[w].code = c
+			smq.freqStat[w].times++
+			smq.unitCount++
 			p += i + 1
 		}
 	}
-	res.codeSep = builder.String()
+	smq.codeSep = builder.String()
+	smq.stat()
+	return smq
 }

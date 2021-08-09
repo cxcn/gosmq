@@ -12,16 +12,16 @@ import (
 	"time"
 )
 
-func read(fpm string, ding int, isW bool) *Trie {
+func NewDict(fpm string, ding int, isW bool) *Trie {
 
 	start := time.Now()
 	defer func() {
 		cost := time.Since(start)
-		fmt.Println("read cost time = ", cost)
+		fmt.Println("NewDict cost time = ", cost)
 	}()
 
 	// 读取码表
-	var dict = NewTrie()
+	dict := NewTrie()
 	f, err := os.Open(fpm)
 	if err != nil {
 		fmt.Println("码表读取错误:", err)
