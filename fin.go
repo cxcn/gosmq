@@ -86,7 +86,9 @@ func NewFin(code string, isS bool) *Fin {
 	for i, v := range fin.keyCount {
 		fin.keyRate[i] = div(v, len(code))
 	}
-	fin.leftHand = fin.posRate[3] + (fin.posRate[0]+fin.posRate[1])/2
+	fin.leftHand = fin.keyRate[1] + fin.keyRate[2] + fin.keyRate[3] + fin.keyRate[4]
+	fin.rightHand = fin.keyRate[6] + fin.keyRate[7] + fin.keyRate[8] + fin.keyRate[9]
+	fin.leftHand = fin.leftHand / (fin.leftHand + fin.rightHand) // 归一
 	fin.rightHand = 1 - fin.leftHand
 	fin.diffHandRate = fin.posRate[0] + fin.posRate[1]
 	fin.sameFinRate = div(countSameFin, posSum)
