@@ -30,17 +30,6 @@ func read(fp string, ding int) *Trie {
 		fmt.Println("检测到普通码表")
 	} else {
 		fmt.Println("检测到赛码表")
-		for {
-			b, _, eof := buff.ReadLine()
-			if eof == io.EOF {
-				break
-			}
-			wc := strings.Split(string(b), "\t")
-			if len(wc) == 2 {
-				dict.Insert(wc[0], wc[1])
-			}
-		}
-		return dict
 	}
 
 	freq := make(map[string]int)
@@ -54,22 +43,21 @@ func read(fp string, ding int) *Trie {
 		if len(wc) != 2 {
 			continue
 		}
-		word, code := wc[0], wc[1]
-		freq[code] += 1
-		var key string
-		if freq[code] != 1 {
-			key = code + strconv.Itoa(freq[code])
-		} else if len(code) < ding {
-			key = code + "_"
-		} else {
-			key = code
+		c := wc[1]
+		if ding > 0 {
+			freq[c] += 1
+			if freq[c] != 1 {
+				c = c + strconv.Itoa(freq[c])
+			} else if len(c) < ding {
+				c = c + "_"
+			}
 		}
-		dict.Insert(word, key)
+		dict.Insert(wc[0], c)
 	}
 	return dict
 }
 
-func (t Trie) addPunct() {
+func (t *Trie) addPunct() {
 	// 符号
 	punct := map[string]string{
 		"·": "`",
