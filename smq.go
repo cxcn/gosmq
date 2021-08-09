@@ -15,7 +15,7 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 	start := time.Now()
 	defer func() {
 		cost := time.Since(start)
-		fmt.Println("calc cost time = ", cost)
+		fmt.Println("NewSmq cost time = ", cost)
 	}()
 
 	smq := new(Smq)

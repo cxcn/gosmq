@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"time"
+
+	"github.com/jedib0t/go-pretty/v6/table"
 )
 
 func main() {
@@ -62,32 +64,103 @@ func main() {
 	}
 	out := ""
 	out += fmt.Sprintln("----------------------")
-	out += fmt.Sprintf("文本字数：%d\n", smq.textLen)
+
+	t1 := table.NewWriter()
+	t1.AppendHeader(table.Row{"文本字数", "总键数", "码长", "非汉字数", "缺字数"})
+	t1.AppendRow([]interface{}{
+		smq.textLen, smq.codeLen,
+		fmt.Sprintf("%.4f", smq.codeAvg),
+		smq.notHanCount, smq.lackCount,
+	})
+	t1.SetStyle(table.StyleColoredBright)
+	out += fmt.Sprintln(t1.Render())
+	out += "\n"
+
 	out += fmt.Sprintf("非汉字：%s\n", smq.notHan)
-	out += fmt.Sprintf("非汉字数：%d\n", smq.notHanCount)
 	out += fmt.Sprintf("缺字：%s\n", smq.lack)
-	out += fmt.Sprintf("缺字数：%d\n", smq.lackCount)
-	out += fmt.Sprintln("------------")
-	out += fmt.Sprintf("总键数：%d\n", smq.codeLen)
-	out += fmt.Sprintf("码长：%.4f\n", smq.codeAvg)
-	out += fmt.Sprintf("打词：    %d\t%.3f%%\n", smq.wordCount, 100*smq.wordRate)
-	out += fmt.Sprintf("打词字数：%d\t%.3f%%\n", smq.wordLen, 100*smq.wordLenRate)
-	out += fmt.Sprintf("选重：    %d\t%.3f%%\n", smq.repeatCount, 100*smq.repeatRate)
-	out += fmt.Sprintf("选重字数：%d\t%.3f%%\n", smq.repeatLen, 100*smq.repeatLenRate)
+	out += "\n"
+
+	t2 := table.NewWriter()
+	t2.AppendHeader(table.Row{"打词", "选重", "打词字数", "选重字数"})
+	t2.AppendRow([]interface{}{
+		smq.wordCount,
+		smq.repeatCount,
+		smq.wordLen,
+		smq.repeatLen,
+	})
+	t2.AppendRow([]interface{}{
+		fmt.Sprintf("%.3f%%", 100*smq.wordRate),
+		fmt.Sprintf("%.3f%%", 100*smq.repeatRate),
+		fmt.Sprintf("%.3f%%", 100*smq.wordLenRate),
+		fmt.Sprintf("%.3f%%", 100*smq.repeatLenRate),
+	})
+	t2.SetStyle(table.StyleColoredBright)
+	out += fmt.Sprintln(t2.Render())
+	out += "\n"
+
 	out += fmt.Sprintf("码长统计：%v\n", smq.codeStat)
 	out += fmt.Sprintf("词长统计：%v\n", smq.wordStat)
-	out += fmt.Sprintln("------------")
+	out += "\n"
 
-	out += fmt.Sprintf("左右：%d\t%.3f%%\n", fin.posCount[0], 100*fin.posRate[0])
-	out += fmt.Sprintf("右左：%d\t%.3f%%\n", fin.posCount[1], 100*fin.posRate[1])
-	out += fmt.Sprintf("左左：%d\t%.3f%%\n", fin.posCount[2], 100*fin.posRate[2])
-	out += fmt.Sprintf("右右：%d\t%.3f%%\n", fin.posCount[3], 100*fin.posRate[3])
-	out += fmt.Sprintf("异手：%.3f%%\n", 100*fin.diffHandRate)
-	out += fmt.Sprintf("同指：%.3f%%\n", 100*fin.sameFinRate)
-	out += fmt.Sprintf("异指：%.3f%%\n", 100*fin.diffFinRate)
-	for i, v := range fin.keyCount {
-		out += fmt.Sprintf("第%d列：%d\t%.3f%%\n", i, v, 100*fin.keyRate[i])
-	}
+	t3 := table.NewWriter()
+	t3.AppendHeader(table.Row{"左右", "右左", "左左", "右右"})
+	t3.AppendRow([]interface{}{
+		fin.posCount[0],
+		fin.posCount[1],
+		fin.posCount[2],
+		fin.posCount[3],
+	})
+	t3.AppendRow([]interface{}{
+		fmt.Sprintf("%.3f%%", 100*fin.posRate[0]),
+		fmt.Sprintf("%.3f%%", 100*fin.posRate[1]),
+		fmt.Sprintf("%.3f%%", 100*fin.posRate[2]),
+		fmt.Sprintf("%.3f%%", 100*fin.posRate[3]),
+	})
+	t3.SetStyle(table.StyleColoredBright)
+	out += fmt.Sprintln(t3.Render())
+	out += "\n"
+
+	t4 := table.NewWriter()
+	t4.AppendHeader(table.Row{"异手", "同指", "异指"})
+	t4.AppendRow([]interface{}{
+		fmt.Sprintf("%.3f%%", 100*fin.diffHandRate),
+		fmt.Sprintf("%.3f%%", 100*fin.sameFinRate),
+		fmt.Sprintf("%.3f%%", 100*fin.diffFinRate),
+	})
+	t4.SetStyle(table.StyleColoredBright)
+	out += fmt.Sprintln(t4.Render())
+	out += "\n"
+
+	t5 := table.NewWriter()
+	t5.AppendHeader(table.Row{"小指", "无名指", "中指", "食指", "大拇指", "食指", "中指", "无名指", "小指", "其他"})
+	t5.AppendRow([]interface{}{
+		fin.keyCount[1],
+		fin.keyCount[2],
+		fin.keyCount[3],
+		fin.keyCount[4],
+		fin.keyCount[5],
+		fin.keyCount[6],
+		fin.keyCount[7],
+		fin.keyCount[8],
+		fin.keyCount[9],
+		fin.keyCount[0],
+	})
+	// t.AppendSeparator()
+	t5.AppendRow([]interface{}{
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[1]),
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[2]),
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[3]),
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[4]),
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[5]),
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[6]),
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[7]),
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[8]),
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[9]),
+		fmt.Sprintf("%.3f%%", 100*fin.keyRate[0]),
+	})
+	t5.SetStyle(table.StyleColoredBright)
+	out += fmt.Sprintln(t5.Render())
+
 	out += fmt.Sprintln("----------------------")
 	fmt.Print(out)
 	// time.Sleep(5 * time.Second)
