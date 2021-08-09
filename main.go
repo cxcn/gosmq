@@ -22,8 +22,9 @@ func main() {
 
 	var (
 		fpm  string // file path mb
-		ding int    // 是否输出赛码表
-		isW  bool   // file path write smb
+		ding int    // 普通码表起顶码长
+		isD  bool   // 是否只跑单字
+		isW  bool   // 是否输出赛码表
 		fpt  string // file path text
 		isS  bool   // 空格是否互击
 		csk  string // custom select keys
@@ -32,7 +33,8 @@ func main() {
 	)
 
 	flag.StringVar(&fpm, "i", "", "码表路径，可以是rime格式码表 或 极速跟打器赛码表")
-	flag.IntVar(&ding, "d", 0, "普通码表起顶码长，码长大于等于此数，首选不会追加空格")
+	flag.IntVar(&ding, "n", 0, "普通码表起顶码长，码长大于等于此数，首选不会追加空格")
+	flag.BoolVar(&isD, "d", false, "是否只跑单字")
 	flag.BoolVar(&isW, "w", false, "是否输出赛码表(保存在.\\smb\\文件夹下)")
 	flag.StringVar(&fpt, "t", "", "文本路径，utf8编码格式文本，会自动去除空白符")
 	flag.BoolVar(&isS, "s", false, "空格是否互击")
@@ -43,12 +45,15 @@ func main() {
 
 	if help {
 		fmt.Print("saimaqi version: 0.4\n\n")
-		fmt.Print("Usage: saimaqi.exe [-i mb] [-d int] [-w] [-t text] [-s] [-k string] [-o output]\n\n")
+		fmt.Print("Usage: saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-s] [-k string] [-o output]\n\n")
 		flag.PrintDefaults()
 		return
 	}
+	if isD {
+		fmt.Println("只跑单字...")
+	}
 
-	dict := NewDict(fpm, ding, isW)
+	dict := NewDict(fpm, ding, isW, isD)
 	if len(dict.children) == 0 {
 		return
 	}

@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func NewDict(fpm string, ding int, isW bool) *Trie {
+func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 
 	start := time.Now()
 	defer func() {
@@ -37,9 +37,13 @@ func NewDict(fpm string, ding int, isW bool) *Trie {
 				break
 			}
 			wc := strings.Split(string(b), "\t")
-			if len(wc) == 2 {
-				dict.Insert(wc[0], wc[1])
+			if len(wc) != 2 {
+				continue
 			}
+			if isD && len([]rune(wc[0])) != 1 {
+				continue
+			}
+			dict.Insert(wc[0], wc[1])
 		}
 		dict.addPunct()
 		return dict
@@ -56,6 +60,9 @@ func NewDict(fpm string, ding int, isW bool) *Trie {
 		}
 		wc := strings.Split(string(b), "\t")
 		if len(wc) != 2 {
+			continue
+		}
+		if isD && len([]rune(wc[0])) != 1 {
 			continue
 		}
 		c := wc[1]
