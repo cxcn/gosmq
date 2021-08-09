@@ -121,8 +121,10 @@ func main() {
 	out += "\n"
 
 	t4 := table.NewWriter()
-	t4.AppendHeader(table.Row{"异手", "同指", "异指"})
+	t4.AppendHeader(table.Row{"左手", "右手", "异手", "同指", "异指"})
 	t4.AppendRow([]interface{}{
+		fmt.Sprintf("%.3f%%", 100*fin.leftHand),
+		fmt.Sprintf("%.3f%%", 100*fin.rightHand),
 		fmt.Sprintf("%.3f%%", 100*fin.diffHandRate),
 		fmt.Sprintf("%.3f%%", 100*fin.sameFinRate),
 		fmt.Sprintf("%.3f%%", 100*fin.diffFinRate),

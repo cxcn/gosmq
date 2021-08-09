@@ -11,6 +11,8 @@ type Fin struct {
 	posCount []int     // LR RL LL RR
 	posRate  []float64 // LR RL LL RR
 
+	leftHand     float64
+	rightHand    float64
 	diffHandRate float64 // 异手
 	sameFinRate  float64 // 同指
 	diffFinRate  float64 // 同手异指
@@ -84,6 +86,8 @@ func NewFin(code string, isS bool) *Fin {
 	for i, v := range fin.keyCount {
 		fin.keyRate[i] = div(v, len(code))
 	}
+	fin.leftHand = fin.posRate[0] + (fin.posRate[1]+fin.posRate[2])/2
+	fin.rightHand = 1 - fin.leftHand
 	fin.diffHandRate = fin.posRate[0] + fin.posRate[1]
 	fin.sameFinRate = div(countSameFin, posSum)
 	fin.diffFinRate = fin.posRate[2] + fin.posRate[3] - fin.sameFinRate
