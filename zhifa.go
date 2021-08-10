@@ -3,7 +3,7 @@ package main
 import (
 	_ "embed"
 	"fmt"
-	"strconv"
+	"io"
 	"strings"
 )
 
@@ -19,18 +19,13 @@ type Zhifa struct {
 func newZhifa(isS bool) map[byte]map[byte]*Zhifa {
 
 	var zhifa = make(map[byte]map[byte]*Zhifa)
-	// f, _ := ioutil.ReadFile(".\\data\\dangliang")
-	dlSli := strings.Split(dangliang, "\n")
-	for _, v := range dlSli {
-		line := strings.Split(strings.TrimSpace(v), "\t")
-		if len(line) != 2 {
-			fmt.Println("当量表有误：", line)
-			continue
-		}
-		key := line[0]
-		dl, err := strconv.ParseFloat(line[1], 64)
-		if err != nil {
-			fmt.Println("当量表有误：", line)
+	r := strings.NewReader(dangliang)
+	var key string
+	var dl float64
+	for {
+		_, err := fmt.Fscanln(r, &key, &dl)
+		if err == io.EOF {
+			break
 		}
 		z := new(Zhifa)
 		z.dl = dl
