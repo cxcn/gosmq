@@ -76,9 +76,7 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 
 			w := string(text[p : p+i+1])
 			var c string
-			if a == nil {
-				c = w
-			} else {
+			if a != nil {
 				c = a.code
 				// 选重，替换选重键 ascii 50: 2
 				if i := c[len(c)-1]; 50 <= i && i <= 57 {
@@ -89,6 +87,8 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 						c = string(tmp)
 					}
 				}
+			} else if len(w) == 1 {
+				c = w
 			}
 			builder.WriteString(c)
 			builder.WriteString(" ")

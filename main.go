@@ -110,29 +110,34 @@ func main() {
 	t3 := table.NewWriter()
 	t3.AppendHeader(table.Row{"左右", "右左", "左左", "右右"})
 	t3.AppendRow([]interface{}{
-		fin.posCount[0],
-		fin.posCount[1],
-		fin.posCount[2],
-		fin.posCount[3],
+		fin.handCount[0],
+		fin.handCount[1],
+		fin.handCount[2],
+		fin.handCount[3],
 	})
 	t3.AppendRow([]interface{}{
-		fmt.Sprintf("%.3f%%", 100*fin.posRate[0]),
-		fmt.Sprintf("%.3f%%", 100*fin.posRate[1]),
-		fmt.Sprintf("%.3f%%", 100*fin.posRate[2]),
-		fmt.Sprintf("%.3f%%", 100*fin.posRate[3]),
+		fmt.Sprintf("%.3f%%", 100*fin.handRate[0]),
+		fmt.Sprintf("%.3f%%", 100*fin.handRate[1]),
+		fmt.Sprintf("%.3f%%", 100*fin.handRate[2]),
+		fmt.Sprintf("%.3f%%", 100*fin.handRate[3]),
 	})
 	t3.SetStyle(table.StyleColoredBright)
 	out += fmt.Sprintln(t3.Render())
 	out += "\n"
 
 	t4 := table.NewWriter()
-	t4.AppendHeader(table.Row{"左手", "右手", "异手", "同指", "异指"})
+	t4.AppendHeader(table.Row{"当量", "左手", "右手", "异手", "同指", "大跨排", "小跨排", "异指", "小指干扰", "错手"})
 	t4.AppendRow([]interface{}{
+		fmt.Sprintf("%.4f", fin.dl),
 		fmt.Sprintf("%.3f%%", 100*fin.leftHand),
 		fmt.Sprintf("%.3f%%", 100*fin.rightHand),
 		fmt.Sprintf("%.3f%%", 100*fin.diffHandRate),
 		fmt.Sprintf("%.3f%%", 100*fin.sameFinRate),
+		fmt.Sprintf("%.3f%%", 100*fin.dkp),
+		fmt.Sprintf("%.3f%%", 100*fin.xkp),
 		fmt.Sprintf("%.3f%%", 100*fin.diffFinRate),
+		fmt.Sprintf("%.3f%%", 100*fin.xzgr),
+		fmt.Sprintf("%.3f%%", 100*fin.cs),
 	})
 	t4.SetStyle(table.StyleColoredBright)
 	out += fmt.Sprintln(t4.Render())
@@ -143,11 +148,11 @@ func main() {
 	t5_row_1 := []interface{}{}
 	t5_row_2 := []interface{}{}
 	for i := 1; i < 10; i++ {
-		t5_row_1 = append(t5_row_1, fin.keyCount[i])
-		t5_row_2 = append(t5_row_2, fmt.Sprintf("%.3f%%", 100*fin.keyRate[i]))
+		t5_row_1 = append(t5_row_1, fin.finCount[i])
+		t5_row_2 = append(t5_row_2, fmt.Sprintf("%.3f%%", 100*fin.finRate[i]))
 	}
-	t5_row_1 = append(t5_row_1, fin.keyCount[0])
-	t5_row_2 = append(t5_row_2, fmt.Sprintf("%.3f%%", 100*fin.keyRate[0]))
+	t5_row_1 = append(t5_row_1, fin.finCount[0])
+	t5_row_2 = append(t5_row_2, fmt.Sprintf("%.3f%%", 100*fin.finRate[0]))
 	t5.AppendRow(t5_row_1)
 	// t.AppendSeparator()
 	t5.AppendRow(t5_row_2)
