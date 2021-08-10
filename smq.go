@@ -75,6 +75,7 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 			}
 
 			w := string(text[p : p+i+1])
+			p += i + 1
 			var c string
 			if a != nil {
 				c = a.code
@@ -89,6 +90,8 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 				}
 			} else if len(w) == 1 {
 				c = w
+			} else {
+				continue
 			}
 			builder.WriteString(c)
 			builder.WriteString(" ")
@@ -98,7 +101,6 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 			smq.freqStat[w].code = c
 			smq.freqStat[w].times++
 			smq.unitCount++
-			p += i + 1
 		}
 	}
 	smq.codeSep = builder.String()
