@@ -18,6 +18,7 @@ saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-s] [-k string] [-o output]
   -w    输出赛码表
   -t string
         文本路径，utf8编码格式文本，会自动去除空白符
+  -f    是否关闭指法统计
   -s    空格是否互击
   -k string
         自定义选重键(2重开始) (default ";'")

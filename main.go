@@ -26,6 +26,7 @@ func main() {
 		isD  bool   // 是否只跑单字
 		isW  bool   // 是否输出赛码表
 		fpt  string // file path text
+		isnF bool   // 是否关闭指法统计
 		isS  bool   // 空格是否互击
 		csk  string // custom select keys
 		fpo  string // output file path
@@ -37,6 +38,7 @@ func main() {
 	flag.BoolVar(&isD, "d", false, "是否只跑单字")
 	flag.BoolVar(&isW, "w", false, "是否输出赛码表(保存在.\\smb\\文件夹下)")
 	flag.StringVar(&fpt, "t", "", "文本路径，utf8编码格式文本，会自动去除空白符")
+	flag.BoolVar(&isnF, "f", false, "是否关闭指法统计")
 	flag.BoolVar(&isS, "s", false, "空格是否互击")
 	flag.StringVar(&csk, "k", ";'", "自定义选重键(2重开始)")
 	flag.StringVar(&fpo, "o", "", "输出路径")
@@ -45,7 +47,7 @@ func main() {
 
 	if help {
 		fmt.Print("saimaqi version: 0.5\n\n")
-		fmt.Print("Usage: saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-s] [-k string] [-o output]\n\n")
+		fmt.Print("Usage: saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-f] [-s] [-k string] [-o output]\n\n")
 		flag.PrintDefaults()
 		return
 	}
@@ -61,7 +63,6 @@ func main() {
 	if smq.textLen == 0 {
 		return
 	}
-	fin := NewFin(smq.code, isS)
 
 	if fpo != "" {
 		// fmt.Println(fpo)
@@ -107,6 +108,13 @@ func main() {
 	out += fmt.Sprintf("词长统计：%v\n", smq.wordStat)
 	out += "\n"
 
+	if isnF {
+		out += fmt.Sprintln("指法统计已关闭...")
+		out += fmt.Sprintln("----------------------")
+		fmt.Print(out)
+		return
+	}
+	fin := NewFin(smq.code, isS)
 	t3 := table.NewWriter()
 	t3.AppendHeader(table.Row{"左右", "右左", "左左", "右右"})
 	t3.AppendRow([]interface{}{
