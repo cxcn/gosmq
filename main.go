@@ -45,6 +45,9 @@ func main() {
 	flag.BoolVar(&help, "h", false, "显示帮助")
 	flag.Parse()
 
+	if len(fpm) == 0 {
+		help = true
+	}
 	if help {
 		fmt.Print("saimaqi version: 0.5, github: https://github.com/cxcn/saimaqi\n\n")
 		fmt.Print("Usage: saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-f] [-s] [-k string] [-o output]\n\n")
