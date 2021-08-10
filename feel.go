@@ -1,10 +1,5 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
-
 type Feel struct {
 	finCount  []int
 	finRate   []float64
@@ -26,11 +21,11 @@ type Feel struct {
 
 func NewFeel(code string, isS bool) *Feel {
 
-	start := time.Now()
-	defer func() {
-		cost := time.Since(start)
-		fmt.Println("NewFin cost time = ", cost)
-	}()
+	// start := time.Now()
+	// defer func() {
+	// 	cost := time.Since(start)
+	// 	fmt.Println("NewFeel cost time = ", cost)
+	// }()
 
 	zhifa := newZhifa(isS)
 	feel := new(Feel)

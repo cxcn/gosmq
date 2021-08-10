@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
-	"time"
 	"unicode"
 )
 
 func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 
-	start := time.Now()
-	defer func() {
-		cost := time.Since(start)
-		fmt.Println("NewSmq cost time = ", cost)
-	}()
+	// start := time.Now()
+	// defer func() {
+	// 	cost := time.Since(start)
+	// 	fmt.Println("NewSmq cost time = ", cost)
+	// }()
 
 	smq := new(Smq)
 	f, err := os.Open(fpt)
@@ -24,6 +24,8 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 		fmt.Println("文本读取错误:", err)
 		return smq
 	}
+	_, filename := filepath.Split(fpt)
+	fmt.Println("文本读取成功:", filename)
 	defer f.Close()
 	buff := bufio.NewReader(f)
 

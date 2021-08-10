@@ -9,17 +9,17 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 
-	start := time.Now()
-	defer func() {
-		cost := time.Since(start)
-		fmt.Println("NewDict cost time = ", cost)
-	}()
+	// start := time.Now()
+	// defer func() {
+	// 	cost := time.Since(start)
+	// 	fmt.Println("NewDict cost time = ", cost)
+	// }()
 
+	_, filename := filepath.Split(fpm)
 	// 读取码表
 	dict := NewTrie()
 	f, err := os.Open(fpm)
@@ -30,7 +30,7 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 
 	buff := bufio.NewReader(f)
 	if ding < 1 {
-		fmt.Println("检测到赛码表...")
+		fmt.Println("检测到赛码表:", filename)
 		for {
 			b, _, eof := buff.ReadLine()
 			if eof == io.EOF {
@@ -49,7 +49,7 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 		return dict
 	}
 
-	fmt.Println("检测到普通码表...")
+	fmt.Println("检测到普通码表:", filename)
 	var wb []byte
 	freq := make(map[string]int)
 	// 生成字典
@@ -82,13 +82,12 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 
 	// 写入赛码表
 	if isW {
-		_, filename := filepath.Split(fpm)
-		err := ioutil.WriteFile(".\\smb\\smb_"+filename, wb, 0777)
+		err := ioutil.WriteFile(".\\smb\\"+filename, wb, 0777)
 		if err != nil {
 			fmt.Println("赛码表写入错误:", err)
 			return dict
 		}
-		fmt.Println("赛码表写入成功:", ".\\smb\\smb_"+filename)
+		fmt.Println("赛码表写入成功:", ".\\smb\\"+filename)
 	}
 	return dict
 }
