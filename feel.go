@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Fin struct {
+type Feel struct {
 	finCount  []int
 	finRate   []float64
 	leftHand  float64 // 左手
@@ -24,7 +24,7 @@ type Fin struct {
 	cs   float64 // 错手
 }
 
-func NewFin(code string, isS bool) *Fin {
+func NewFeel(code string, isS bool) *Feel {
 
 	start := time.Now()
 	defer func() {
@@ -33,9 +33,9 @@ func NewFin(code string, isS bool) *Fin {
 	}()
 
 	zhifa := newZhifa(isS)
-	fin := new(Fin)
-	fin.finCount = make([]int, 10)
-	fin.handCount = make([]int, 4)
+	feel := new(Feel)
+	feel.finCount = make([]int, 10)
+	feel.handCount = make([]int, 4)
 
 	finger := make(map[byte]int)
 	aaa := "1qaz2wsx3edc4rfv5tgb_6yhn7ujm8ik,9ol.0p;/'"
@@ -61,11 +61,11 @@ func NewFin(code string, isS bool) *Fin {
 		b, ok := finger[code[i]]
 		if !ok {
 			b = 0
-			fin.finCount[b]++
+			feel.finCount[b]++
 			a = b
 			continue
 		}
-		fin.finCount[b]++
+		feel.finCount[b]++
 		if a == 0 {
 			a = b
 			continue
@@ -96,42 +96,42 @@ func NewFin(code string, isS bool) *Fin {
 		// 互击
 		switch zf.hj {
 		case 1:
-			fin.handCount[0]++
+			feel.handCount[0]++
 		case 2:
-			fin.handCount[1]++
+			feel.handCount[1]++
 		case 3:
-			fin.handCount[2]++
+			feel.handCount[2]++
 		case 4:
-			fin.handCount[3]++
+			feel.handCount[3]++
 		}
 	}
 
-	fin.finRate = make([]float64, 10)
-	for i, v := range fin.finCount {
-		fin.finRate[i] = div(v, len(code))
+	feel.finRate = make([]float64, 10)
+	for i, v := range feel.finCount {
+		feel.finRate[i] = div(v, len(code))
 	}
-	fin.leftHand = fin.finRate[1] + fin.finRate[2] + fin.finRate[3] + fin.finRate[4]
-	fin.rightHand = fin.finRate[6] + fin.finRate[7] + fin.finRate[8] + fin.finRate[9]
-	fin.leftHand = fin.leftHand / (fin.leftHand + fin.rightHand) // 归一
-	fin.rightHand = 1 - fin.leftHand
+	feel.leftHand = feel.finRate[1] + feel.finRate[2] + feel.finRate[3] + feel.finRate[4]
+	feel.rightHand = feel.finRate[6] + feel.finRate[7] + feel.finRate[8] + feel.finRate[9]
+	feel.leftHand = feel.leftHand / (feel.leftHand + feel.rightHand) // 归一
+	feel.rightHand = 1 - feel.leftHand
 
-	fin.handRate = make([]float64, 4)
+	feel.handRate = make([]float64, 4)
 	handSum := 0
-	for _, v := range fin.handCount {
+	for _, v := range feel.handCount {
 		handSum += v
 	}
-	for i, v := range fin.handCount {
-		fin.handRate[i] = div(v, handSum)
+	for i, v := range feel.handCount {
+		feel.handRate[i] = div(v, handSum)
 	}
-	fin.diffHandRate = fin.handRate[0] + fin.handRate[1]
-	fin.sameFinRate = div(sameFinCount, handSum)
-	fin.diffFinRate = fin.handRate[2] + fin.handRate[3] - fin.sameFinRate
+	feel.diffHandRate = feel.handRate[0] + feel.handRate[1]
+	feel.sameFinRate = div(sameFinCount, handSum)
+	feel.diffFinRate = feel.handRate[2] + feel.handRate[3] - feel.sameFinRate
 
-	fin.dl = dlSum / float64(combLen)
-	fin.dkp = div(dkpCount, combLen)
-	fin.xkp = div(xkpCount, combLen)
-	fin.xzgr = div(xzgrCount, combLen)
-	fin.cs = div(csCount, combLen)
+	feel.dl = dlSum / float64(combLen)
+	feel.dkp = div(dkpCount, combLen)
+	feel.xkp = div(xkpCount, combLen)
+	feel.xzgr = div(xzgrCount, combLen)
+	feel.cs = div(csCount, combLen)
 
-	return fin
+	return feel
 }
