@@ -1,11 +1,14 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
-	"io/ioutil"
 	"strconv"
 	"strings"
 )
+
+//go:embed data\\dangliang
+var dangliang string
 
 type Zhifa struct {
 	dl float64 // 当量
@@ -16,8 +19,8 @@ type Zhifa struct {
 func newZhifa(isS bool) map[byte]map[byte]*Zhifa {
 
 	var zhifa = make(map[byte]map[byte]*Zhifa)
-	f, _ := ioutil.ReadFile(".\\data\\dangliang")
-	dlSli := strings.Split(string(f), "\n")
+	// f, _ := ioutil.ReadFile(".\\data\\dangliang")
+	dlSli := strings.Split(dangliang, "\n")
 	for _, v := range dlSli {
 		line := strings.Split(strings.TrimSpace(v), "\t")
 		if len(line) != 2 {
