@@ -73,6 +73,10 @@ func main() {
 	out := ""
 	out += fmt.Sprintln("----------------------")
 
+	out += fmt.Sprintf("非汉字：%s\n", smq.notHan)
+	out += fmt.Sprintf("缺字：%s\n", smq.lack)
+	out += "\n"
+
 	t1 := table.NewWriter()
 	t1.AppendHeader(table.Row{"文本字数", "总键数", "码长", "非汉字数", "缺字数"})
 	t1.AppendRow([]interface{}{
@@ -82,10 +86,6 @@ func main() {
 	})
 	t1.SetStyle(table.StyleColoredBright)
 	out += fmt.Sprintln(t1.Render())
-	out += "\n"
-
-	out += fmt.Sprintf("非汉字：%s\n", smq.notHan)
-	out += fmt.Sprintf("缺字：%s\n", smq.lack)
 	out += "\n"
 
 	t2 := table.NewWriter()
