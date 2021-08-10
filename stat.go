@@ -41,32 +41,32 @@ type Smq struct {
 	wordStat map[int]int //词长统计
 }
 
-func (res *Smq) stat() {
+func (smq *Smq) stat() {
 
-	res.code = strings.ReplaceAll(res.codeSep, " ", "")
-	res.codeLen = len(res.code)
-	res.codeAvg = div(res.codeLen, res.textLen)
+	smq.code = strings.ReplaceAll(smq.codeSep, " ", "")
+	smq.codeLen = len(smq.code)
+	smq.codeAvg = div(smq.codeLen, smq.textLen)
 
-	res.codeStat = make(map[int]int)
-	res.wordStat = make(map[int]int)
-	for k, v := range res.freqStat {
+	smq.codeStat = make(map[int]int)
+	smq.wordStat = make(map[int]int)
+	for k, v := range smq.freqStat {
 		l := len([]rune(k))
 		if l > 1 {
-			res.wordCount += v.times
-			res.wordLen += l * v.times
+			smq.wordCount += v.times
+			smq.wordLen += l * v.times
 		}
-		res.codeStat[len(v.code)] += v.times
-		res.wordStat[l] += v.times
+		smq.codeStat[len(v.code)] += v.times
+		smq.wordStat[l] += v.times
 	}
-	res.wordRate = div(res.wordCount, res.unitCount)
-	res.wordLenRate = div(res.wordLen, res.textLen)
-	for k := range res.repeat {
+	smq.wordRate = div(smq.wordCount, smq.unitCount)
+	smq.wordLenRate = div(smq.wordLen, smq.textLen)
+	for k := range smq.repeat {
 		l := len([]rune(k))
-		res.repeatCount += res.freqStat[k].times
-		res.repeatLen += l * res.freqStat[k].times
+		smq.repeatCount += smq.freqStat[k].times
+		smq.repeatLen += l * smq.freqStat[k].times
 	}
-	res.repeatRate = div(res.repeatCount, res.unitCount)
-	res.repeatLenRate = div(res.repeatLen, res.textLen)
+	smq.repeatRate = div(smq.repeatCount, smq.unitCount)
+	smq.repeatLenRate = div(smq.repeatLen, smq.textLen)
 }
 
 func div(x, y int) float64 {
