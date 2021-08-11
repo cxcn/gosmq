@@ -44,28 +44,14 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 
 		p := 0 // point
 		for p < len(text) {
-			// 非汉字
-			if !unicode.Is(unicode.Han, text[p]) {
-				smq.notHanCount++
-				if !strings.Contains(smq.notHan, string(text[p])) {
-					smq.notHan += string(text[p])
-				}
-			} else if _, ok := dict.children[text[p]]; !ok { // 缺字
-				if !strings.Contains(smq.lack, string(text[p])) {
-					smq.lack += string(text[p])
-					smq.lackCount++
-				}
+			// 这是一个奇怪的字符
+			if text[p] == 65533 {
 				p++
 				continue
-			} else if len(dict.children[text[p]].code) == 0 { // 缺字 有词没字
-				if !strings.Contains(smq.lack, string(text[p])) {
-					smq.lack += string(text[p])
-					smq.lackCount++
-				}
 			}
 			// 最长匹配
-			var a *Trie
-			var i int
+			a := new(Trie)
+			i := -1
 			for b, j := dict, 0; p+j < len(text); j++ {
 				if _, ok := b.children[text[p+j]]; !ok {
 					break
@@ -76,33 +62,46 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 				}
 			}
 
-			w := string(text[p : p+i+1])
-			p += i + 1
-			var c string
-			if a != nil {
-				c = a.code
-				// 选重，替换选重键 ascii 50: 2
-				if i := c[len(c)-1]; 50 <= i && i <= 57 {
-					smq.repeat[w] = struct{}{}
-					if len(csk) > int(i-50) {
-						tmp := []byte(c)
-						tmp[len(c)-1] = csk[int(i-50)]
-						c = string(tmp)
-					}
+			if !unicode.Is(unicode.Han, text[p]) { // 非汉字，￥
+				smq.notHanCount++
+				if !strings.Contains(smq.notHan, string(text[p])) {
+					smq.notHan += string(text[p])
 				}
-			} else if len(w) == 1 {
-				c = w
-			} else {
+				if i == -1 { // 缺非汉字￥
+					builder.WriteString(string(text[p]))
+					builder.WriteString(" ")
+					p++
+					continue
+				}
+			} else if i == -1 { // 缺字
+				if !strings.Contains(smq.lack, string(text[p])) {
+					smq.lack += string(text[p])
+					smq.lackCount++
+				}
+				p++
 				continue
 			}
-			builder.WriteString(c)
-			builder.WriteString(" ")
+
+			w := string(text[p : p+i+1])
+			c := a.code
+			// 选重，替换选重键 ascii 50: 2
+			if d := c[len(c)-1]; 50 <= d && d <= 57 {
+				smq.repeat[w] = struct{}{}
+				if len(csk) > int(d-50) {
+					tmp := []byte(c)
+					tmp[len(c)-1] = csk[int(d-50)]
+					c = string(tmp)
+				}
+			}
 			if smq.freqStat[w] == nil {
 				smq.freqStat[w] = new(freq)
 			}
 			smq.freqStat[w].code = c
 			smq.freqStat[w].times++
 			smq.unitCount++
+			builder.WriteString(c)
+			builder.WriteString(" ")
+			p += i + 1
 		}
 	}
 	smq.codeSep = builder.String()

@@ -171,6 +171,53 @@ func main() {
 	t5.AppendRow(t5_row_2)
 	t5.SetStyle(table.StyleColoredBright)
 	out += fmt.Sprintln(t5.Render())
+	out += "\n"
+
+	keys := "1234567890qwertyuiopasdfghjkl;zxcvbnm,./"
+	t6_1_header := []interface{}{}
+	t6_2_header := []interface{}{}
+	t6_3_header := []interface{}{}
+	t6_4_header := []interface{}{}
+	t6_1_row := []interface{}{}
+	t6_2_row := []interface{}{}
+	t6_3_row := []interface{}{}
+	t6_4_row := []interface{}{}
+	for i := 0; i < 10; i++ {
+		t6_1_header = append(t6_1_header, string(keys[i]))
+		t6_2_header = append(t6_2_header, string(keys[i+10]))
+		t6_3_header = append(t6_3_header, string(keys[i+20]))
+		t6_4_header = append(t6_4_header, string(keys[i+30]))
+		t6_1_row = append(t6_1_row, fmt.Sprintf("%.2f%%", 100*feel.keyRate[keys[i]]))
+		t6_2_row = append(t6_2_row, fmt.Sprintf("%.2f%%", 100*feel.keyRate[keys[i+10]]))
+		t6_3_row = append(t6_3_row, fmt.Sprintf("%.2f%%", 100*feel.keyRate[keys[i+20]]))
+		t6_4_row = append(t6_4_row, fmt.Sprintf("%.2f%%", 100*feel.keyRate[keys[i+30]]))
+	}
+	t6_3_header = append(t6_3_header, "'")
+	t6_3_row = append(t6_3_row, fmt.Sprintf("%c: %.2f%%", keys[30], 100*feel.keyRate[keys[30]]))
+
+	t6_1 := table.NewWriter()
+	t6_1.AppendHeader(t6_1_header)
+	t6_1.AppendRow(t6_1_row)
+	t6_1.SetStyle(table.StyleColoredBright)
+	out += fmt.Sprintln(t6_1.Render())
+
+	t6_2 := table.NewWriter()
+	t6_2.AppendHeader(t6_2_header)
+	t6_2.AppendRow(t6_2_row)
+	t6_2.SetStyle(table.StyleColoredBright)
+	out += fmt.Sprintln(t6_2.Render())
+
+	t6_3 := table.NewWriter()
+	t6_3.AppendHeader(t6_3_header)
+	t6_3.AppendRow(t6_3_row)
+	t6_3.SetStyle(table.StyleColoredBright)
+	out += fmt.Sprintln(t6_3.Render())
+
+	t6_4 := table.NewWriter()
+	t6_4.AppendHeader(t6_4_header)
+	t6_4.AppendRow(t6_4_row)
+	t6_4.SetStyle(table.StyleColoredBright)
+	out += fmt.Sprintln(t6_4.Render())
 
 	out += fmt.Sprintln("----------------------")
 	fmt.Print(out)

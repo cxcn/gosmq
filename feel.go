@@ -1,6 +1,7 @@
 package main
 
 type Feel struct {
+	keyRate   map[byte]float64
 	finCount  []int
 	finRate   []float64
 	leftHand  float64 // 左手
@@ -32,12 +33,14 @@ func NewFeel(code string, isS bool) *Feel {
 	feel.finCount = make([]int, 10)
 	feel.handCount = make([]int, 4)
 
+	keyCount := make(map[byte]int)
 	finger := make(map[byte]int)
-	aaa := "1qaz2wsx3edc4rfv5tgb_6yhn7ujm8ik,9ol.0p;/'"
-	bbb := "111122223333444444445666666667777888899999"
-	for i := range aaa {
-		v := int(bbb[i] - 48)
-		finger[aaa[i]] = v
+	keys := "1qaz2wsx3edc4rfv5tgb_6yhn7ujm8ik,9ol.0p;/'"
+	fins := "111122223333444444445666666667777888899999"
+	for i := range keys {
+		keyCount[keys[i]] = 0
+		v := int(fins[i] - 48)
+		finger[keys[i]] = v
 	}
 	var (
 		sameFinCount int
@@ -46,31 +49,26 @@ func NewFeel(code string, isS bool) *Feel {
 		xkpCount     int
 		xzgrCount    int
 		csCount      int
+		keyLen       int
 		combLen      int
 	)
 
-	a := 0
+	_, ok := keyCount[code[0]]
 	for i := 1; i < len(code); i++ {
 
 		// 处理单键
-		b, ok := finger[code[i]]
-		if !ok {
-			b = 0
-			feel.finCount[b]++
-			a = b
+		if _, okk := keyCount[code[i]]; okk {
+			keyLen++
+			keyCount[code[i]]++
+			if !ok {
+				ok = okk
+				continue
+			}
+		} else {
+			ok = okk
+			feel.finCount[0]++
 			continue
 		}
-		feel.finCount[b]++
-		if a == 0 {
-			a = b
-			continue
-		}
-
-		// 同指
-		if a == b {
-			sameFinCount++
-		}
-		a = b
 
 		// 处理按键组合
 		zf := zhifa[code[i-1]][code[i]]
@@ -99,6 +97,16 @@ func NewFeel(code string, isS bool) *Feel {
 		case 4:
 			feel.handCount[3]++
 		}
+		// 同指
+		if zf.tz {
+			sameFinCount++
+		}
+	}
+
+	feel.keyRate = make(map[byte]float64)
+	for k, v := range keyCount {
+		feel.finCount[finger[k]] += v
+		feel.keyRate[k] = div(v, keyLen)
 	}
 
 	feel.finRate = make([]float64, 10)

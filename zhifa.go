@@ -14,6 +14,7 @@ type Zhifa struct {
 	dl float64 // 当量
 	zf int     // 指法：大小跨排等
 	hj int     // 互击 LR RL LL RR
+	tz bool    // 同指
 }
 
 func newZhifa(isS bool) map[byte]map[byte]*Zhifa {
@@ -69,6 +70,10 @@ func newZhifa(isS bool) map[byte]map[byte]*Zhifa {
 				vv.hj = 3 // LL
 			} else if !lr[k] && !lr[kk] {
 				vv.hj = 4 // RR
+			}
+
+			if k == kk {
+				vv.tz = true
 			}
 		}
 	}
