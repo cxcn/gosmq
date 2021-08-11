@@ -13,16 +13,13 @@ func NewTrie() *Trie {
 
 func (t *Trie) Insert(word, code string) {
 	for _, v := range word {
-		if _, ok := t.children[v]; !ok {
+		if t.children[v] == nil {
 			//子节点
-			node := NewTrie()
-			t.children[v] = node
-			t = node
-		} else {
-			t = t.children[v]
+			t.children[v] = NewTrie()
 		}
+		t = t.children[v]
 	}
-	if len(t.code) == 0 {
+	if t.code == "" {
 		t.code = code
 	}
 }

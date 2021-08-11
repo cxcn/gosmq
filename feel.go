@@ -71,7 +71,7 @@ func NewFeel(code string, isS bool) *Feel {
 		}
 
 		// 处理按键组合
-		zf := zhifa[code[i-1]][code[i]]
+		zf := zhifa[code[i-1:i+1]]
 		dlSum += zf.dl
 		combLen++
 		// 大小跨排等

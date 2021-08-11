@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -27,21 +26,18 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 	_, filename := filepath.Split(fpt)
 	fmt.Println("文本读取成功:", filename)
 	defer f.Close()
-	buff := bufio.NewReader(f)
+	scan := bufio.NewScanner(f)
+	scan.Split(bufio.ScanWords)
 
 	smq.freqStat = make(map[string]*freq)
 	smq.repeat = make(map[string]struct{})
 	var builder strings.Builder
 
 	// 逐行读取 text
-	for {
-		line, _, eof := buff.ReadLine()
-		if eof == io.EOF {
-			break
-		}
-		text := []rune(strings.TrimSpace(string(line)))
-		smq.textLen += len(text)
+	for scan.Scan() {
 
+		text := []rune(scan.Text())
+		smq.textLen += len(text)
 		p := 0 // point
 		for p < len(text) {
 			// 这是一个奇怪的字符
@@ -53,11 +49,12 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 			a := new(Trie)
 			i := -1
 			for b, j := dict, 0; p+j < len(text); j++ {
-				if _, ok := b.children[text[p+j]]; !ok {
+				if v, ok := b.children[text[p+j]]; !ok {
 					break
+				} else {
+					b = v
 				}
-				b = b.children[text[p+j]]
-				if len(b.code) != 0 {
+				if b.code != "" {
 					a, i = b, j
 				}
 			}

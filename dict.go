@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -27,16 +26,12 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 		fmt.Println("码表读取错误:", err)
 		return dict
 	}
+	scan := bufio.NewScanner(f)
 
-	buff := bufio.NewReader(f)
 	if ding < 1 {
 		fmt.Println("检测到赛码表:", filename)
-		for {
-			b, _, eof := buff.ReadLine()
-			if eof == io.EOF {
-				break
-			}
-			wc := strings.Split(string(b), "\t")
+		for scan.Scan() {
+			wc := strings.Split(scan.Text(), "\t")
 			if len(wc) != 2 {
 				continue
 			}
@@ -53,12 +48,8 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 	var wb []byte
 	freq := make(map[string]int)
 	// 生成字典
-	for {
-		b, _, eof := buff.ReadLine()
-		if eof == io.EOF {
-			break
-		}
-		wc := strings.Split(string(b), "\t")
+	for scan.Scan() {
+		wc := strings.Split(scan.Text(), "\t")
 		if len(wc) != 2 {
 			continue
 		}
@@ -66,14 +57,19 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 			continue
 		}
 		c := wc[1]
-		freq[c] += 1
+		freq[c]++
+		suf := ""
 		if freq[c] != 1 {
-			c = c + strconv.Itoa(freq[c])
+			suf = strconv.Itoa(freq[c])
+			c = c + suf
 		} else if len(c) < ding {
-			c = c + "_"
+			suf = "_"
+			c = c + suf
 		}
 		if isW {
-			wb = append(wb, []byte(wc[0]+"\t"+c+"\n")...)
+			wb = append(wb, scan.Bytes()...)
+			wb = append(wb, suf...)
+			wb = append(wb, '\n')
 		}
 		dict.Insert(wc[0], c)
 	}

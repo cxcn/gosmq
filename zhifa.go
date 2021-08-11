@@ -17,9 +17,9 @@ type Zhifa struct {
 	tz bool    // 同指
 }
 
-func newZhifa(isS bool) map[byte]map[byte]*Zhifa {
+func newZhifa(isS bool) map[string]*Zhifa {
 
-	var zhifa = make(map[byte]map[byte]*Zhifa)
+	var zhifa = make(map[string]*Zhifa, 999)
 	r := strings.NewReader(dangliang)
 	var key string
 	var dl float64
@@ -30,10 +30,7 @@ func newZhifa(isS bool) map[byte]map[byte]*Zhifa {
 		}
 		z := new(Zhifa)
 		z.dl = dl
-		if _, ok := zhifa[key[0]]; !ok {
-			zhifa[key[0]] = make(map[byte]*Zhifa)
-		}
-		zhifa[key[0]][key[1]] = z
+		zhifa[key] = z
 	}
 
 	lr := make(map[byte]bool)
@@ -47,35 +44,33 @@ func newZhifa(isS bool) map[byte]map[byte]*Zhifa {
 	}
 
 	for k, v := range zhifa {
-		for kk, vv := range v {
 
-			if k == '_' {
-				if isS {
-					vv.hj = 1
-				}
-				continue
-			}
-			if kk == '_' {
-				if isS {
-					vv.hj = 2
-				}
-				continue
-			}
-
-			if lr[k] && !lr[kk] {
-				vv.hj = 1 // LR
-			} else if !lr[k] && lr[kk] {
-				vv.hj = 2 // RL
-			} else if lr[k] && lr[kk] {
-				vv.hj = 3 // LL
-			} else if !lr[k] && !lr[kk] {
-				vv.hj = 4 // RR
-			}
-
-			if k == kk {
-				vv.tz = true
-			}
+		if k[0] == k[1] {
+			v.tz = true
 		}
+		if k[0] == '_' {
+			if isS {
+				v.hj = 1
+			}
+			continue
+		}
+		if k[1] == '_' {
+			if isS {
+				v.hj = 2
+			}
+			continue
+		}
+
+		if lr[k[0]] && !lr[k[1]] {
+			v.hj = 1 // LR
+		} else if !lr[k[0]] && lr[k[1]] {
+			v.hj = 2 // RL
+		} else if lr[k[0]] && lr[k[1]] {
+			v.hj = 3 // LL
+		} else if !lr[k[0]] && !lr[k[1]] {
+			v.hj = 4 // RR
+		}
+
 	}
 
 	d := []string{"br", "bt", "ce", "ec", "mu", "my", "nu", "ny",
@@ -102,16 +97,16 @@ func newZhifa(isS bool) map[byte]map[byte]*Zhifa {
 		"xt", ".y", "tx", "y."}
 
 	for _, v := range d {
-		zhifa[v[0]][v[1]].zf = 1
+		zhifa[v].zf = 1
 	}
 	for _, v := range x {
-		zhifa[v[0]][v[1]].zf = 2
+		zhifa[v].zf = 2
 	}
 	for _, v := range gr {
-		zhifa[v[0]][v[1]].zf = 3
+		zhifa[v].zf = 3
 	}
 	for _, v := range c {
-		zhifa[v[0]][v[1]].zf = 4
+		zhifa[v].zf = 4
 	}
 	return zhifa
 }

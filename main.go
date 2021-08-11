@@ -49,7 +49,7 @@ func main() {
 		help = true
 	}
 	if help {
-		fmt.Print("saimaqi version: 0.5, github: https://github.com/cxcn/saimaqi\n\n")
+		fmt.Print("saimaqi version: 0.7, github: https://github.com/cxcn/saimaqi\n\n")
 		fmt.Print("Usage: saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-f] [-s] [-k string] [-o output]\n\n")
 		flag.PrintDefaults()
 		return
@@ -193,7 +193,7 @@ func main() {
 		t6_4_row = append(t6_4_row, fmt.Sprintf("%.2f%%", 100*feel.keyRate[keys[i+30]]))
 	}
 	t6_3_header = append(t6_3_header, "'")
-	t6_3_row = append(t6_3_row, fmt.Sprintf("%c: %.2f%%", keys[30], 100*feel.keyRate[keys[30]]))
+	t6_3_row = append(t6_3_row, fmt.Sprintf("%.2f%%", 100*feel.keyRate[keys[30]]))
 
 	t6_1 := table.NewWriter()
 	t6_1.AppendHeader(t6_1_header)
