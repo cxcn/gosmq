@@ -31,9 +31,11 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 
 	smq.freqStat = make(map[string]*freq)
 	smq.repeat = make(map[string]struct{})
+	notHan := make(map[rune]struct{})
+	lack := make(map[rune]struct{})
 	var builder strings.Builder
 
-	// 逐行读取 text
+	// 读取 text
 	for scan.Scan() {
 
 		text := []rune(scan.Text())
@@ -61,9 +63,7 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 
 			if !unicode.Is(unicode.Han, text[p]) { // 非汉字，￥
 				smq.notHanCount++
-				if !strings.Contains(smq.notHan, string(text[p])) {
-					smq.notHan += string(text[p])
-				}
+				notHan[text[p]] = struct{}{}
 				if i == -1 { // 缺非汉字￥
 					builder.WriteString(string(text[p]))
 					builder.WriteString(" ")
@@ -71,10 +71,7 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 					continue
 				}
 			} else if i == -1 { // 缺字
-				if !strings.Contains(smq.lack, string(text[p])) {
-					smq.lack += string(text[p])
-					smq.lackCount++
-				}
+				lack[text[p]] = struct{}{}
 				p++
 				continue
 			}
@@ -102,6 +99,13 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 		}
 	}
 	smq.codeSep = builder.String()
+	for k := range notHan {
+		smq.notHan += string(k)
+	}
+	for k := range lack {
+		smq.lack += string(k)
+		smq.lackCount++
+	}
 	smq.stat()
 	return smq
 }
