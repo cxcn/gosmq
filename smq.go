@@ -51,7 +51,7 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 		for p < len(text) {
 			// 删掉空白字符
 			switch text[p] {
-			case 65533, '\n', '\r', '\t', ' ':
+			case 65533, '\n', '\r', '\t', ' ', '　':
 				p++
 				smq.textLen--
 				continue
