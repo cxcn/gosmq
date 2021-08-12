@@ -34,6 +34,14 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 	lack := make(map[rune]struct{})
 	var builder strings.Builder
 
+	btoi := func(d byte) (int, bool) {
+		// ascii 48: 0
+		if 48 <= d && d <= 57 {
+			return int(d - 48), true
+		}
+		return 0, false
+	}
+
 	// 读取 text
 	for {
 		line, err := buff.ReadString('\n')
@@ -79,12 +87,14 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 
 			w := string(text[p : p+i+1])
 			c := a.code
-			// 选重，替换选重键 ascii 50: 2
-			if d := c[len(c)-1]; 50 <= d && d <= 57 {
+			// 选重，替换选重键
+			// 最后一码是数字 0-9
+			if d, ok := btoi(c[len(c)-1]); len(c) > 1 && ok {
 				smq.repeat[w] = struct{}{}
-				if len(csk) > int(d-50) {
+				// 最后一码大于1,倒数第二码不是数字
+				if _, okk := btoi(c[len(c)-2]); len(csk) > d-2 && d > 1 && !okk {
 					tmp := []byte(c)
-					tmp[len(c)-1] = csk[int(d-50)]
+					tmp[len(c)-1] = csk[d-2]
 					c = string(tmp)
 				}
 			}
