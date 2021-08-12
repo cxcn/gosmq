@@ -26,8 +26,7 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 	_, filename := filepath.Split(fpt)
 	fmt.Println("文本读取成功:", filename)
 	defer f.Close()
-	scan := bufio.NewScanner(f)
-	scan.Split(bufio.ScanWords)
+	buff := bufio.NewReader(f)
 
 	smq.freqStat = make(map[string]*freq)
 	smq.repeat = make(map[string]struct{})
@@ -36,15 +35,17 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 	var builder strings.Builder
 
 	// 读取 text
-	for scan.Scan() {
-
-		text := []rune(scan.Text())
+	for {
+		line, err := buff.ReadString('\n')
+		text := []rune(line)
 		smq.textLen += len(text)
 		p := 0 // point
 		for p < len(text) {
-			// 这是一个奇怪的字符
-			if text[p] == 65533 {
+			// 删掉空白字符
+			switch text[p] {
+			case 65533, '\n', '\r', '\t', ' ':
 				p++
+				smq.textLen--
 				continue
 			}
 			// 最长匹配
@@ -97,7 +98,11 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 			builder.WriteString(" ")
 			p += i + 1
 		}
+		if err != nil {
+			break
+		}
 	}
+
 	smq.codeSep = builder.String()
 	for k := range notHan {
 		smq.notHan += string(k)
