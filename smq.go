@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,8 +29,12 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 	defer f.Close()
 	buff := bufio.NewReader(f)
 
-	smq.freqStat = make(map[string]*freq)
-	smq.repeat = make(map[string]struct{})
+	// smq.freqStat = make(map[string]*freq)
+	// smq.repeat = make(map[string]struct{})
+	smq.codeStat = make(map[int]int)
+	smq.wordStat = make(map[int]int)
+	smq.repeatStat = make(map[int]int)
+
 	notHan := make(map[rune]struct{})
 	lack := make(map[rune]struct{})
 	var builder strings.Builder
@@ -85,24 +90,41 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 				continue
 			}
 
-			w := string(text[p : p+i+1])
+			// w := string(text[p : p+i+1])
 			c := a.code
-			// 选重，替换选重键
-			// 最后一码是数字 0-9
-			if d, ok := btoi(c[len(c)-1]); len(c) > 1 && ok {
-				smq.repeat[w] = struct{}{}
-				// 最后一码大于1,倒数第二码不是数字
-				if _, okk := btoi(c[len(c)-2]); len(csk) > d-2 && d > 1 && !okk {
-					tmp := []byte(c)
-					tmp[len(c)-1] = csk[d-2]
-					c = string(tmp)
+			// 选重
+			rp := 0
+			for n := len(c) - 1; n >= 0; n-- {
+				if d, ok := btoi(c[n]); ok {
+					rp += d * int(math.Pow10(len(c)-1-n))
+				} else {
+					break
 				}
 			}
-			if smq.freqStat[w] == nil {
-				smq.freqStat[w] = new(freq)
+			if rp != 0 {
+				// smq.repeat[w] = struct{}{}
+				smq.repeatStat[rp]++
+				smq.repeatCount++
+				smq.repeatLen += i + 1
+				if rp < 10 { // 10重以内，替换选重键
+					if len(csk) > rp {
+						tmp := []byte(c)
+						tmp[len(c)-1] = csk[rp]
+						c = string(tmp)
+					}
+				}
 			}
-			smq.freqStat[w].code = c
-			smq.freqStat[w].times++
+			smq.codeStat[len(c)]++
+			smq.wordStat[i+1]++
+			if i > 0 {
+				smq.wordCount++
+				smq.wordLen += i + 1
+			}
+			// if smq.freqStat[w] == nil {
+			// 	smq.freqStat[w] = new(freq)
+			// }
+			// smq.freqStat[w].code = c
+			// smq.freqStat[w].times++
 			smq.unitCount++
 			builder.WriteString(c)
 			builder.WriteString(" ")

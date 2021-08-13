@@ -4,10 +4,10 @@ import (
 	"strings"
 )
 
-type freq struct {
-	code  string
-	times int
-}
+// type freq struct {
+// 	code  string
+// 	times int
+// }
 
 type Smq struct {
 	textLen     int    //文本字数
@@ -16,8 +16,8 @@ type Smq struct {
 	lack        string //缺字
 	lackCount   int    //缺字数
 
-	repeat   map[string]struct{} //选重
-	freqStat map[string]*freq    //字词：频率
+	// repeat   map[string]struct{} //选重
+	// freqStat map[string]*freq    //字词：频率
 
 	codeSep   string //空格间隔的全部编码
 	code      string //全部编码
@@ -37,8 +37,9 @@ type Smq struct {
 	repeatRate    float64 //选重率（上屏）
 	repeatLenRate float64 //选重率（字数）
 
-	codeStat map[int]int //码长统计
-	wordStat map[int]int //词长统计
+	codeStat   map[int]int //码长统计
+	wordStat   map[int]int //词长统计
+	repeatStat map[int]int //选重统计
 }
 
 func (smq *Smq) stat() {
@@ -47,24 +48,22 @@ func (smq *Smq) stat() {
 	smq.codeLen = len(smq.code)
 	smq.codeAvg = div(smq.codeLen, smq.textLen)
 
-	smq.codeStat = make(map[int]int)
-	smq.wordStat = make(map[int]int)
-	for k, v := range smq.freqStat {
-		l := len([]rune(k))
-		if l > 1 {
-			smq.wordCount += v.times
-			smq.wordLen += l * v.times
-		}
-		smq.codeStat[len(v.code)] += v.times
-		smq.wordStat[l] += v.times
-	}
+	// for k, v := range smq.freqStat {
+	// 	l := len([]rune(k))
+	// 	if l > 1 {
+	// 		smq.wordCount += v.times
+	// 		smq.wordLen += l * v.times
+	// 	}
+	// 	smq.codeStat[len(v.code)] += v.times
+	// 	smq.wordStat[l] += v.times
+	// }
 	smq.wordRate = div(smq.wordCount, smq.unitCount)
 	smq.wordLenRate = div(smq.wordLen, smq.textLen)
-	for k := range smq.repeat {
-		l := len([]rune(k))
-		smq.repeatCount += smq.freqStat[k].times
-		smq.repeatLen += l * smq.freqStat[k].times
-	}
+	// for k := range smq.repeat {
+	// 	l := len([]rune(k))
+	// 	smq.repeatCount += smq.freqStat[k].times
+	// 	smq.repeatLen += l * smq.freqStat[k].times
+	// }
 	smq.repeatRate = div(smq.repeatCount, smq.unitCount)
 	smq.repeatLenRate = div(smq.repeatLen, smq.textLen)
 }

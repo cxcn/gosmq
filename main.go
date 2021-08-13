@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -45,10 +46,12 @@ func main() {
 	flag.BoolVar(&help, "h", false, "显示帮助")
 	flag.Parse()
 
-	if len(fpm) == 0 {
-		help = true
+	if len(os.Args) == 1 {
+		fmt.Println("请在命令行中运行此程序\n按Enter键退出...")
+		fmt.Scanln(&fpo)
+		return
 	}
-	if help {
+	if help || len(fpm) == 0 {
 		fmt.Print("saimaqi version: 0.7, github: https://github.com/cxcn/saimaqi\n\n")
 		fmt.Print("Usage: saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-f] [-s] [-k string] [-o output]\n\n")
 		flag.PrintDefaults()
@@ -63,6 +66,7 @@ func main() {
 	if len(dict.children) == 0 || len(fpt) == 0 {
 		return
 	}
+	csk = " _" + csk
 	smq := NewSmq(dict, fpt, csk)
 	if smq.textLen == 0 {
 		fmt.Println("文本为空...")
@@ -78,6 +82,11 @@ func main() {
 
 	out += fmt.Sprintf("非汉字：%s\n", smq.notHan)
 	out += fmt.Sprintf("缺字：%s\n", smq.lack)
+	out += "\n"
+
+	out += fmt.Sprintf("码长统计：%v\n", smq.codeStat)
+	out += fmt.Sprintf("词长统计：%v\n", smq.wordStat)
+	out += fmt.Sprintf("选重统计：%v\n", smq.repeatStat)
 	out += "\n"
 
 	t1 := table.NewWriter()
@@ -107,10 +116,6 @@ func main() {
 	})
 	t2.SetStyle(table.StyleColoredBright)
 	out += fmt.Sprintln(t2.Render())
-	out += "\n"
-
-	out += fmt.Sprintf("码长统计：%v\n", smq.codeStat)
-	out += fmt.Sprintf("词长统计：%v\n", smq.wordStat)
 	out += "\n"
 
 	if isnF {
