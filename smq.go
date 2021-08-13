@@ -137,7 +137,7 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 	for k := range notHan {
 		smq.notHan += string(k)
 	}
-	smq.lackCount = len(smq.lack)
+	smq.lackCount = len(lack)
 	for k := range lack {
 		smq.lack += string(k)
 	}
