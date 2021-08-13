@@ -90,10 +90,11 @@ func main() {
 	out += "\n"
 
 	t1 := table.NewWriter()
-	t1.AppendHeader(table.Row{"文本字数", "总键数", "码长", "非汉字数", "缺字数"})
+	t1.AppendHeader(table.Row{"文本字数", "总键数", "码长", "十击速度", "非汉字数", "缺字数"})
 	t1.AppendRow([]interface{}{
 		smq.textLen, smq.codeLen,
 		fmt.Sprintf("%.4f", smq.codeAvg),
+		fmt.Sprintf("%.2f", 600/smq.codeAvg),
 		smq.notHanCount, smq.lackCount,
 	})
 	t1.SetStyle(table.StyleColoredBright)
