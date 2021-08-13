@@ -87,29 +87,3 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 	}
 	return dict
 }
-
-func (t *Trie) addPunct() {
-	// 符号
-	punct := map[string]string{
-		"·": "`",
-		"【": "[",
-		"】": "]",
-		"；": ";",
-		"‘": "\"",
-		"’": "\"",
-		"，": ",",
-		"。": ".",
-		"、": "/",
-		// 用 ~ 表示换挡
-		"——": "~-",
-		"：":  "~;",
-		"“":  "~\"",
-		"”":  "~\"",
-		"《":  "~,",
-		"》":  "~.",
-		"？":  "~/",
-	}
-	for k, v := range punct {
-		t.Insert(k, v)
-	}
-}

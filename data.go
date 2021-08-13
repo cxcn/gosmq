@@ -10,11 +10,32 @@ import (
 //go:embed data\\dangliang
 var dangliang string
 
+//go:embed data\\punct
+var punct string
+
 type Zhifa struct {
 	dl float64 // 当量
 	zf int     // 指法：大小跨排等
 	hj int     // 互击 LR RL LL RR
 	tz bool    // 同指
+}
+
+func (t *Trie) addPunct() {
+	r := strings.NewReader(punct)
+	var p string
+	var key string
+	for {
+		_, err := fmt.Fscanln(r, &p, &key)
+		if err == io.EOF {
+			break
+		}
+		t.Insert(p, key)
+	}
+	var i byte = 33
+	for i < 127 {
+		t.Insert(string(i), string(i))
+		i++
+	}
 }
 
 func newZhifa(isS bool) map[string]*Zhifa {

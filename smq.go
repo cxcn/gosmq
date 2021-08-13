@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -79,8 +78,6 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 				smq.notHanCount++
 				notHan[text[p]] = struct{}{}
 				if i == -1 { // 缺非汉字￥
-					builder.WriteString(string(text[p]))
-					builder.WriteString(" ")
 					p++
 					continue
 				}
@@ -94,15 +91,16 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 			c := a.code
 			// 选重
 			rp := 0
+			pow := 1
 			for n := len(c) - 1; n >= 0; n-- {
-				if d, ok := btoi(c[n]); ok {
-					rp += d * int(math.Pow10(len(c)-1-n))
+				if d, ok := btoi(c[n]); ok && len(c) > 1 {
+					rp += d * pow
+					pow *= 10
 				} else {
 					break
 				}
 			}
 			if rp != 0 {
-				// smq.repeat[w] = struct{}{}
 				smq.repeatStat[rp]++
 				smq.repeatCount++
 				smq.repeatLen += i + 1
@@ -139,9 +137,9 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 	for k := range notHan {
 		smq.notHan += string(k)
 	}
+	smq.lackCount = len(smq.lack)
 	for k := range lack {
 		smq.lack += string(k)
-		smq.lackCount++
 	}
 	smq.stat()
 	return smq
