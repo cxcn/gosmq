@@ -28,6 +28,7 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 	}
 	scan := bufio.NewScanner(f)
 
+	dict.addPunct()
 	if ding < 1 {
 		fmt.Println("检测到赛码表:", filename)
 		for scan.Scan() {
@@ -74,7 +75,6 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 		dict.Insert(wc[0], c)
 	}
 	f.Close()
-	dict.addPunct()
 
 	// 写入赛码表
 	if isW {

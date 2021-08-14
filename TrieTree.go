@@ -21,5 +21,7 @@ func (t *Trie) Insert(word, code string) {
 	}
 	if t.code == "" {
 		t.code = code
+	} else if len(code) <= len(t.code) {
+		t.code = code
 	}
 }
