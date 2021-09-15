@@ -99,12 +99,11 @@ func newSmqOut(dict *trie, fpt string, fpo string, csk string) *SmqOut {
 				so.RepeatStat[rp]++
 				so.RepeatCount++
 				so.RepeatLen += i + 1
-				if rp < 10 { // 10重以内，替换选重键
-					if len(csk) > rp {
-						tmp := []byte(c)
-						tmp[len(c)-1] = csk[rp]
-						c = string(tmp)
-					}
+				// 10重以内，替换选重键
+				if rp < 10 && rp-2 <= len(csk)-1 {
+					tmp := []byte(c)
+					tmp[len(c)-1] = csk[rp-2]
+					c = string(tmp)
 				}
 			}
 			so.CodeStat[len(c)]++

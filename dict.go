@@ -28,6 +28,9 @@ func newDict(fpm string, ding int, isW bool, isS bool) *trie {
 	}
 	scan := bufio.NewScanner(f)
 
+	if isS {
+		fmt.Println("只跑单字...")
+	}
 	if ding < 1 {
 		fmt.Println("检测到赛码表:", filename)
 		for scan.Scan() {
@@ -76,9 +79,6 @@ func newDict(fpm string, ding int, isW bool, isS bool) *trie {
 	dict.addPunct()
 	f.Close()
 
-	if isS {
-		fmt.Println("只跑单字...")
-	}
 	// 写入赛码表
 	if isW {
 		_ = os.Mkdir("smb", 0666)
