@@ -58,9 +58,6 @@ func main() {
 		return
 	}
 	fmt.Println()
-	if isS {
-		fmt.Println("只跑单字...")
-	}
 
 	si := smq.SmqIn{
 		Fpm:  fpm,
@@ -73,7 +70,7 @@ func main() {
 	}
 	so := smq.NewSmq(si)
 
-	if len(fpt) == 0 {
+	if so.CodeLen == 0 {
 		return
 	}
 

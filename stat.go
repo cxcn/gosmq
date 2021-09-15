@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-type smqOut struct {
+type SmqOut struct {
 	TextLen     int    //文本字数
 	NotHan      string //非汉字
 	NotHanCount int    //非汉字数
@@ -14,6 +14,10 @@ type smqOut struct {
 	CodeSep   string //空格间隔的全部编码
 	Code      string //全部编码
 	UnitCount int    //上屏数
+
+	CodeStat   map[int]int //码长统计
+	WordStat   map[int]int //词长统计
+	RepeatStat map[int]int //选重统计
 
 	//以下可由上面计算得
 	CodeLen int     //总键数
@@ -28,13 +32,9 @@ type smqOut struct {
 	RepeatLen     int     //选重字数
 	RepeatRate    float64 //选重率（上屏）
 	RepeatLenRate float64 //选重率（字数）
-
-	CodeStat   map[int]int //码长统计
-	WordStat   map[int]int //词长统计
-	RepeatStat map[int]int //选重统计
 }
 
-func (so *smqOut) stat() {
+func (so *SmqOut) stat() {
 	so.Code = strings.ReplaceAll(so.CodeSep, " ", "")
 	so.CodeLen = len(so.Code)
 	so.CodeAvg = div(so.CodeLen, so.TextLen)

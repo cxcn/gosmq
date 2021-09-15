@@ -76,14 +76,18 @@ func newDict(fpm string, ding int, isW bool, isS bool) *trie {
 	dict.addPunct()
 	f.Close()
 
+	if isS {
+		fmt.Println("只跑单字...")
+	}
 	// 写入赛码表
 	if isW {
-		err := ioutil.WriteFile(".\\smb\\"+filename, wb, 0777)
+		_ = os.Mkdir("smb", 0666)
+		err := ioutil.WriteFile(".\\smb\\"+filename, wb, 0666)
 		if err != nil {
 			fmt.Println("赛码表写入错误:", err)
-			return dict
+		} else {
+			fmt.Println("赛码表写入成功:", ".\\smb\\"+filename)
 		}
-		fmt.Println("赛码表写入成功:", ".\\smb\\"+filename)
 	}
 	return dict
 }

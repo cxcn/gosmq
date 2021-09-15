@@ -10,8 +10,8 @@ import (
 	"unicode"
 )
 
-func newSmqOut(dict *trie, fpt string, fpo string, csk string) *smqOut {
-	so := new(smqOut)
+func newSmqOut(dict *trie, fpt string, fpo string, csk string) *SmqOut {
+	so := new(SmqOut)
 	f, err := os.Open(fpt)
 	if err != nil {
 		fmt.Println("文本读取错误:", err)
@@ -130,7 +130,7 @@ func newSmqOut(dict *trie, fpt string, fpo string, csk string) *smqOut {
 
 	so.CodeSep = builder.String()
 	if fpo != "" { // 输出编码
-		_ = ioutil.WriteFile(fpo, []byte(so.CodeSep), 0777)
+		_ = ioutil.WriteFile(fpo, []byte(so.CodeSep), 0666)
 	}
 	for k := range notHan {
 		so.NotHan += string(k)

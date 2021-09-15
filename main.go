@@ -11,8 +11,12 @@ type SmqIn struct { // Smq input
 	Fpo string // 输出编码路径
 }
 
-func NewSmq(si SmqIn) *smqOut {
+func NewSmq(si SmqIn) *SmqOut {
 	dict := newDict(si.Fpm, si.Ding, si.IsW, si.IsS)
-	so := newSmqOut(dict, si.Fpt, si.Fpo, si.Csk)
+	so := new(SmqOut)
+	if len(si.Fpt) == 0 || dict.children == nil {
+		return so
+	}
+	so = newSmqOut(dict, si.Fpt, si.Fpo, si.Csk)
 	return so
 }
