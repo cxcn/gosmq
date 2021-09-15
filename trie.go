@@ -1,21 +1,21 @@
-package main
+package smq
 
-type Trie struct {
-	children map[rune]*Trie
+type trie struct {
+	children map[rune]*trie
 	code     string
 }
 
-func NewTrie() *Trie {
-	root := new(Trie)
-	root.children = make(map[rune]*Trie)
+func newTrie() *trie {
+	root := new(trie)
+	root.children = make(map[rune]*trie)
 	return root
 }
 
-func (t *Trie) Insert(word, code string) {
+func (t *trie) insert(word, code string) {
 	for _, v := range word {
 		if t.children[v] == nil {
 			//子节点
-			t.children[v] = NewTrie()
+			t.children[v] = newTrie()
 		}
 		t = t.children[v]
 	}

@@ -1,43 +1,38 @@
-package main
+package smq
 
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"unicode"
 )
 
-func NewSmq(dict *Trie, fpt string, csk string) *Smq {
-
-	// start := time.Now()
-	// defer func() {
-	// 	cost := time.Since(start)
-	// 	fmt.Println("NewSmq cost time = ", cost)
-	// }()
-
-	smq := new(Smq)
+func newSmqOut(dict *trie, fpt string, fpo string, csk string) *smqOut {
+	so := new(smqOut)
 	f, err := os.Open(fpt)
 	if err != nil {
 		fmt.Println("文本读取错误:", err)
-		return smq
+		return so
 	}
 	_, filename := filepath.Split(fpt)
 	fmt.Println("文本读取成功:", filename)
 	defer f.Close()
 	buff := bufio.NewReader(f)
 
-	// smq.freqStat = make(map[string]*freq)
-	// smq.repeat = make(map[string]struct{})
-	smq.codeStat = make(map[int]int)
-	smq.wordStat = make(map[int]int)
-	smq.repeatStat = make(map[int]int)
+	// so.freqStat = make(map[string]*freq)
+	// so.repeat = make(map[string]struct{})
+	so.CodeStat = make(map[int]int)
+	so.WordStat = make(map[int]int)
+	so.RepeatStat = make(map[int]int)
 
 	notHan := make(map[rune]struct{})
 	lack := make(map[rune]struct{})
 	var builder strings.Builder
 
+	// ascii 转数字
 	btoi := func(d byte) (int, bool) {
 		// ascii 48: 0
 		if 48 <= d && d <= 57 {
@@ -50,18 +45,18 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 	for {
 		line, err := buff.ReadString('\n')
 		text := []rune(line)
-		smq.textLen += len(text)
+		so.TextLen += len(text)
 		p := 0 // point
 		for p < len(text) {
 			// 删掉空白字符
 			switch text[p] {
 			case 65533, '\n', '\r', '\t', ' ', '　':
 				p++
-				smq.textLen--
+				so.TextLen--
 				continue
 			}
 			// 最长匹配
-			a := new(Trie)
+			a := new(trie)
 			i := -1
 			for b, j := dict, 0; p+j < len(text); j++ {
 				if v, ok := b.children[text[p+j]]; !ok {
@@ -75,7 +70,7 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 			}
 
 			if !unicode.Is(unicode.Han, text[p]) { // 非汉字，￥
-				smq.notHanCount++
+				so.NotHanCount++
 				notHan[text[p]] = struct{}{}
 				if i == -1 { // 缺非汉字￥
 					p++
@@ -101,9 +96,9 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 				}
 			}
 			if rp != 0 {
-				smq.repeatStat[rp]++
-				smq.repeatCount++
-				smq.repeatLen += i + 1
+				so.RepeatStat[rp]++
+				so.RepeatCount++
+				so.RepeatLen += i + 1
 				if rp < 10 { // 10重以内，替换选重键
 					if len(csk) > rp {
 						tmp := []byte(c)
@@ -112,18 +107,18 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 					}
 				}
 			}
-			smq.codeStat[len(c)]++
-			smq.wordStat[i+1]++
+			so.CodeStat[len(c)]++
+			so.WordStat[i+1]++
 			if i > 0 {
-				smq.wordCount++
-				smq.wordLen += i + 1
+				so.WordCount++
+				so.WordLen += i + 1
 			}
-			// if smq.freqStat[w] == nil {
-			// 	smq.freqStat[w] = new(freq)
+			// if so.freqStat[w] == nil {
+			// 	so.freqStat[w] = new(freq)
 			// }
-			// smq.freqStat[w].code = c
-			// smq.freqStat[w].times++
-			smq.unitCount++
+			// so.freqStat[w].code = c
+			// so.freqStat[w].times++
+			so.UnitCount++
 			builder.WriteString(c)
 			builder.WriteString(" ")
 			p += i + 1
@@ -133,14 +128,17 @@ func NewSmq(dict *Trie, fpt string, csk string) *Smq {
 		}
 	}
 
-	smq.codeSep = builder.String()
+	so.CodeSep = builder.String()
+	if fpo != "" { // 输出编码
+		_ = ioutil.WriteFile(fpo, []byte(so.CodeSep), 0777)
+	}
 	for k := range notHan {
-		smq.notHan += string(k)
+		so.NotHan += string(k)
 	}
-	smq.lackCount = len(lack)
+	so.LackCount = len(lack)
 	for k := range lack {
-		smq.lack += string(k)
+		so.Lack += string(k)
 	}
-	smq.stat()
-	return smq
+	so.stat()
+	return so
 }

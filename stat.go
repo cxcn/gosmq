@@ -1,71 +1,47 @@
-package main
+package smq
 
 import (
 	"strings"
 )
 
-// type freq struct {
-// 	code  string
-// 	times int
-// }
+type smqOut struct {
+	TextLen     int    //文本字数
+	NotHan      string //非汉字
+	NotHanCount int    //非汉字数
+	Lack        string //缺字
+	LackCount   int    //缺字数
 
-type Smq struct {
-	textLen     int    //文本字数
-	notHan      string //非汉字
-	notHanCount int    //非汉字数
-	lack        string //缺字
-	lackCount   int    //缺字数
-
-	// repeat   map[string]struct{} //选重
-	// freqStat map[string]*freq    //字词：频率
-
-	codeSep   string //空格间隔的全部编码
-	code      string //全部编码
-	unitCount int    //上屏数
+	CodeSep   string //空格间隔的全部编码
+	Code      string //全部编码
+	UnitCount int    //上屏数
 
 	//以下可由上面计算得
-	codeLen int     //总键数
-	codeAvg float64 //码长
+	CodeLen int     //总键数
+	CodeAvg float64 //码长
 
-	wordCount   int     //打词数
-	wordLen     int     //打词字数
-	wordRate    float64 //打词率（上屏）
-	wordLenRate float64 //打词率（字数）
+	WordCount   int     //打词数
+	WordLen     int     //打词字数
+	WordRate    float64 //打词率（上屏）
+	WordLenRate float64 //打词率（字数）
 
-	repeatCount   int     //选重数
-	repeatLen     int     //选重字数
-	repeatRate    float64 //选重率（上屏）
-	repeatLenRate float64 //选重率（字数）
+	RepeatCount   int     //选重数
+	RepeatLen     int     //选重字数
+	RepeatRate    float64 //选重率（上屏）
+	RepeatLenRate float64 //选重率（字数）
 
-	codeStat   map[int]int //码长统计
-	wordStat   map[int]int //词长统计
-	repeatStat map[int]int //选重统计
+	CodeStat   map[int]int //码长统计
+	WordStat   map[int]int //词长统计
+	RepeatStat map[int]int //选重统计
 }
 
-func (smq *Smq) stat() {
-
-	smq.code = strings.ReplaceAll(smq.codeSep, " ", "")
-	smq.codeLen = len(smq.code)
-	smq.codeAvg = div(smq.codeLen, smq.textLen)
-
-	// for k, v := range smq.freqStat {
-	// 	l := len([]rune(k))
-	// 	if l > 1 {
-	// 		smq.wordCount += v.times
-	// 		smq.wordLen += l * v.times
-	// 	}
-	// 	smq.codeStat[len(v.code)] += v.times
-	// 	smq.wordStat[l] += v.times
-	// }
-	smq.wordRate = div(smq.wordCount, smq.unitCount)
-	smq.wordLenRate = div(smq.wordLen, smq.textLen)
-	// for k := range smq.repeat {
-	// 	l := len([]rune(k))
-	// 	smq.repeatCount += smq.freqStat[k].times
-	// 	smq.repeatLen += l * smq.freqStat[k].times
-	// }
-	smq.repeatRate = div(smq.repeatCount, smq.unitCount)
-	smq.repeatLenRate = div(smq.repeatLen, smq.textLen)
+func (so *smqOut) stat() {
+	so.Code = strings.ReplaceAll(so.CodeSep, " ", "")
+	so.CodeLen = len(so.Code)
+	so.CodeAvg = div(so.CodeLen, so.TextLen)
+	so.WordRate = div(so.WordCount, so.UnitCount)
+	so.WordLenRate = div(so.WordLen, so.TextLen)
+	so.RepeatRate = div(so.RepeatCount, so.UnitCount)
+	so.RepeatLenRate = div(so.RepeatLen, so.TextLen)
 }
 
 func div(x, y int) float64 {

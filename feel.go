@@ -1,26 +1,27 @@
-package main
+package smq
 
 type Feel struct {
-	keyRate   map[byte]float64
-	finCount  []int
-	finRate   []float64
-	leftHand  float64 // 左手
-	rightHand float64 // 右手
+	KeyRate   map[byte]float64
+	FinCount  []int
+	FinRate   []float64
+	LeftHand  float64 // 左手
+	RightHand float64 // 右手
 
-	handCount    []int     // LR RL LL RR
-	handRate     []float64 // LR RL LL RR
-	diffHandRate float64   // 异手
-	sameFinRate  float64   // 同指
-	diffFinRate  float64   // 同手异指
+	HandCount    []int     // LR RL LL RR
+	HandRate     []float64 // LR RL LL RR
+	DiffHandRate float64   // 异手
+	SameFinRate  float64   // 同指
+	DiffFinRate  float64   // 同手异指
 
-	dl   float64 // 当量
-	dkp  float64 // 大跨排
-	xkp  float64 // 小跨排
-	xzgr float64 // 小指干扰
-	cs   float64 // 错手
+	Eq  float64 // 当量 equivalent
+	Sk  float64 // 同键 same key
+	Xkp float64 // 小跨排
+	Dkp float64 // 大跨排
+	Cs  float64 // 错手
+	Lfd float64 // 小指干扰 little finger disturb
 }
 
-func NewFeel(code string, isS bool) *Feel {
+func NewFeel(code string, aS bool) *Feel {
 
 	// start := time.Now()
 	// defer func() {
@@ -28,10 +29,13 @@ func NewFeel(code string, isS bool) *Feel {
 	// 	fmt.Println("NewFeel cost time = ", cost)
 	// }()
 
-	zhifa := newZhifa(isS)
+	data := newData(aS)
 	feel := new(Feel)
-	feel.finCount = make([]int, 10)
-	feel.handCount = make([]int, 4)
+	if len(code) == 0 {
+		return feel
+	}
+	feel.FinCount = make([]int, 10)
+	feel.HandCount = make([]int, 4)
 
 	keyCount := make(map[byte]int)
 	finger := make(map[byte]int)
@@ -43,14 +47,14 @@ func NewFeel(code string, isS bool) *Feel {
 		finger[keys[i]] = v
 	}
 	var (
-		sameFinCount int
-		dlSum        float64
-		dkpCount     int
-		xkpCount     int
-		xzgrCount    int
-		csCount      int
-		keyLen       int
-		combLen      int
+		eqSum    float64
+		skCount  int
+		xkpCount int
+		dkpCount int
+		csCount  int
+		lfdCount int
+		keyLen   int
+		combLen  int
 	)
 
 	_, ok := keyCount[code[0]]
@@ -66,75 +70,75 @@ func NewFeel(code string, isS bool) *Feel {
 			}
 		} else {
 			ok = okk
-			feel.finCount[0]++
+			feel.FinCount[0]++
 			continue
 		}
 
 		// 处理按键组合
-		zf := zhifa[code[i-1:i+1]]
-		dlSum += zf.dl
+		comb := data[code[i-1:i+1]]
+		eqSum += comb.eq
 		combLen++
-		// 大小跨排等
-		switch zf.zf {
+		// 同手
+		switch comb.sh {
 		case 0:
 		case 2:
 			xkpCount++
 		case 3:
-			xzgrCount++
-		case 1:
 			dkpCount++
 		case 4:
 			csCount++
-		}
-		// 互击
-		switch zf.hj {
 		case 1:
-			feel.handCount[0]++
+			skCount++
+		}
+		if comb.lfd { // 小指干扰
+			lfdCount++
+		}
+		// 异手
+		switch comb.dist {
+		case 1:
+			feel.HandCount[0]++
 		case 2:
-			feel.handCount[1]++
+			feel.HandCount[1]++
 		case 3:
-			feel.handCount[2]++
+			feel.HandCount[2]++
 		case 4:
-			feel.handCount[3]++
-		}
-		// 同指
-		if zf.tz {
-			sameFinCount++
+			feel.HandCount[3]++
 		}
 	}
 
-	feel.keyRate = make(map[byte]float64)
+	feel.KeyRate = make(map[byte]float64)
 	for k, v := range keyCount {
-		feel.finCount[finger[k]] += v
-		feel.keyRate[k] = div(v, keyLen)
+		feel.FinCount[finger[k]] += v
+		feel.KeyRate[k] = div(v, keyLen)
 	}
 
-	feel.finRate = make([]float64, 10)
-	for i, v := range feel.finCount {
-		feel.finRate[i] = div(v, len(code))
+	feel.FinRate = make([]float64, 10)
+	for i, v := range feel.FinCount {
+		feel.FinRate[i] = div(v, len(code))
 	}
-	feel.leftHand = feel.finRate[1] + feel.finRate[2] + feel.finRate[3] + feel.finRate[4]
-	feel.rightHand = feel.finRate[6] + feel.finRate[7] + feel.finRate[8] + feel.finRate[9]
-	feel.leftHand = feel.leftHand / (feel.leftHand + feel.rightHand) // 归一
-	feel.rightHand = 1 - feel.leftHand
+	feel.LeftHand = feel.FinRate[1] + feel.FinRate[2] + feel.FinRate[3] + feel.FinRate[4]
+	feel.RightHand = feel.FinRate[6] + feel.FinRate[7] + feel.FinRate[8] + feel.FinRate[9]
+	feel.LeftHand = feel.LeftHand / (feel.LeftHand + feel.RightHand) // 归一
+	feel.RightHand = 1 - feel.LeftHand
 
-	feel.handRate = make([]float64, 4)
+	feel.HandRate = make([]float64, 4)
 	handSum := 0
-	for _, v := range feel.handCount {
+	for _, v := range feel.HandCount {
 		handSum += v
 	}
-	for i, v := range feel.handCount {
-		feel.handRate[i] = div(v, handSum)
+	for i, v := range feel.HandCount {
+		feel.HandRate[i] = div(v, handSum)
 	}
-	feel.diffHandRate = feel.handRate[0] + feel.handRate[1]
-	feel.sameFinRate = div(sameFinCount, handSum)
-	feel.diffFinRate = feel.handRate[2] + feel.handRate[3] - feel.sameFinRate
+	feel.DiffHandRate = feel.HandRate[0] + feel.HandRate[1]
+	feel.SameFinRate = div(skCount+xkpCount+dkpCount, handSum)
+	feel.DiffFinRate = feel.HandRate[2] + feel.HandRate[3] - feel.SameFinRate
 
-	feel.dl = dlSum / float64(combLen)
-	feel.dkp = div(dkpCount, combLen)
-	feel.xkp = div(xkpCount, combLen)
-	feel.xzgr = div(xzgrCount, combLen)
-	feel.cs = div(csCount, combLen)
+	feel.Eq = eqSum / float64(combLen)
+	feel.Sk = div(skCount, combLen)
+	feel.Xkp = div(xkpCount, combLen)
+	feel.Dkp = div(dkpCount, combLen)
+	feel.Lfd = div(lfdCount, combLen)
+	feel.Cs = div(csCount, combLen)
 
 	return feel
 }

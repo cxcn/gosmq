@@ -1,4 +1,4 @@
-package main
+package smq
 
 import (
 	"bufio"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
+func newDict(fpm string, ding int, isW bool, isS bool) *trie {
 
 	// start := time.Now()
 	// defer func() {
@@ -20,7 +20,7 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 
 	_, filename := filepath.Split(fpm)
 	// 读取码表
-	dict := NewTrie()
+	dict := newTrie()
 	f, err := os.Open(fpm)
 	if err != nil {
 		fmt.Println("码表读取错误:", err)
@@ -35,10 +35,10 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 			if len(wc) != 2 {
 				continue
 			}
-			if isD && len([]rune(wc[0])) != 1 {
+			if isS && len([]rune(wc[0])) != 1 {
 				continue
 			}
-			dict.Insert(wc[0], wc[1])
+			dict.insert(wc[0], wc[1])
 		}
 		dict.addPunct()
 		return dict
@@ -53,7 +53,7 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 		if len(wc) != 2 {
 			continue
 		}
-		if isD && len([]rune(wc[0])) != 1 {
+		if isS && len([]rune(wc[0])) != 1 {
 			continue
 		}
 		c := wc[1]
@@ -71,7 +71,7 @@ func NewDict(fpm string, ding int, isW bool, isD bool) *Trie {
 			wb = append(wb, suf...)
 			wb = append(wb, '\n')
 		}
-		dict.Insert(wc[0], c)
+		dict.insert(wc[0], c)
 	}
 	dict.addPunct()
 	f.Close()
