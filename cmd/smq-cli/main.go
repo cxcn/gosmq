@@ -52,8 +52,8 @@ func main() {
 		return
 	}
 	if help || len(fpm) == 0 {
-		fmt.Print("saimaqi version: 0.7, github: https://github.com/cxcn/saimaqi\n\n")
-		fmt.Print("Usage: saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-f] [-s] [-k string] [-o output]\n\n")
+		fmt.Print("smq-cli version: 0.7, github: https://github.com/cxcn/gosmq\n\n")
+		fmt.Print("Usage: smq-cli.exe [-i mb] [-n int] [-d] [-w] [-t text] [-f] [-s] [-k string] [-o output]\n\n")
 		flag.PrintDefaults()
 		return
 	}
@@ -142,15 +142,16 @@ func main() {
 	out += "\n"
 
 	t4 := table.NewWriter()
-	t4.AppendHeader(table.Row{"当量", "左手", "右手", "异手", "同指", "大跨排", "小跨排", "异指", "小指干扰", "错手"})
+	t4.AppendHeader(table.Row{"当量", "左手", "右手", "异手", "同指", "同键", "小跨排", "大跨排", "异指", "小指干扰", "错手"})
 	t4.AppendRow([]interface{}{
 		fmt.Sprintf("%.4f", feel.Eq),
 		fmt.Sprintf("%.3f%%", 100*feel.LeftHand),
 		fmt.Sprintf("%.3f%%", 100*feel.RightHand),
 		fmt.Sprintf("%.3f%%", 100*feel.DiffHandRate),
 		fmt.Sprintf("%.3f%%", 100*feel.SameFinRate),
-		fmt.Sprintf("%.3f%%", 100*feel.Dkp),
+		fmt.Sprintf("%.3f%%", 100*feel.Sk),
 		fmt.Sprintf("%.3f%%", 100*feel.Xkp),
+		fmt.Sprintf("%.3f%%", 100*feel.Dkp),
 		fmt.Sprintf("%.3f%%", 100*feel.DiffFinRate),
 		fmt.Sprintf("%.3f%%", 100*feel.Lfd),
 		fmt.Sprintf("%.3f%%", 100*feel.Cs),

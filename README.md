@@ -7,7 +7,7 @@ go 写的赛码器
 所有文件使用 `utf8` 编码
 
 ```shell
-saimaqi.exe [-i mb] [-n int] [-d] [-w] [-t text] [-s] [-k string] [-o output]
+smq-cli.exe [-i mb] [-n int] [-d] [-w] [-t text] [-s] [-k string] [-o output]
 
   -h    显示帮助
   -i string
@@ -101,6 +101,6 @@ sort: original
 赛码表：`-i mbpath -t textpath`
 
 普通码表：
-- 四码定长：`-i mbpath -d=4 [-w] -t textpath`
-- 二码顶功：`-i mbpath -d=2 [-w] -t textpath`
-- 不定长：`-i mbpath -d=99 [-w] -t textpath`
+- 四码定长：`-i mbpath -n=4 [-w] -t textpath`
+- 二码顶功：`-i mbpath -n=2 [-w] -t textpath`
+- 不定长：`-i mbpath -n=99 [-w] -t textpath`
