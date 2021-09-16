@@ -12,11 +12,11 @@ type SmqIn struct { // Smq input
 }
 
 func NewSmq(si SmqIn) *SmqOut {
-	dict := newDict(si.Fpm, si.Ding, si.IsW, si.IsS)
+	dict := newDict(si.Fpm, si.IsS, si.Ding, si.IsW)
 	so := new(SmqOut)
 	if len(si.Fpt) == 0 || dict.children == nil {
 		return so
 	}
-	so = newSmqOut(dict, si.Fpt, si.Fpo, si.Csk)
+	so = newSmqOut(dict, si.Fpt, si.Csk, si.Fpo)
 	return so
 }

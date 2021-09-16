@@ -10,7 +10,7 @@ import (
 	"unicode"
 )
 
-func newSmqOut(dict *trie, fpt string, fpo string, csk string) *SmqOut {
+func newSmqOut(dict *trie, fpt, csk, fpo string) *SmqOut {
 	so := new(SmqOut)
 	f, err := os.Open(fpt)
 	if err != nil {
@@ -22,8 +22,6 @@ func newSmqOut(dict *trie, fpt string, fpo string, csk string) *SmqOut {
 	defer f.Close()
 	buff := bufio.NewReader(f)
 
-	// so.freqStat = make(map[string]*freq)
-	// so.repeat = make(map[string]struct{})
 	so.CodeStat = make(map[int]int)
 	so.WordStat = make(map[int]int)
 	so.RepeatStat = make(map[int]int)
@@ -33,14 +31,13 @@ func newSmqOut(dict *trie, fpt string, fpo string, csk string) *SmqOut {
 	var builder strings.Builder
 
 	// ascii 转数字
-	btoi := func(d byte) (int, bool) {
+	btoi := func(d byte) int {
 		// ascii 48: 0
 		if 48 <= d && d <= 57 {
-			return int(d - 48), true
+			return int(d - 48)
 		}
-		return 0, false
+		return -1
 	}
-
 	// 读取 text
 	for {
 		line, err := buff.ReadString('\n')
@@ -82,25 +79,25 @@ func newSmqOut(dict *trie, fpt string, fpo string, csk string) *SmqOut {
 				continue
 			}
 
-			// w := string(text[p : p+i+1])
 			c := a.code
 			// 选重
 			rp := 0
 			pow := 1
 			for n := len(c) - 1; n >= 0; n-- {
-				if d, ok := btoi(c[n]); ok && len(c) > 1 {
+				if d := btoi(c[n]); d >= 0 && len(c) > 1 {
 					rp += d * pow
 					pow *= 10
 				} else {
 					break
 				}
 			}
-			if rp != 0 {
+
+			if rp > 1 {
 				so.RepeatStat[rp]++
 				so.RepeatCount++
 				so.RepeatLen += i + 1
-				// 10重以内，替换选重键
-				if rp < 10 && rp-2 <= len(csk)-1 {
+				// 替换选重键
+				if rp-2 <= len(csk)-1 {
 					tmp := []byte(c)
 					tmp[len(c)-1] = csk[rp-2]
 					c = string(tmp)
@@ -112,11 +109,6 @@ func newSmqOut(dict *trie, fpt string, fpo string, csk string) *SmqOut {
 				so.WordCount++
 				so.WordLen += i + 1
 			}
-			// if so.freqStat[w] == nil {
-			// 	so.freqStat[w] = new(freq)
-			// }
-			// so.freqStat[w].code = c
-			// so.freqStat[w].times++
 			so.UnitCount++
 			builder.WriteString(c)
 			builder.WriteString(" ")
@@ -128,7 +120,8 @@ func newSmqOut(dict *trie, fpt string, fpo string, csk string) *SmqOut {
 	}
 
 	so.CodeSep = builder.String()
-	if fpo != "" { // 输出编码
+	// 输出编码
+	if fpo != "" {
 		_ = ioutil.WriteFile(fpo, []byte(so.CodeSep), 0666)
 	}
 	for k := range notHan {

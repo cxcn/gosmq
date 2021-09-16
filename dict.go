@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func newDict(fpm string, ding int, isW bool, isS bool) *trie {
+func newDict(fpm string, isS bool, ding int, isW bool) *trie {
 
 	// start := time.Now()
 	// defer func() {
@@ -27,10 +27,10 @@ func newDict(fpm string, ding int, isW bool, isS bool) *trie {
 		return dict
 	}
 	scan := bufio.NewScanner(f)
-
 	if isS {
 		fmt.Println("只跑单字...")
 	}
+
 	if ding < 1 {
 		fmt.Println("检测到赛码表:", filename)
 		for scan.Scan() {
@@ -61,17 +61,19 @@ func newDict(fpm string, ding int, isW bool, isS bool) *trie {
 		}
 		c := wc[1]
 		freq[c]++
-		suf := ""
-		if freq[c] != 1 {
-			suf = strconv.Itoa(freq[c])
-			c = c + suf
-		} else if len(c) < ding {
-			suf = "_"
-			c = c + suf
+		rp := freq[c]
+		suf := "_"
+		if rp != 1 {
+			suf = strconv.Itoa(rp)
+			c += suf
+		} else if ding > len(c) {
+			c += suf
 		}
 		if isW {
 			wb = append(wb, scan.Bytes()...)
-			wb = append(wb, suf...)
+			if rp != 1 || ding > len(c) {
+				wb = append(wb, suf...)
+			}
 			wb = append(wb, '\n')
 		}
 		dict.insert(wc[0], c)

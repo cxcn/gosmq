@@ -24,6 +24,8 @@ smq-cli.exe [-i mb] [-n int] [-d] [-w] [-t text] [-s] [-k string] [-o output]
         自定义选重键(2重开始) (default ";'")
   -o string
         输出路径
+  -c string
+        对比码表路径，只能是赛码表
 ``` 
 
 ## 码表
