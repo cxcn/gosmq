@@ -66,13 +66,12 @@ func newSmqOut(si *SmqIn) *SmqOut {
 			for p+j < len(text) {
 				t = t.children[text[p+j]]
 				j++
-				if t != nil {
-					if t.code != "" {
-						i = j
-						c = t.code
-					}
-				} else {
+				if t == nil {
 					break
+				}
+				if t.code != "" {
+					i = j
+					c = t.code
 				}
 			}
 			if i == 0 { // 缺字
@@ -144,7 +143,10 @@ func newSmqOut(si *SmqIn) *SmqOut {
 
 	// 输出编码
 	if si.Fpo != "" {
-		_ = ioutil.WriteFile(si.Fpo, codeSep.Bytes(), 0666)
+		err = ioutil.WriteFile(si.Fpo, codeSep.Bytes(), 0666)
+		if err != nil {
+			fmt.Printf("输出编码错误：%v", err)
+		}
 	}
 	return so
 }
