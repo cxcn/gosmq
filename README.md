@@ -28,7 +28,7 @@ Application Options:
 Help Options:
   /?             Show this help message
   /h, /help      Show this help message
-``` 
+```
 
 ## 码表
 
@@ -62,6 +62,7 @@ sort: original
 ```
 
 `-d=4` 转换结果
+
 ```
 人	a_
 如果	a2
@@ -90,16 +91,29 @@ sort: original
 
 可选:  
 `-k` 空格是否互击  
-`-c` 自定义选重键(2重开始) (default ";'")  
-将编码中末尾数字替换，只支持10重以内
+`-c` 自定义选重键(2 重开始) (default ";'")  
+将编码中末尾数字替换，只支持 10 重以内
 
 ## 例子
 
 赛码表：`-i mbpath -t textpath`
 
 普通码表：
+
 - 四码定长：`-i mbpath -d=4 [-w] -t textpath`
 - 二码顶功：`-i mbpath -d=2 [-w] -t textpath`
 - 不定长：`-i mbpath -d=99 [-w] -t textpath`
 
 多个码表同时测试：`-i mb1 -i mb2 -i mb3 -t textpath`
+
+## 性能
+
+> 配置：windows 10, r5 3600@4.2g, 8\*2 2933Mhz c18
+
+| 文本         | 文本字数 | 码表             | 码表词条数 | 耗时  |
+| ------------ | -------- | ---------------- | ---------- | ----- |
+| 心情决定事情 | 9.6w     | 091点儿2021夏 | 20w        | 130ms |
+| 红楼梦原著   | 87w      | 091点儿2021夏 | 20w        | 300ms |
+| 极品全能高手 | 2164w    | 091点儿2021夏 | 20w        | 4.3s  |
+| 极品全能高手 | 2164w    | 红辣椒五笔码表   | 880w       | 13.6s |
+| 心情决定事情 | 9.6w     | 红辣椒五笔码表   | 880w       | 7.2s  |
