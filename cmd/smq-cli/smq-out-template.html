@@ -21,7 +21,6 @@
     .schemaName {
       font-weight: bolder;
       text-align: center;
-      padding-bottom: 0.8rem;
       text-shadow: 0 0 10px #aaa;
     }
 
@@ -108,15 +107,13 @@
 <body>
   <header>
     <h1 style="text-align:center;">《{{.TextFileName | removeTxt}}》赛码结果</h1>
-    <p style="text-align:center;">文本字数：{{$firstSchemas := index .Schemas 0}} {{$firstSchemas.SmqOut.TextLen}}</p>
+    <div style="text-align:center;">文本字数：{{$firstSchemas := index .Schemas 0}} {{$firstSchemas.SmqOut.TextLen}}</div>
   </header>
   <main>
     {{range .Schemas}}
     <div class="cardGroup">
       <div class="reportCard">
         <div class="schemaName">{{.SchemaName | removeTxt}}</div>
-
-
 
         <div class="sectionTitle">🚀&nbsp;效率</div>
 

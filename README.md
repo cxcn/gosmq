@@ -2,6 +2,11 @@
 
 go 写的赛码器
 
+## 预览
+
+![](/assets/preview-cli.png)
+![](/assets/preview-web.png)
+
 ## 基本用法
 
 所有文件使用 `utf8` 编码
@@ -36,7 +41,6 @@ Help Options:
 必须指定 `-d` 参数（起顶码长，码长大于等于此数，首选不会追加空格 `_`）  
 可选 `-w` 参数（是否输出赛码表，保存在`.\\smb\\`文件夹下）
 
-例：
 ```
 # Rime dictionary
 # encoding: utf-8
@@ -71,7 +75,6 @@ sort: original
 
 > 注意：极速赛码器转换的格式编码为 utf-16，需要手动转为 utf-8 才能使用
 
-例：
 ```
 工	a_
 花	a2
