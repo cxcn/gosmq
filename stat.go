@@ -26,13 +26,13 @@ type SmqOut struct {
 
 	// 下面是手感部分
 
-	eqSum     float64 // 总当量
-	skCount   int     // 同键
-	xkpCount  int     // 小跨排
-	dkpCount  int     // 大跨排
-	csCount   int     // 错手
-	lfdCount  int     // 小指干扰
-	combLen   int     // 按键组合数
+	eqSum     int // 总当量*10
+	skCount   int // 同键
+	xkpCount  int // 小跨排
+	dkpCount  int // 大跨排
+	csCount   int // 错手
+	lfdCount  int // 小指干扰
+	combLen   int // 按键组合数
 	keyCount  [128]int
 	finCount  [10]int
 	handCount [4]int // LR RL LL RR
@@ -90,7 +90,7 @@ func (so *SmqOut) stat(si *SmqIn) {
 	so.SameFinRate = div(so.skCount+so.xkpCount+so.dkpCount, so.combLen)
 	so.DiffFinRate = 1 - so.DiffHandRate - so.SameFinRate
 
-	so.Eq = so.eqSum / float64(so.combLen)
+	so.Eq = div(so.eqSum, 10) / float64(so.combLen)
 	so.Sk = div(so.skCount, so.combLen)
 	so.Xkp = div(so.xkpCount, so.combLen)
 	so.Dkp = div(so.dkpCount, so.combLen)

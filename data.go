@@ -17,10 +17,10 @@ var equivalent string
 var fingering string
 
 type comb struct {
-	eq   float64 // 当量 equivalent
-	dist int     // 分布 distribution: LR RL LL RR
-	sh   int     // 同手 same hand: 同键 小跨排 大跨排 错手
-	lfd  bool    // 小指干扰 little finger disturb
+	eq   int  // 当量*10 equivalent
+	dist int  // 分布 distribution: LR RL LL RR
+	sh   int  // 同手 same hand: 同键 小跨排 大跨排 错手
+	lfd  bool // 小指干扰 little finger disturb
 }
 
 func (t *trie) addPunct() {
@@ -45,12 +45,12 @@ func (t *trie) addPunct() {
 // allow space -> map
 func newCombs(aS bool) map[string]*comb {
 
-	var c = make(map[string]*comb, 999)
+	var c = make(map[string]*comb, 1800)
 
 	// 当量
 	r := strings.NewReader(equivalent)
 	var key string
-	var eq float64 // equivalent
+	var eq int // equivalent
 	for {
 		_, err := fmt.Fscanln(r, &key, &eq)
 		if err == io.EOF {
