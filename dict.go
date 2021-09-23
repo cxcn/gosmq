@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func newDict(fpm string, isS bool, ding int, isW bool) *trie {
+func newDict(si *SmqIn) *trie {
 
 	// start := time.Now()
 	// defer func() {
@@ -18,27 +18,27 @@ func newDict(fpm string, isS bool, ding int, isW bool) *trie {
 	// 	fmt.Println("NewDict cost time = ", cost)
 	// }()
 
-	_, filename := filepath.Split(fpm)
+	_, filename := filepath.Split(si.Fpm)
 	// 读取码表
 	dict := newTrie()
-	f, err := os.Open(fpm)
+	f, err := os.Open(si.Fpm)
 	if err != nil {
 		fmt.Println("码表读取错误:", err)
 		return dict
 	}
 	scan := bufio.NewScanner(f)
-	if isS {
+	if si.IsS {
 		fmt.Println("只跑单字...")
 	}
 
-	if ding < 1 {
+	if si.Ding < 1 {
 		fmt.Println("检测到赛码表:", filename)
 		for scan.Scan() {
 			wc := strings.Split(scan.Text(), "\t")
 			if len(wc) != 2 {
 				continue
 			}
-			if isS && len([]rune(wc[0])) != 1 {
+			if si.IsS && len([]rune(wc[0])) != 1 {
 				continue
 			}
 			dict.insert(wc[0], wc[1])
@@ -56,7 +56,7 @@ func newDict(fpm string, isS bool, ding int, isW bool) *trie {
 		if len(wc) != 2 {
 			continue
 		}
-		if isS && len([]rune(wc[0])) != 1 {
+		if si.IsS && len([]rune(wc[0])) != 1 {
 			continue
 		}
 		c := wc[1]
@@ -66,12 +66,12 @@ func newDict(fpm string, isS bool, ding int, isW bool) *trie {
 		if rp != 1 {
 			suf = strconv.Itoa(rp)
 			c += suf
-		} else if ding > len(c) {
+		} else if si.Ding > len(c) {
 			c += suf
 		}
-		if isW {
+		if si.IsW {
 			wb = append(wb, scan.Bytes()...)
-			if rp != 1 || ding > len(c) {
+			if rp != 1 || si.Ding > len(c) {
 				wb = append(wb, suf...)
 			}
 			wb = append(wb, '\n')
@@ -82,7 +82,7 @@ func newDict(fpm string, isS bool, ding int, isW bool) *trie {
 	f.Close()
 
 	// 写入赛码表
-	if isW {
+	if si.IsW {
 		_ = os.Mkdir("smb", 0666)
 		err := ioutil.WriteFile(".\\smb\\"+filename, wb, 0666)
 		if err != nil {

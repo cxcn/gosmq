@@ -7,25 +7,22 @@ go 写的赛码器
 所有文件使用 `utf8` 编码
 
 ```shell
-smq-cli.exe [-i mb] [-n int] [-d] [-w] [-t text] [-s] [-k string] [-o output]
+smq-cli.exe [OPTIONS]
 
-  -h    显示帮助
-  -i string
-        码表路径，可以是`rime`格式码表或速跟打器赛码表
-  -n int
-        普通码表起顶码长，码长大于等于此数，首选不会追加空格
-  -d    是否只跑单字
-  -w    是否输出赛码表(保存在.\\smb\\文件夹下)
-  -t string
-        文本路径，utf8编码格式文本，会自动去除空白符
-  -f    是否关闭手感统计
-  -s    空格是否互击
-  -k string
-        自定义选重键(2重开始) (default ";'")
-  -o string
-        输出路径
-  -c string
-        对比码表路径，只能是赛码表
+Application Options:
+  /i, /input:    []string       码表路径，可设置多个
+  /d, /ding:     int    普通码表起顶码长，码长大于等于此数，首选不会追加空格
+  /s, /single    bool   是否只跑单字
+  /w             bool   是否输出赛码表(保存在.\smb\文件夹下)
+  /t, /text:     string utf8编码格式文本
+  /k             bool   空格是否互击
+  /c:            string 自定义选重键(2重开始) (default: ;\')
+  /o, /output:   string 输出编码路径
+  /v, /version   bool   查看版本信息
+
+Help Options:
+  /?             Show this help message
+  /h, /help      Show this help message
 ``` 
 
 ## 码表
@@ -33,14 +30,10 @@ smq-cli.exe [-i mb] [-n int] [-d] [-w] [-t text] [-s] [-k string] [-o output]
 码表顺序和匹配顺序无关（最长顺序匹配）  
 字词有重复时取较短码长
 
-通用: 可选 `-d`, `-k`  
-码表: 必须 `-n`, 可选 `-w`  
-赛码表: 不要 `-n`, `-w`
-
 ### rime 格式的码表
 
 只支持编码在后的格式  
-必须指定 `-n` 参数（起顶码长，码长大于等于此数，首选不会追加空格 `_`）  
+必须指定 `-d` 参数（起顶码长，码长大于等于此数，首选不会追加空格 `_`）  
 可选 `-w` 参数（是否输出赛码表，保存在`.\\smb\\`文件夹下）
 
 例：
@@ -64,7 +57,7 @@ sort: original
 ...
 ```
 
-`-n=4` 转换结果
+`-d=4` 转换结果
 ```
 人	a_
 如果	a2
@@ -93,9 +86,8 @@ sort: original
 ## 手感
 
 可选:  
-`-f` 是否关闭手感统计  
-`-s` 空格是否互击  
-`-k` 自定义选重键(2重开始) (default ";'")  
+`-k` 空格是否互击  
+`-c` 自定义选重键(2重开始) (default ";'")  
 将编码中末尾数字替换，只支持10重以内
 
 ## 例子
@@ -103,6 +95,8 @@ sort: original
 赛码表：`-i mbpath -t textpath`
 
 普通码表：
-- 四码定长：`-i mbpath -n=4 [-w] -t textpath`
-- 二码顶功：`-i mbpath -n=2 [-w] -t textpath`
-- 不定长：`-i mbpath -n=99 [-w] -t textpath`
+- 四码定长：`-i mbpath -d=4 [-w] -t textpath`
+- 二码顶功：`-i mbpath -d=2 [-w] -t textpath`
+- 不定长：`-i mbpath -d=99 [-w] -t textpath`
+
+多个码表同时测试：`-i mb1 -i mb2 -i mb3 -t textpath`
