@@ -20,7 +20,7 @@ func newDict(si *SmqIn) *trie {
 
 	_, filename := filepath.Split(si.Fpm)
 	// 读取码表
-	dict := newTrie()
+	dict := new(trie)
 	f, err := os.Open(si.Fpm)
 	if err != nil {
 		fmt.Println("码表读取错误:", err)

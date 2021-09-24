@@ -82,36 +82,19 @@ func newSmqOut(si *SmqIn) *SmqOut {
 				continue
 			}
 
-			// 选重
-			rp := 0
-			pow := 1
-			for n := len(c) - 1; n >= 0; n-- {
-				if d := btoi(c[n]); d >= 0 && len(c) > 1 {
-					rp += d * pow
-					pow *= 10
-				} else {
-					break
-				}
-			}
-
-			if rp > 1 {
-				so.RepeatStat[rp]++
-				so.RepeatCount++
-				so.RepeatLen += i
-				// 替换选重键
-				if rp-2 <= len(si.Csk)-1 {
-					tmp := []byte(c)
-					tmp[len(c)-1] = si.Csk[rp-2]
-					c = string(tmp)
-				}
-			}
-			so.CodeStat[len(c)]++
-			so.WordStat[i]++
+			so.UnitCount++   // 上屏数
+			so.WordStat[i]++ // 词长
 			if i > 1 {
 				so.WordCount++
 				so.WordLen += i
 			}
-			so.UnitCount++
+			c, rp := repeat(c, si.Csk) // 选重
+			if rp > 1 {
+				so.RepeatStat[rp]++
+				so.RepeatCount++
+				so.RepeatLen += i
+			}
+			so.CodeStat[len(c)]++ // 码长
 			so.CodeLen += len(c)
 			code.WriteString(c)
 			if si.Fpo != "" {
@@ -151,11 +134,33 @@ func newSmqOut(si *SmqIn) *SmqOut {
 	return so
 }
 
-// ascii 转数字
-func btoi(d byte) int {
-	// ascii 48: 0
-	if 48 <= d && d <= 57 {
-		return int(d - 48)
+func repeat(c, csk string) (string, int) {
+
+	// ascii 转数字
+	btoi := func(d byte) int {
+		// ascii 48: 0
+		if 48 <= d && d <= 57 {
+			return int(d - 48)
+		}
+		return -1
 	}
-	return -1
+	rp := 0
+	pow := 1
+	for n := len(c) - 1; n >= 0; n-- {
+		if d := btoi(c[n]); d >= 0 && len(c) > 1 {
+			rp += d * pow
+			pow *= 10
+		} else {
+			break
+		}
+	}
+	if rp > 1 {
+		// 替换选重键
+		if rp-2 <= len(csk)-1 {
+			tmp := []byte(c)
+			tmp[len(c)-1] = csk[rp-2]
+			c = string(tmp)
+		}
+	}
+	return c, rp
 }

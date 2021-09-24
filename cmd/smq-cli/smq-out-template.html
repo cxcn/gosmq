@@ -11,7 +11,9 @@
       min-width: fit-content;
       font-size: 16px;
     }
-
+    header{
+      text-align: center;
+    }
     main {
       display: flex;
       flex-wrap: wrap;
@@ -100,14 +102,15 @@
     footer {
       color: #ddd;
       font-size: .8rem;
+      text-align: right;
     }
   </style>
 </head>
 
 <body>
   <header>
-    <h1 style="text-align:center;">《{{.TextFileName | removeTxt}}》赛码结果</h1>
-    <div style="text-align:center;">文本字数：{{$firstSchemas := index .Schemas 0}} {{$firstSchemas.SmqOut.TextLen}}</div>
+    <h1>《{{.TextFileName | removeTxt}}》赛码结果</h1>
+    <div>文本字数：{{$firstSchemas := index .Schemas 0}} {{$firstSchemas.SmqOut.TextLen}}</div>
   </header>
   <main>
     {{range .Schemas}}
@@ -121,10 +124,6 @@
           <div class="smqOutField">
             <b>码长</b>
             <i>{{.SmqOut.CodeAvg | printf "%.3f"}}</i>
-          </div>
-          <div class="smqOutField">
-            <b>上屏数</b>
-            <i>{{.SmqOut.UnitCount}}</i>
           </div>
           <div class="smqOutField">
             <b>总键数</b>

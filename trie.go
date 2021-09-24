@@ -5,17 +5,13 @@ type trie struct {
 	code     string
 }
 
-func newTrie() *trie {
-	root := new(trie)
-	root.children = make(map[rune]*trie)
-	return root
-}
-
 func (t *trie) insert(word, code string) {
 	for _, v := range word {
-		if t.children[v] == nil {
-			//子节点
-			t.children[v] = newTrie()
+		if t.children == nil {
+			t.children = make(map[rune]*trie)
+			t.children[v] = new(trie)
+		} else if t.children[v] == nil {
+			t.children[v] = new(trie)
 		}
 		t = t.children[v]
 	}
