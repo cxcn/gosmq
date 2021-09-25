@@ -1,3 +1,4 @@
+cmd/smq-web/
 *.txt
 *.yaml
 *.exe

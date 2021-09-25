@@ -53,7 +53,7 @@ func main() {
 	}()
 
 	_, textFileName := filepath.Split(opt.Fpt)
-	a := NewHTMLOutputInfo(textFileName)
+	h := NewHTML(textFileName)
 	for _, v := range opt.Fpm {
 		si := smq.SmqIn{
 			Fpm:  v,
@@ -70,10 +70,10 @@ func main() {
 			continue
 		}
 		_, mbFileName := filepath.Split(v)
-		a.AddSchema(mbFileName, so)
+		h.AddResult(so, mbFileName)
 		output(so)
 	}
-	a.OutputHTMLFile("result.html")
+	h.OutputHTMLFile("result.html")
 
 	// time.Sleep(5 * time.Second)
 }

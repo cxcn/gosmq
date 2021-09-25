@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>《{{.TextFileName}}》赛码结果</title>
+</head>
+<style>
+  body {
+    background: rgb(240, 244, 245)
+  }
+
+  #header {
+    text-align: center;
+    padding-top: 1rem;
+  }
+
+  #textFileName {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+
+  #content {
+    text-align: left;
+    display: flex;
+    justify-content: center;
+    min-width: fit-content;
+    margin: 1rem;
+  }
+
+  .reportCard {
+    transition: 0.2s;
+    display: inline;
+    width: 30rem;
+    min-width: 30rem;
+    margin: 0.8rem;
+    padding: 1rem;
+    background-color: #fefefe;
+    border: none;
+    border-radius: 10px;
+  }
+
+  .reportCard:hover {
+    box-shadow: 0 0 6px 0 #bbb;
+  }
+
+  .reportCard .schemaName {
+    font-size: large;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .cardBlock {
+    padding: 0.5rem 0;
+  }
+
+  .stat {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  table {
+    table-layout: fixed;
+  }
+
+  .heatMap {
+    width: 100%;
+    border-spacing: 6px 6px;
+  }
+
+  .tableBasic {
+    min-width: 80%;
+  }
+
+  .tableFeel {
+    min-width: 80%;
+  }
+
+  .tableStat th{
+    padding-right: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .tableStat td{
+    padding-right: 0.2rem;
+  }
+
+  th {
+    color: lightslategray;
+  }
+
+  .keyRateTitle {
+    text-align: center; 
+    font-weight: bold;
+    padding-bottom: 0.5rem;
+  }
+
+  .key {
+    padding: 0.1rem;
+    border-radius: 5px;
+    box-shadow: 0 0 2px 0 #bbb;
+  }
+
+  td.key {
+    text-align: center;
+  }
+
+  .heatMapRate {
+    text-align: center;
+    font-size: 0.5em;
+    color: rgb(0, 0, 4, 0.4)
+  }
+
+  .fin {
+    font-size: smaller;
+  }
+
+  .finHeatMap td {
+    white-space: nowrap;
+  }
+
+  #footer {
+    text-align: right;
+  }
+</style>
+
+<body>
+  <div id="header">
+    <div id="textFileName">
+      《{{.TextFileName}}》赛码结果
+    </div>
+    <div id="textLen">
+      &nbsp;&nbsp; 共计 {{.TextLen}} 字
+    </div>
+  </div>
+  <div id="content">
+    {{range .SmqOuts}}
+    <div class="reportCard">
+      <div class="schemaName cardBlock">{{.SchemaName}}</div>
+
+      <div class="cardBlock">
+        <table class="tableBasic">
+          <tr>
+            <th>码长</th>
+            <th>总键数</th>
+            <th>上屏数</th>
+            <th>非汉字数</th>
+            <th>缺字数</th>
+          </tr>
+          <tr>
+            <td>{{.CodeAvg | printf "%.3f"}}</td>
+            <td>{{.CodeLen }}</td>
+            <td>{{.UnitCount }}</td>
+            <td>{{.NotHanCount }}</td>
+            <td>{{.LackCount }}</td>
+            <td></td>
+          </tr>
+
+          <tr>
+            <th>打词数</th>
+            <th>打词字数</th>
+            <th>选重数</th>
+            <th>选重字数</th>
+          </tr>
+          <tr>
+            <td>{{.WordCount }}</td>
+            <td>{{.WordLen }}</td>
+            <td>{{.RepeatCount }}</td>
+            <td>{{.RepeatLen }}</td>
+          </tr>
+          <tr>
+            <td>{{.WordRate | toPer}}</td>
+            <td>{{.WordLenRate | toPer}}</td>
+            <td>{{.RepeatRate | toPer}}</td>
+            <td>{{.RepeatLenRate | toPer}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="cardBlock">
+        <div class="keyRateTitle">按键频率 %</div>
+        <table class="heatMap">
+          {{range .KeyHeatMap}}
+          <tr>
+            {{range .}} {{.}}{{end}}
+          </tr>
+          {{end}}
+          <tr class="finHeatMap">
+            {{range .FinHeatMap}}
+            {{.}}
+            {{end}}
+          </tr>
+        </table>
+      </div>
+
+      <div class="cardBlock">
+        <table class="tableFeel">
+          <tr>
+            <th>左手</th>
+            <th>左左</th>
+            <th>左右</th>
+            <th>右左</th>
+            <th>右右</th>
+          </tr>
+          <tr>
+            <td>{{.LeftHand | toPer}}</td>
+            <td>{{index .HandRate 2 | toPer}}</td>
+            <td>{{index .HandRate 0 | toPer}}</td>
+            <td>{{index .HandRate 1 | toPer}}</td>
+            <td>{{index .HandRate 3 | toPer}}</td>
+          </tr>
+          <tr>
+            <th>右手</th>
+            <th>同指</th>
+            <th>同键</th>
+            <th>小跨排</th>
+            <th>大跨排</th>
+          </tr>
+          <tr>
+            <td>{{.RightHand | toPer}}</td>
+            <td>{{.SameFinRate | toPer}}</td>
+            <td>{{.Sk | toPer}}</td>
+            <td>{{.Xkp | toPer}}</td>
+            <td>{{.Dkp | toPer}}</td>
+          </tr>
+          <tr>
+            <th>当量</th>
+            <th>异手</th>
+            <th>异指</th>
+            <th>错手</th>
+            <th>小指干扰</th>
+          </tr>
+          <tr>
+            <td>{{.Eq | printf "%.3f"}}</td>
+            <td>{{.DiffHandRate | toPer}}</td>
+            <td>{{.DiffFinRate | toPer}}</td>
+            <td>{{.Cs | toPer}}</td>
+            <td>{{.Lfd | toPer}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="cardBlock stat">
+        <table class="tableStat">
+          <tr>
+            <th>码长</th>
+            {{range $k,$v := .CodeStat}}
+            <td>{{$k}}:{{$v}}</td>
+            {{end}}
+          </tr>
+          <tr>
+            <th>词长</th>
+            {{range $k,$v := .WordStat}}
+            <td>{{$k}}:{{$v}}</td>
+            {{end}}
+          </tr>
+          <tr>
+            <th>选重</th>
+            {{range $k,$v := .RepeatStat}}
+            <td>{{$k}}:{{$v}}</td>
+            {{end}}
+          </tr>
+        </table>
+      </div>
+    </div>
+    {{end}}
+  </div>
+  <div id="footer"><a href="https://github.com/cxcn/gosmq" target="_blank">访问仓库</a></div>
+</body>
+
+</html>
