@@ -37,7 +37,7 @@ type SmqOut struct {
 	finCount  [10]int
 	handCount [4]int // LR RL LL RR
 
-	KeyRate   [41]float64
+	KeyRate   [42]float64
 	FinRate   [10]float64
 	LeftHand  float64 // 左手
 	RightHand float64 // 右手
@@ -72,14 +72,14 @@ func (so *SmqOut) stat(si *SmqIn) {
 			so.finCount[0] += v
 		}
 	}
-	for i, v := range "1234567890qwertyuiopasdfghjkl;zxcvbnm,./'" {
+	for i, v := range "1234567890qwertyuiopasdfghjkl;zxcvbnm,./'_" {
 		so.KeyRate[i] = div(so.keyCount[v], keyLen)
 	}
 	for i, v := range so.finCount {
 		so.FinRate[i] = div(v, so.CodeLen)
 	}
 
-	so.LeftHand = (so.FinRate[1] + so.FinRate[2] + so.FinRate[3] + so.FinRate[4]) * float64(so.CodeLen) / float64(keyLen-so.finCount[5])
+	so.LeftHand = div(so.finCount[1]+so.finCount[2]+so.finCount[3]+so.finCount[4], keyLen-so.finCount[5]-so.finCount[0])
 	so.RightHand = 1 - so.LeftHand
 
 	noSpace := so.handCount[0] + so.handCount[1] + so.handCount[2] + so.handCount[3]
