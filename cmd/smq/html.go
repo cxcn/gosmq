@@ -78,13 +78,7 @@ func toPercentage(src float64) string {
 // 生成按键热力图
 func (res *Result) genKeyHeatMap() {
 	src := res.KeyRate
-	max := 0.0
-	for i, v := range src {
-		if v > max && i != 41 {
-			max = v
-		}
-	}
-
+	max := 0.06
 	res.KeyHeatMap = make([][]template.HTML, 4)
 	line := "1234567890"
 	for i, v := range line {
@@ -108,19 +102,14 @@ func (res *Result) genKeyHeatMap() {
 // 按键颜色代码片段
 func genKeyHeatCode(freq, max float64, key rune) template.HTML {
 	return template.HTML(fmt.Sprintf(
-		`<td class="key" style="background-color: rgba(220,0,0,%.4f)";>%s <div class="heatMapRate">%.2f</div></td>`,
+		`<td class="key" style="background-color: rgba(255,0,0,%.4f);">%s <div class="heatMapRate">%.2f</div></td>`,
 		freq/max*0.6, string(key), freq*100))
 }
 
 // 生成手指热力图
 func (res *Result) genFinHeatMap() {
 	src := res.FinRate
-	max := 0.0
-	for _, v := range src {
-		if v > max {
-			max = v
-		}
-	}
+	max := 0.25
 	fins := []string{"左小", "左无", "左中", "左食", "大拇指", "右食", "右中", "右无", "右小"}
 	for i := 0; i < 9; i++ {
 		res.FinHeatMap[i] = genFinHeatCode(src[i+1], max, i, fins[i])
@@ -131,10 +120,10 @@ func (res *Result) genFinHeatMap() {
 func genFinHeatCode(freq, max float64, id int, fin string) template.HTML {
 	if id == 4 {
 		return template.HTML(fmt.Sprintf(
-			`<td class="key fin" colspan="2" style="background-color: rgba(0,0,220,%.4f);">%s <div class="heatMapRate">%.2f</div></td>`,
+			`<td class="key fin" colspan="2" style="background-color: rgba(0,0,255,%.4f);">%s <div class="heatMapRate">%.2f</div></td>`,
 			freq/max*0.6, fin, freq*100))
 	}
 	return template.HTML(fmt.Sprintf(
-		`<td class="key fin" style="background-color: rgba(0,0,220,%.4f);">%s <div class="heatMapRate">%.2f</div></td>`,
+		`<td class="key fin" style="background-color: rgba(0,0,255,%.4f);">%s <div class="heatMapRate">%.2f</div></td>`,
 		freq/max*0.6, fin, freq*100))
 }
