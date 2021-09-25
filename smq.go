@@ -25,8 +25,9 @@ func newSmqOut(si *SmqIn) *SmqOut {
 	defer f.Close()
 
 	// 读取码表
-	dict := newDict(si)
-	if dict.children == nil {
+	dict, count := newDict(si)
+	so.MbLen = count
+	if count == 0 {
 		return so
 	}
 

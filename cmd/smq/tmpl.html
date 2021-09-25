@@ -9,34 +9,36 @@
 </head>
 <style>
   body {
-    background: rgb(240, 244, 245)
+    background: rgb(240, 244, 245);
   }
 
   #header {
+    display: flex;
+    flex-direction: column;
     text-align: center;
     padding-top: 1rem;
   }
 
   #textFileName {
-    font-size: 1.5em;
+    font-size: x-large;
     font-weight: bold;
   }
 
   #content {
-    text-align: left;
     display: flex;
     justify-content: center;
     min-width: fit-content;
-    margin: 1rem;
+    text-align: left;
+    margin: 0.5rem;
   }
 
   .reportCard {
+    display: flex;
+    flex-direction: column;
     transition: 0.2s;
-    display: inline;
-    width: 30rem;
-    min-width: 30rem;
+    width: 31rem;
     margin: 0.8rem;
-    padding: 1rem;
+    padding: 0.8rem;
     background-color: #fefefe;
     border: none;
     border-radius: 10px;
@@ -46,57 +48,52 @@
     box-shadow: 0 0 6px 0 #bbb;
   }
 
-  .reportCard .schemaName {
-    font-size: large;
+  .reportCard .schemaInfo {
+    display: flex;
+    align-items: end;
+    justify-content: start;
+    font-size: larger;
     font-weight: bold;
-    text-align: center;
-    padding-top: 0.5rem;
-    padding-bottom: 1rem;
+    padding-left: 0.2rem;
+  }
+
+  .mbLen {
+    padding-left: 1rem;
+    font-size: 0.8em;
+    color: lightslategray;
+    white-space: nowrap;
+  }
+
+  .mbLenValue {
+    font-size: 0.7em;
+    font-weight: normal;
   }
 
   .cardBlock {
     padding: 0.5rem 0;
   }
 
-  .stat {
-    display: flex;
-    overflow-x: auto;
-  }
-
   table {
     table-layout: fixed;
-  }
-
-  .heatMap {
-    width: 100%;
-    border-spacing: 6px 6px;
-  }
-
-  .tableBasic {
-    min-width: 80%;
-  }
-
-  .tableFeel {
-    min-width: 80%;
-  }
-
-  .tableStat th{
-    padding-right: 0.5rem;
-    white-space: nowrap;
-  }
-
-  .tableStat td{
-    padding-right: 0.2rem;
   }
 
   th {
     color: lightslategray;
   }
 
+  .tableBasic {
+    min-width: 80%;
+  }
+
   .keyRateTitle {
-    text-align: center; 
+    text-align: center;
     font-weight: bold;
     padding-bottom: 0.5rem;
+  }
+
+  .heatMap {
+    width: 100%;
+    border-spacing: 6px 6px;
   }
 
   .key {
@@ -123,8 +120,26 @@
     white-space: nowrap;
   }
 
+  .tableFeel {
+    min-width: 80%;
+  }
+  
+  .cardBlock.stat {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .tableStat th {
+    padding-right: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .tableStat td {
+    padding-right: 0.2rem;
+  }
+
   #footer {
-    text-align: right;
+    text-align: center;
   }
 </style>
 
@@ -140,7 +155,17 @@
   <div id="content">
     {{range .SmqOuts}}
     <div class="reportCard">
-      <div class="schemaName cardBlock">{{.SchemaName}}</div>
+      <div class="cardBlock schemaInfo">
+        <div class="shcemaName">
+          {{.SchemaName}}
+        </div>
+        <div class="mbLen">
+          词条数：
+        </div>
+        <div class="mbLenValue">
+          {{.MbLen}}
+        </div>
+      </div>
 
       <div class="cardBlock">
         <table class="tableBasic">

@@ -2,6 +2,7 @@ package smq
 
 type SmqOut struct {
 	TextLen     int     //文本字数
+	MbLen       int     //词条数
 	NotHan      string  //非汉字
 	NotHanCount int     //非汉字数
 	Lack        string  //缺字

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func newDict(si *SmqIn) *trie {
+func newDict(si *SmqIn) (*trie, int) {
 
 	// start := time.Now()
 	// defer func() {
@@ -24,12 +24,14 @@ func newDict(si *SmqIn) *trie {
 	f, err := os.Open(si.Fpm)
 	if err != nil {
 		fmt.Println("码表读取错误:", err)
-		return dict
+		return dict, 0
 	}
 	scan := bufio.NewScanner(f)
 	if si.IsS {
 		fmt.Println("只跑单字...")
 	}
+
+	count := 0
 
 	if si.Ding < 1 {
 		fmt.Println("检测到赛码表:", filename)
@@ -42,9 +44,10 @@ func newDict(si *SmqIn) *trie {
 				continue
 			}
 			dict.insert(wc[0], wc[1])
+			count++
 		}
 		dict.addPunct()
-		return dict
+		return dict, count
 	}
 
 	fmt.Println("检测到普通码表:", filename)
@@ -77,6 +80,7 @@ func newDict(si *SmqIn) *trie {
 			wb = append(wb, '\n')
 		}
 		dict.insert(wc[0], c)
+		count++
 	}
 	dict.addPunct()
 	f.Close()
@@ -91,5 +95,5 @@ func newDict(si *SmqIn) *trie {
 			fmt.Println("赛码表写入成功:", ".\\smb\\"+filename)
 		}
 	}
-	return dict
+	return dict, count
 }

@@ -4,11 +4,9 @@ import (
 	_ "embed"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
-
-//go:embed assets\\punct
-var punct string
 
 //go:embed assets\\equivalent
 var equivalent string
@@ -24,21 +22,33 @@ type comb struct {
 }
 
 func (t *trie) addPunct() {
-	r := strings.NewReader(punct)
-	var p string // punct
-	var k string // key
-	for {
-		_, err := fmt.Fscanln(r, &p, &k)
-		if err == io.EOF {
-			break
-		}
-		t.insert(p, k)
+	en := "`-=[];',./"
+	cn := []rune(`·-=【】；‘，。、`)
+	for i, v := range en {
+		t.insert(string(v), string(v))
+		t.insert(string(cn[i]), string(v))
 	}
-	// ascii
-	var i byte = 33
-	for i < 127 {
-		t.insert(string(i), string(i))
-		i++
+	t.insert("’", "'")
+
+	shiftEN := `~_+{}:"<>?)!@#$%^&*(`
+	shiftCN := []rune(`~_+{}：“《》？）！@#￥%^&*（`)
+	for i, v := range shiftEN {
+		key := ""
+		if i >= len(en) {
+			key = strconv.Itoa(i - len(en))
+		} else {
+			key = string(en[i])
+		}
+		t.insert(string(v), "`"+key)
+		t.insert(string(shiftCN[i]), "`"+key)
+	}
+	t.insert("”", "`'")
+	t.insert("——", "`-")
+	t.insert("……", "`6")
+
+	for i := 0; i < 26; i++ {
+		t.insert(string(byte(i+97)), string(byte(i+97)))
+		t.insert(string(byte(i+65)), "`"+string(byte(i+65)))
 	}
 }
 
