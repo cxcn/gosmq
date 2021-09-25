@@ -78,7 +78,7 @@ func toPercentage(src float64) string {
 // 生成按键热力图
 func (res *Result) genKeyHeatMap() {
 	src := res.KeyRate
-	max := 0.06
+	max := 0.07
 	res.KeyHeatMap = make([][]template.HTML, 4)
 	line := "1234567890"
 	for i, v := range line {
