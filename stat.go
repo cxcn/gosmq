@@ -64,23 +64,29 @@ func (so *SmqOut) stat(si *SmqIn) {
 	so.RepeatRate = div(so.RepeatCount, so.UnitCount)
 	so.RepeatLenRate = div(so.RepeatLen, so.TextLen)
 
-	keyLen := 0
-	for i, v := range so.keyCount {
-		if key := si.keys[i]; key != 0 {
-			so.finCount[si.keys[i]] += v
-			keyLen += v
-		} else {
-			so.finCount[0] += v
-		}
+	keys := "1234567890qwertyuiopasdfghjkl;zxcvbnm,./'_"
+	shiftKeys := "!@#$%^&*()QWERTYUIOPASDFGHJKL:ZXCVBNM<>?\""
+	for i, v := range shiftKeys {
+		so.keyCount[keys[i]] += so.keyCount[v]
 	}
-	for i, v := range "1234567890qwertyuiopasdfghjkl;zxcvbnm,./'_" {
-		so.KeyRate[i] = div(so.keyCount[v], keyLen)
+
+	a := "1qaz2wsx3edc4rfv5tgb_6yhn7ujm8ik,9ol.0p;/'"
+	b := "111122223333444444445666666667777888899999"
+	var fins [128]int
+	for i := range a {
+		fins[a[i]] = int(b[i] - 48)
 	}
+
+	for i, v := range keys {
+		so.KeyRate[i] = div(so.keyCount[v], so.CodeLen)
+		so.finCount[fins[v]] += so.keyCount[v]
+	}
+
 	for i, v := range so.finCount {
 		so.FinRate[i] = div(v, so.CodeLen)
 	}
 
-	so.LeftHand = div(so.finCount[1]+so.finCount[2]+so.finCount[3]+so.finCount[4], keyLen-so.finCount[5]-so.finCount[0])
+	so.LeftHand = div(so.finCount[1]+so.finCount[2]+so.finCount[3]+so.finCount[4], so.CodeLen-so.finCount[5]-so.finCount[0])
 	so.RightHand = 1 - so.LeftHand
 
 	noSpace := so.handCount[0] + so.handCount[1] + so.handCount[2] + so.handCount[3]

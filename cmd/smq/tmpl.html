@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>《{{.TextFileName}}》赛码结果</title>
+  <title>{{.TextFileName}} 赛码结果</title>
 </head>
 <style>
   body {
@@ -22,6 +22,7 @@
   #textFileName {
     font-size: x-large;
     font-weight: bold;
+    padding-bottom: 0.5rem;
   }
 
   #content {
@@ -48,7 +49,7 @@
     box-shadow: 0 0 6px 0 #bbb;
   }
 
-  .reportCard .schemaInfo {
+  .cardBlock.schemaInfo {
     display: flex;
     align-items: end;
     justify-content: start;
@@ -123,18 +124,23 @@
   .tableFeel {
     min-width: 80%;
   }
-  
+
   .cardBlock.stat {
     display: flex;
-    overflow-x: auto;
+    align-items: flex-start;
   }
 
-  .tableStat th {
+  .statHead th {
     padding-right: 0.5rem;
     white-space: nowrap;
   }
 
-  .tableStat td {
+  .statTable {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .statTable>table td {
     padding-right: 0.2rem;
   }
 
@@ -146,10 +152,10 @@
 <body>
   <div id="header">
     <div id="textFileName">
-      《{{.TextFileName}}》赛码结果
+      {{.TextFileName}}
     </div>
     <div id="textLen">
-      &nbsp;&nbsp; 共计 {{.TextLen}} 字
+      文本字数 {{.TextLen}}； 非汉字数 {{.NotHanCount}}
     </div>
   </div>
   <div id="content">
@@ -173,14 +179,12 @@
             <th>码长</th>
             <th>总键数</th>
             <th>上屏数</th>
-            <th>非汉字数</th>
             <th>缺字数</th>
           </tr>
           <tr>
             <td>{{.CodeAvg | printf "%.3f"}}</td>
             <td>{{.CodeLen }}</td>
             <td>{{.UnitCount }}</td>
-            <td>{{.NotHanCount }}</td>
             <td>{{.LackCount }}</td>
             <td></td>
           </tr>
@@ -270,26 +274,36 @@
       </div>
 
       <div class="cardBlock stat">
-        <table class="tableStat">
+        <table class="statHead">
           <tr>
             <th>码长</th>
-            {{range $k,$v := .CodeStat}}
-            <td>{{$k}}:{{$v}}</td>
-            {{end}}
           </tr>
           <tr>
             <th>词长</th>
-            {{range $k,$v := .WordStat}}
-            <td>{{$k}}:{{$v}}</td>
-            {{end}}
           </tr>
           <tr>
             <th>选重</th>
-            {{range $k,$v := .RepeatStat}}
-            <td>{{$k}}:{{$v}}</td>
-            {{end}}
           </tr>
         </table>
+        <div class="statTable">
+          <table>
+            <tr>
+              {{range $k,$v := .CodeStat}}
+              <td>{{$k}}:{{$v}}</td>
+              {{end}}
+            </tr>
+            <tr>
+              {{range $k,$v := .WordStat}}
+              <td>{{$k}}:{{$v}}</td>
+              {{end}}
+            </tr>
+            <tr>
+              {{range $k,$v := .RepeatStat}}
+              <td>{{$k}}:{{$v}}</td>
+              {{end}}
+            </tr>
+          </table>
+        </div>
       </div>
     </div>
     {{end}}

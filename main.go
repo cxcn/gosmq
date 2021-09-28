@@ -13,19 +13,13 @@ type SmqIn struct { // Smq input
 	As bool // 空格是否互击
 
 	combs map[string]*comb
-	keys  [128]int // 按键所用手指
 }
 
 func NewSmq(si *SmqIn) *SmqOut {
 
 	// defer profile.Start(profile.MemProfile, profile.MemProfileRate(1)).Stop()
-	si.combs = newCombs(si.As)
-	keys := "1qaz2wsx3edc4rfv5tgb_6yhn7ujm8ik,9ol.0p;/'"
-	fins := "111122223333444444445666666667777888899999"
-	for i := range keys {
-		si.keys[keys[i]] = int(fins[i] - 48)
-	}
 
+	si.combs = newCombs(si.As)
 	so := newSmqOut(si)
 	return so
 }

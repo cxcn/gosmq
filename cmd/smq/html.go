@@ -26,22 +26,28 @@ type Result struct {
 type TmplData struct {
 	TextFileName string
 	TextLen      int
+	NotHanCount  int
 	SmqOuts      []*Result
 }
 
 func NewHTML(s string) *TmplData {
 	d := new(TmplData)
-	d.TextFileName = removeSuffix(s)
+	s = strings.Split(s, ".")[0]
+	if !strings.ContainsRune(s, '《') {
+		s = "《" + s + "》"
+	}
+	d.TextFileName = s
 	return d
 }
 
 // 添加一个结果
 func (d *TmplData) AddResult(r *smq.SmqOut, s string) {
 	d.TextLen = r.TextLen
+	d.NotHanCount = r.NotHanCount
 
 	tmp := Result{
 		SmqOut:     r,
-		SchemaName: removeSuffix(s),
+		SchemaName: strings.Split(s, ".")[0],
 	}
 	tmp.genKeyHeatMap()
 	tmp.genFinHeatMap()
@@ -63,11 +69,6 @@ func (d *TmplData) OutputHTMLFile(fileName string) {
 		panic(err)
 	}
 	t.Execute(file, d)
-}
-
-// 去掉文件名后缀
-func removeSuffix(s string) string {
-	return strings.Split(s, ".")[0]
 }
 
 // float64转换成百分数
