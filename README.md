@@ -4,8 +4,8 @@ go 写的赛码器
 
 ## 预览
 
-![](/assets/preview-cli.png)
-![](/assets/preview-web.png)
+![](./assets/preview-cli.png)
+![](./assets/preview-web.png)
 
 ## 基本用法
 
