@@ -36,8 +36,8 @@ func NewHTML() *TmplData {
 // 添加一个结果
 func (d *TmplData) AddResult(so *smq.SmqOut) {
 
-	if !strings.ContainsRune(so.DictName, '《') {
-		d.TextName = "《" + so.DictName + "》"
+	if !strings.ContainsRune(so.TextName, '《') {
+		d.TextName = "《" + so.TextName + "》"
 	} else {
 		d.TextName = so.TextName
 	}
