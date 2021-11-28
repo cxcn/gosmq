@@ -17,40 +17,40 @@ var tmpl string
 // 赛码结果
 type Result struct {
 	*smq.SmqOut
-	SchemaName string
 	KeyHeatMap [][]template.HTML
 	FinHeatMap [10]template.HTML
 }
 
 // 供模版使用的数据
 type TmplData struct {
-	TextFileName string
-	TextLen      int
-	NotHanCount  int
-	SmqOuts      []*Result
+	TextName    string
+	TextLen     int
+	NotHanCount int
+	Results     []*Result
 }
 
-func NewHTML(s string) *TmplData {
-	d := new(TmplData)
-	if !strings.ContainsRune(s, '《') {
-		s = "《" + s + "》"
-	}
-	d.TextFileName = s
-	return d
+func NewHTML() *TmplData {
+	return new(TmplData)
 }
 
 // 添加一个结果
-func (d *TmplData) AddResult(r *smq.SmqOut, s string) {
-	d.TextLen = r.TextLen
-	d.NotHanCount = r.NotHanCount
+func (d *TmplData) AddResult(so *smq.SmqOut) {
+
+	if !strings.ContainsRune(so.DictName, '《') {
+		d.TextName = "《" + so.DictName + "》"
+	} else {
+		d.TextName = so.TextName
+	}
+
+	d.TextLen = so.TextLen
+	d.NotHanCount = so.NotHanCount
 
 	tmp := Result{
-		SmqOut:     r,
-		SchemaName: strings.Split(s, ".")[0],
+		SmqOut: so,
 	}
 	tmp.genKeyHeatMap()
 	tmp.genFinHeatMap()
-	d.SmqOuts = append(d.SmqOuts, &tmp)
+	d.Results = append(d.Results, &tmp)
 }
 
 // 输出 html 文件

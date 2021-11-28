@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{.TextFileName}} 赛码结果</title>
+  <title>{{.TextName}} 赛码结果</title>
 </head>
 <style>
   body {
@@ -152,24 +152,24 @@
 <body>
   <div id="header">
     <div id="textFileName">
-      {{.TextFileName}}
+      {{.TextName}}
     </div>
     <div id="textLen">
       文本字数 {{.TextLen}}； 非汉字数 {{.NotHanCount}}
     </div>
   </div>
   <div id="content">
-    {{range .SmqOuts}}
+    {{range .Results}}
     <div class="reportCard">
       <div class="cardBlock schemaInfo">
         <div class="shcemaName">
-          {{.SchemaName}}
+          {{.DictName}}
         </div>
         <div class="mbLen">
           词条数：
         </div>
         <div class="mbLenValue">
-          {{.MbLen}}
+          {{.DictLen}}
         </div>
       </div>
 

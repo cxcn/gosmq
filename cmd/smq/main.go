@@ -54,7 +54,7 @@ func main() {
 		fmt.Println("main cost time = ", cost)
 	}()
 
-	h := NewHTML(smq.GetFileName(opt.Fpt))
+	h := NewHTML()
 	for _, v := range opt.Fpd {
 		si := smq.SmqIn{
 			Fpd:  v,
@@ -68,7 +68,7 @@ func main() {
 		if so.CodeLen == 0 {
 			continue
 		}
-		h.AddResult(so, smq.GetFileName(v))
+		h.AddResult(so)
 		output(so)
 
 		if opt.IsO {
