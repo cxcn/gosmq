@@ -1,9 +1,9 @@
 package smq
 
-func (so *SmqOut) feel(combMap map[string]*comb) {
+func (so *SmqOut) feel(codeSlice []string, combMap map[string]*comb) {
 
 	var keyComb string
-	for i, keys := range so.CodeSlice {
+	for i, keys := range codeSlice {
 		for j := 0; j < len(keys); j++ {
 			// 处理单键
 			if keys[j] < 128 {
@@ -15,8 +15,8 @@ func (so *SmqOut) feel(combMap map[string]*comb) {
 
 			if j < len(keys)-1 {
 				keyComb = keys[j : j+2]
-			} else if i < len(so.CodeSlice)-1 && len(so.CodeSlice[i+1]) > 0 {
-				keyComb = string([]byte{keys[j], so.CodeSlice[i+1][0]})
+			} else if i < len(codeSlice)-1 && len(codeSlice[i+1]) > 0 {
+				keyComb = string([]byte{keys[j], codeSlice[i+1][0]})
 			} else {
 				continue
 			}

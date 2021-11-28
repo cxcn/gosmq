@@ -7,17 +7,19 @@ import (
 	"unicode"
 )
 
-func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as bool) {
+func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as, isO bool) {
 
 	buf := bufio.NewReader(rd)
 	var notHan []rune
 	var lack []rune
+	combMap := newCombMap(as)
 
 	for {
 		// 逐行读取文本文件
 		line, err := buf.ReadString('\n')
 		text := []rune(line)
 		so.TextLen += len(text)
+		var codeSlice []string
 
 		for p := 0; p < len(text); {
 			// 删掉空白字符
@@ -35,9 +37,10 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as bool) {
 			}
 			// 最长匹配
 			t := dict
-			j := 0  // 已匹配的字数
-			i := 0  // 有编码的匹配
-			c := "" // 编码
+			j := 0 // 已匹配的字数
+			i := 0 // 有编码的匹配
+
+			c := string(text[p]) // 编码
 			for p+j < len(text) {
 				t = t.children[text[p+j]]
 				j++
@@ -53,8 +56,12 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as bool) {
 				if isHan {
 					lack = append(lack, text[p])
 				}
-				so.WordSlice = append(so.WordSlice, text[p:p+1])
-				so.CodeSlice = append(so.CodeSlice, "")
+				if isO {
+					so.WordSlice = append(so.WordSlice, text[p:p+1])
+					so.CodeSlice = append(so.CodeSlice, c)
+				} else {
+					codeSlice = append(codeSlice, c)
+				}
 				p++
 				continue
 			}
@@ -73,17 +80,27 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as bool) {
 			}
 			so.CodeStat[len(c)]++ // 码长
 			so.CodeLen += len(c)
-
-			so.WordSlice = append(so.WordSlice, text[p:p+i])
-			so.CodeSlice = append(so.CodeSlice, c)
+			if isO {
+				so.WordSlice = append(so.WordSlice, text[p:p+i])
+				so.CodeSlice = append(so.CodeSlice, c)
+			} else {
+				codeSlice = append(codeSlice, c)
+			}
 
 			p += i
+		}
+
+		if !isO {
+			so.feel(codeSlice, combMap)
 		}
 		if err != nil {
 			break
 		}
 	}
 
+	if isO {
+		so.feel(so.CodeSlice, combMap)
+	}
 	for _, v := range notHan {
 		if !strings.ContainsRune(so.NotHan, v) {
 			so.NotHan += string(v)
@@ -94,7 +111,6 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as bool) {
 			so.Lack += string(v)
 		}
 	}
-	so.feel(newCombMap(as))
 	so.stat()
 }
 

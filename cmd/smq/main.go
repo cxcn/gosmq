@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"time"
@@ -63,6 +61,7 @@ func main() {
 			Fpt:  opt.Fpt,
 			Csk:  opt.Csk,
 			As:   opt.AS,
+			IsO:  opt.IsO,
 		}
 		so := si.Smq()
 		if so.CodeLen == 0 {
@@ -70,23 +69,6 @@ func main() {
 		}
 		h.AddResult(so)
 		output(so)
-
-		if opt.IsO {
-			var wb bytes.Buffer
-			for i, v := range so.WordSlice {
-				wb.WriteString(string(v))
-				wb.WriteByte('\t')
-				wb.WriteString(so.CodeSlice[i])
-				wb.WriteByte('\n')
-			}
-			_ = os.Mkdir("result", 0666)
-			err := ioutil.WriteFile(".\\result\\"+so.TextName+"_"+so.DictName+".txt", wb.Bytes(), 0666)
-			if err != nil {
-				fmt.Println("输出结果错误:", err)
-			} else {
-				fmt.Println("输出结果成功:", ".\\result\\"+so.TextName+"_"+so.DictName+".txt")
-			}
-		}
 	}
 	h.OutputHTMLFile("result.html")
 

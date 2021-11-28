@@ -12,8 +12,12 @@ func output(so *smq.SmqOut) {
 	out := ""
 	out += fmt.Sprintln("----------------------")
 
+	out += fmt.Sprintf("文本字数：%d\n", so.TextLen)
+	out += fmt.Sprintf("词条数：%d\n", so.DictLen)
 	out += fmt.Sprintf("非汉字：%s\n", so.NotHan)
-	out += fmt.Sprintf("缺字：%s\n", so.Lack)
+	if so.Lack != "" {
+		out += fmt.Sprintf("缺字：%s\n", so.Lack)
+	}
 	out += "\n"
 
 	out += fmt.Sprintf("码长统计：%v\n", so.CodeStat)
@@ -22,9 +26,9 @@ func output(so *smq.SmqOut) {
 	out += "\n"
 
 	t1 := table.NewWriter()
-	t1.AppendHeader(table.Row{"文本字数", "总键数", "码长", "十击速度", "非汉字数", "缺字数"})
+	t1.AppendHeader(table.Row{"总键数", "码长", "十击速度", "非汉字数", "缺字数"})
 	t1.AppendRow([]interface{}{
-		so.TextLen, so.CodeLen,
+		so.CodeLen,
 		fmt.Sprintf("%.4f", so.CodeAvg),
 		fmt.Sprintf("%.2f", 600/so.CodeAvg),
 		so.NotHanCount, so.LackCount,

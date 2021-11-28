@@ -8,6 +8,7 @@ type SmqIn struct {
 	Fpt string // 文本路径
 	Csk string // 自定义选重键(2重开始，默认为;')
 	As  bool   // 空格是否互击
+	IsO bool   // 是否输出编码
 }
 
 type SmqOut struct {
