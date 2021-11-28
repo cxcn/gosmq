@@ -9,8 +9,6 @@ go 写的赛码器
 
 ## 基本用法
 
-所有文件使用 `utf8` 编码
-
 ```shell
 smq-cli.exe [OPTIONS]
 
@@ -18,11 +16,10 @@ Application Options:
   /i, /input:    []string       码表路径，可设置多个
   /d, /ding:     int    普通码表起顶码长，码长大于等于此数，首选不会追加空格
   /s, /single    bool   是否只跑单字
-  /w             bool   是否输出赛码表(保存在.\smb\文件夹下)
-  /t, /text:     string utf8编码格式文本
+  /t, /text:     string 文本
+  /c:            string 自定义选重键(2重开始) (default: ";'")
   /k             bool   空格是否互击
-  /c:            string 自定义选重键(2重开始) (default: ;\')
-  /o, /output:   string 输出编码路径
+  /o, /output    bool   是否输出结果
   /v, /version   bool   查看版本信息
 
 Help Options:
@@ -39,7 +36,6 @@ Help Options:
 
 只支持编码在后的格式  
 必须指定 `-d` 参数（起顶码长，码长大于等于此数，首选不会追加空格 `_`）  
-可选 `-w` 参数（是否输出赛码表，保存在`.\\smb\\`文件夹下）
 
 ```
 # Rime dictionary
