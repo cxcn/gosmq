@@ -32,7 +32,6 @@ type TmplData struct {
 
 func NewHTML(s string) *TmplData {
 	d := new(TmplData)
-	s = strings.Split(s, ".")[0]
 	if !strings.ContainsRune(s, '《') {
 		s = "《" + s + "》"
 	}

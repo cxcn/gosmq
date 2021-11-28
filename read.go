@@ -24,7 +24,6 @@ func ReadFile(name string) (*os.File, io.Reader, error) {
 	if cs.Confidence != 100 && cs.Charset != "UTF-8" {
 		cs.Charset = "GB18030"
 	}
-
 	f.Seek(0, 0)
 	rd, err := charset.NewReaderLabel(cs.Charset, f) // 转换字节流
 	return f, rd, err

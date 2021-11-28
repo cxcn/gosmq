@@ -53,7 +53,7 @@ func (t *trie) addPunct() {
 }
 
 // allow space -> map
-func newCombs(aS bool) map[string]*comb {
+func newCombMap(aS bool) map[string]*comb {
 
 	var c = make(map[string]*comb, 1800)
 

@@ -2,47 +2,22 @@ package smq
 
 import (
 	"bufio"
-	"bytes"
-	"fmt"
-	"io/ioutil"
-	"path/filepath"
+	"io"
 	"strings"
 	"unicode"
 )
 
-func newSmqOut(si *SmqIn) *SmqOut {
-
-	so := new(SmqOut)
-	// 读取文本
-	f, rd, err := ReadFile(si.Fpt)
-	if err != nil {
-		fmt.Println("文本读取错误:", err)
-		return so
-	}
-	_, filename := filepath.Split(si.Fpt)
-	fmt.Println("文本读取成功:", filename)
-	defer f.Close()
-
-	// 读取码表
-	dict, count := newDict(si)
-	so.MbLen = count
-	if count == 0 {
-		return so
-	}
-
-	so.RepeatStat = make(map[int]int)
-	so.CodeStat = make(map[int]int)
-	so.WordStat = make(map[int]int)
+func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as bool) {
 
 	buf := bufio.NewReader(rd)
-	var codeSep bytes.Buffer
 	var notHan []rune
 	var lack []rune
+
 	for {
+		// 逐行读取文本文件
 		line, err := buf.ReadString('\n')
 		text := []rune(line)
 		so.TextLen += len(text)
-		var code strings.Builder
 
 		for p := 0; p < len(text); {
 			// 删掉空白字符
@@ -78,6 +53,8 @@ func newSmqOut(si *SmqIn) *SmqOut {
 				if isHan {
 					lack = append(lack, text[p])
 				}
+				so.WordSlice = append(so.WordSlice, text[p:p+1])
+				so.CodeSlice = append(so.CodeSlice, "")
 				p++
 				continue
 			}
@@ -88,25 +65,20 @@ func newSmqOut(si *SmqIn) *SmqOut {
 				so.WordCount++
 				so.WordLen += i
 			}
-			c, rp := repeat(c, si.Csk) // 选重
+			c, rp := repeat(c, csk) // 选重
+			so.RepeatStat[rp]++
 			if rp > 1 {
-				so.RepeatStat[rp]++
 				so.RepeatCount++
 				so.RepeatLen += i
 			}
 			so.CodeStat[len(c)]++ // 码长
 			so.CodeLen += len(c)
-			code.WriteString(c)
-			if si.Fpo != "" {
-				codeSep.WriteString(c)
-				codeSep.WriteByte(' ')
-			}
+
+			so.WordSlice = append(so.WordSlice, text[p:p+i])
+			so.CodeSlice = append(so.CodeSlice, c)
+
 			p += i
 		}
-		if si.Fpo != "" {
-			codeSep.WriteByte('\n')
-		}
-		so.feel(code.String(), si.combs)
 		if err != nil {
 			break
 		}
@@ -122,16 +94,8 @@ func newSmqOut(si *SmqIn) *SmqOut {
 			so.Lack += string(v)
 		}
 	}
-	so.stat(si)
-
-	// 输出编码
-	if si.Fpo != "" {
-		err = ioutil.WriteFile(si.Fpo, codeSep.Bytes(), 0666)
-		if err != nil {
-			fmt.Printf("输出编码错误：%v", err)
-		}
-	}
-	return so
+	so.feel(newCombMap(as))
+	so.stat()
 }
 
 func repeat(c, csk string) (string, int) {
@@ -161,6 +125,8 @@ func repeat(c, csk string) (string, int) {
 			tmp[len(c)-1] = csk[rp-2]
 			c = string(tmp)
 		}
+	} else {
+		rp = 1
 	}
 	return c, rp
 }

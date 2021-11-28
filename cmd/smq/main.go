@@ -1,9 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
-	"path/filepath"
 	"runtime"
 	"time"
 
@@ -23,15 +24,16 @@ func main() {
 	}
 
 	type option struct {
-		Fpm  []string `short:"i" long:"input" description:"[]string\t码表路径，可设置多个"`
+		Fpd  []string `short:"i" long:"input" description:"[]string\t码表路径，可设置多个"`
 		Ding int      `short:"d" long:"ding" description:"int\t普通码表起顶码长，码长大于等于此数，首选不会追加空格"`
 		IsS  bool     `short:"s" long:"single" description:"bool\t是否只跑单字"`
-		IsW  bool     `short:"w" description:"bool\t是否输出赛码表(保存在.\\smb\\文件夹下)"`
-		Fpt  string   `short:"t" long:"text" description:"string\tutf8编码格式文本"`
-		AS   bool     `short:"k" description:"bool\t空格是否互击"`
-		Csk  string   `short:"c" default:";'" description:"string\t自定义选重键(2重开始)"`
-		Fpo  string   `short:"o" long:"output" description:"string\t输出编码路径"`
-		Ver  bool     `short:"v" long:"version" description:"bool\t查看版本信息"`
+
+		Fpt string `short:"t" long:"text" description:"string\t文本"`
+		Csk string `short:"c" default:";'" description:"string\t自定义选重键(2重开始)"`
+		AS  bool   `short:"k" description:"bool\t空格是否互击"`
+
+		IsO bool `short:"o" long:"output" description:"bool\t是否输出结果"`
+		Ver bool `short:"v" long:"version" description:"bool\t查看版本信息"`
 	}
 
 	var opt option
@@ -42,7 +44,7 @@ func main() {
 		return
 	}
 
-	if len(opt.Fpm) == 0 {
+	if len(opt.Fpd) == 0 {
 		return
 	}
 
@@ -52,26 +54,39 @@ func main() {
 		fmt.Println("main cost time = ", cost)
 	}()
 
-	_, textFileName := filepath.Split(opt.Fpt)
-	h := NewHTML(textFileName)
-	for _, v := range opt.Fpm {
+	h := NewHTML(smq.GetFileName(opt.Fpt))
+	for _, v := range opt.Fpd {
 		si := smq.SmqIn{
-			Fpm:  v,
+			Fpd:  v,
 			Ding: opt.Ding,
 			IsS:  opt.IsS,
-			IsW:  opt.IsW,
 			Fpt:  opt.Fpt,
 			Csk:  opt.Csk,
-			Fpo:  opt.Fpo,
 			As:   opt.AS,
 		}
-		so := smq.NewSmq(&si)
+		so := si.Smq()
 		if so.CodeLen == 0 {
 			continue
 		}
-		_, mbFileName := filepath.Split(v)
-		h.AddResult(so, mbFileName)
+		h.AddResult(so, smq.GetFileName(v))
 		output(so)
+
+		if opt.IsO {
+			var wb bytes.Buffer
+			for i, v := range so.WordSlice {
+				wb.WriteString(string(v))
+				wb.WriteByte('\t')
+				wb.WriteString(so.CodeSlice[i])
+				wb.WriteByte('\n')
+			}
+			_ = os.Mkdir("result", 0666)
+			err := ioutil.WriteFile(".\\result\\"+so.TextName+"_"+so.DictName+".txt", wb.Bytes(), 0666)
+			if err != nil {
+				fmt.Println("输出结果错误:", err)
+			} else {
+				fmt.Println("输出结果成功:", ".\\result\\"+so.TextName+"_"+so.DictName+".txt")
+			}
+		}
 	}
 	h.OutputHTMLFile("result.html")
 

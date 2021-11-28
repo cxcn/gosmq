@@ -1,52 +1,59 @@
 package smq
 
-func (so *SmqOut) feel(code string, combs map[string]*comb) {
+func (so *SmqOut) feel(combMap map[string]*comb) {
 
-	if len(code) == 0 {
-		return
-	}
-	for i := 0; i <= len(code)-2; i++ {
+	var keyComb string
+	for i, keys := range so.CodeSlice {
+		for j := 0; j < len(keys); j++ {
+			// 处理单键
+			if keys[j] < 128 {
+				so.keyCount[keys[j]]++
+			} else {
+				so.finCount[0]++
+				continue
+			}
 
-		// 处理单键
-		if code[i] < 128 {
-			so.keyCount[code[i]]++
-		} else {
-			so.finCount[0]++
-			continue
-		}
+			if j < len(keys)-1 {
+				keyComb = keys[j : j+2]
+			} else if i < len(so.CodeSlice)-1 && len(so.CodeSlice[i+1]) > 0 {
+				keyComb = string([]byte{keys[j], so.CodeSlice[i+1][0]})
+			} else {
+				continue
+			}
 
-		// 处理按键组合
-		comb, ok := combs[code[i:i+2]]
-		if !ok {
-			continue
-		}
-		so.eqSum += comb.eq
-		so.combLen++
-		// 同手
-		switch comb.sh {
-		case 0:
-		case 2:
-			so.xkpCount++
-		case 3:
-			so.dkpCount++
-		case 4:
-			so.csCount++
-		case 1:
-			so.skCount++
-		}
-		if comb.lfd { // 小指干扰
-			so.lfdCount++
-		}
-		// 异手
-		switch comb.dist {
-		case 1:
-			so.handCount[0]++
-		case 2:
-			so.handCount[1]++
-		case 3:
-			so.handCount[2]++
-		case 4:
-			so.handCount[3]++
+			// 处理按键组合
+			comb, ok := combMap[keyComb]
+			if !ok {
+				continue
+			}
+			so.eqSum += comb.eq
+			so.combLen++
+			// 同手
+			switch comb.sh {
+			case 0:
+			case 2:
+				so.xkpCount++
+			case 3:
+				so.dkpCount++
+			case 4:
+				so.csCount++
+			case 1:
+				so.skCount++
+			}
+			if comb.lfd { // 小指干扰
+				so.lfdCount++
+			}
+			// 异手
+			switch comb.dist {
+			case 1:
+				so.handCount[0]++
+			case 2:
+				so.handCount[1]++
+			case 3:
+				so.handCount[2]++
+			case 4:
+				so.handCount[3]++
+			}
 		}
 	}
 }
