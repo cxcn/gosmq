@@ -8,6 +8,7 @@ package smq
 // 		IsS:  false,
 // 		Csk:  ";'",
 // 		As:   false,
+// 		IsO:  false,
 // 	}
 // 	so := si.Smq()
 // 	for i, v := range so.WordSlice {
