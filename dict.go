@@ -21,12 +21,12 @@ func newDict(si *SmqIn) (*trie, int) {
 	_, filename := filepath.Split(si.Fpm)
 	// 读取码表
 	dict := new(trie)
-	f, err := os.Open(si.Fpm)
+	f, rd, err := ReadFile(si.Fpm)
 	if err != nil {
 		fmt.Println("码表读取错误:", err)
 		return dict, 0
 	}
-	scan := bufio.NewScanner(f)
+	scan := bufio.NewScanner(rd)
 	if si.IsS {
 		fmt.Println("只跑单字...")
 	}
@@ -37,6 +37,7 @@ func newDict(si *SmqIn) (*trie, int) {
 		fmt.Println("检测到赛码表:", filename)
 		for scan.Scan() {
 			wc := strings.Split(scan.Text(), "\t")
+			// fmt.Println(scan.Text())
 			if len(wc) != 2 {
 				continue
 			}

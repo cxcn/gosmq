@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strings"
 	"unicode"
@@ -15,7 +14,7 @@ func newSmqOut(si *SmqIn) *SmqOut {
 
 	so := new(SmqOut)
 	// 读取文本
-	f, err := os.Open(si.Fpt)
+	f, rd, err := ReadFile(si.Fpt)
 	if err != nil {
 		fmt.Println("文本读取错误:", err)
 		return so
@@ -35,7 +34,7 @@ func newSmqOut(si *SmqIn) *SmqOut {
 	so.CodeStat = make(map[int]int)
 	so.WordStat = make(map[int]int)
 
-	buf := bufio.NewReader(f)
+	buf := bufio.NewReader(rd)
 	var codeSep bytes.Buffer
 	var notHan []rune
 	var lack []rune
