@@ -2,9 +2,9 @@
 
 go 写的赛码器，只是一个包，具体实现请看
 
-- <https://github.com/cxcn/gosmq/cmd/cli>
-- <https://github.com/cxcn/gosmq/cmd/web>
-- <https://github.com/cxcn/gosmq/cmd/web-server>
+- <https://github.com/cxcn/gosmq/tree/main/cmd/cli>
+- <https://github.com/cxcn/gosmq/tree/main/cmd/web>
+- <https://github.com/cxcn/gosmq/tree/main/cmd/web-server>
 
 
 ## 码表
