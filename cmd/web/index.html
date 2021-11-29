@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>单单的赛码器</title>
+  </head>
+  <style>
+    div.main {
+      display: flex;
+      justify-content: center;
+      margin-top: 10%;
+      margin-bottom: auto;
+    }
+    th {
+      color: lightslategray;
+      padding-left: 20px;
+    }
+    td {
+      padding-left: 20px;
+      text-align: center;
+    }
+    [type="number"],[name="csk"],[name="csk1"]{
+      width: 3rem;
+    }
+    input {
+      max-width: 6rem;
+    }
+    div.footer {
+      bottom: 10px;
+      width: 95%;
+      position: fixed;
+      text-align: right;
+    }
+  </style>
+
+  <body>
+    <div class="main">
+      <form action="/result" method="post">
+        <table class="dict">
+          <tr>
+            <th></th>
+            <th>码表 1</th>
+            <th>码表 2</th>
+          </tr>
+          <tr>
+            <th>选择码表</th>
+            <td>
+              <select name="fpd">
+                {{ range .DictNames }}
+                <option value="{{.}}">{{. | getName}}</option>
+                {{ end }}
+              </select>
+            </td>
+            <td>
+              <select name="fpd1">
+                {{ range .DictNames }}
+                <option value="{{.}}">{{. | getName}}</option>
+                {{ end }}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th>起顶码长</th>
+            <td><input type="number" name="ding" value="0" min="0" /></td>
+            <td><input type="number" name="ding1" value="0" min="0" /></td>
+          </tr>
+          <tr>
+            <th>是否只跑单字</th>
+            <td><input type="checkbox" name="iss" value="true" />是</td>
+            <td><input type="checkbox" name="iss1" value="true" />是</td>
+          </tr>
+          <tr>
+            <th>自定义选重键</th>
+            <td><input type="text" name="csk" value=";'" /></td>
+            <td><input type="text" name="csk1" value=";'" /></td>
+          </tr>
+          <tr>
+            <th>空格是否互击</th>
+            <td><input type="checkbox" name="as" value="true" />是</td>
+            <td><input type="checkbox" name="as1" value="true" />是</td>
+          </tr>
+          <tr>
+            <th>是否输出编码</th>
+            <td><input type="checkbox" name="iso" value="true" />是</td>
+            <td><input type="checkbox" name="iso1" value="true" />是</td>
+          </tr>
+          <tr>
+            <th>选择文本</th>
+            <td>
+              <select name="fpt">
+                {{ range .TextNames }}
+                <option value="{{.}}">{{. | getName}}</option>
+                {{ end }}
+              </select>
+            </td>
+            <td><input type="submit" /></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    <div class="footer">单单的赛码器 web</div>
+  </body>
+</html>
