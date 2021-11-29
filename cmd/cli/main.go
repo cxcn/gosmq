@@ -60,6 +60,7 @@ func main() {
 			Fpd:  v,
 			Ding: opt.Ding,
 			IsS:  opt.IsS,
+			IsW:  true,
 			Fpt:  opt.Fpt,
 			Csk:  opt.Csk,
 			As:   opt.AS,

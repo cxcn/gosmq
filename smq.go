@@ -28,12 +28,14 @@ func (si *SmqIn) Smq() *SmqOut {
 		var wb []byte
 		so.DictLen, wb = dict.readC(rd, si.IsS, si.Ding)
 		// 写入赛码表
-		_ = os.Mkdir("dict", 0666)
-		err := ioutil.WriteFile(".\\dict\\"+so.DictName+"_赛码表.txt", wb, 0666)
-		if err != nil {
-			fmt.Println("Error! 赛码表写入错误:", err)
-		} else {
-			fmt.Println("Success! 成功写入赛码表:", ".\\dict\\"+so.DictName+"_赛码表.txt")
+		if si.IsW {
+			_ = os.Mkdir("dict", 0666)
+			err := ioutil.WriteFile(".\\dict\\"+so.DictName+"_赛码表.txt", wb, 0666)
+			if err != nil {
+				fmt.Println("Error! 赛码表写入错误:", err)
+			} else {
+				fmt.Println("Success! 成功写入赛码表:", ".\\dict\\"+so.DictName+"_赛码表.txt")
+			}
 		}
 	}
 	f.Close()

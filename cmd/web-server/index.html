@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>单单的赛码器</title>
+  </head>
+  <style>
+    div.main {
+      display: flex;
+      justify-content: center;
+      margin-top: 5%;
+      margin-bottom: auto;
+    }
+    table.dict {
+      margin: auto;
+    }
+    th {
+      color: lightslategray;
+      padding-left: 20px;
+    }
+    td {
+      padding-left: 20px;
+      text-align: center;
+    }
+    [type="number"],[name="csk"]{
+      width: 3rem;
+    }
+    input {
+      max-width: 6rem;
+    }
+    div.footer {
+      bottom: 10px;
+      width: 95%;
+      position: fixed;
+      text-align: right;
+    }
+  </style>
+
+  <body>
+    <div class="main">
+      <form action="/result" method="post" >
+        <textarea name="text" cols="50" rows="20" placeholder="这里输入文本" required></textarea>
+        <textarea name="dict" cols="50" rows="20" placeholder="这里输入码表" required></textarea>
+
+        <table class="dict">
+          <tr>
+            <th>文本名</th>
+            <td><input type="text" name="textname"/></td>
+          </tr>
+          <tr>
+            <th>码表名</th>
+            <td><input type="text" name="dictname"/></td>
+          </tr>
+          <tr>
+            <th>起顶码长</th>
+            <td><input type="number" name="ding" value="0" min="0" /></td>
+          </tr>
+          <tr>
+            <th>是否只跑单字</th>
+            <td><input type="checkbox" name="iss" value="true" />是</td>
+          </tr>
+          <tr>
+            <th>自定义选重键</th>
+            <td><input type="text" name="csk" value=";'" /></td>
+          </tr>
+          <tr>
+            <th>空格是否互击</th>
+            <td><input type="checkbox" name="as" value="true" />是</td>
+          </tr>
+          <tr>
+            <th>是否输出编码</th>
+            <td><input type="checkbox" name="iso" value="true" />是</td>
+          </tr>
+          <tr>
+            <td colspan="2"><input type="submit" /></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    <div class="footer">单单的赛码器 web</div>
+  </body>
+</html>
