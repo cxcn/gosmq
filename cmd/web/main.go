@@ -58,7 +58,7 @@ func main() {
 	}
 
 	server := http.Server{
-		Addr: "localhost:8080",
+		Addr: "localhost:5666",
 	}
 	http.HandleFunc("/index", func(rw http.ResponseWriter, r *http.Request) {
 		// html, _ := ioutil.ReadFile("index.html")
@@ -77,7 +77,7 @@ func main() {
 
 		// fmt.Fprintln(rw, r.PostForm)
 	})
-	fmt.Println("\nhttp://localhost:8080/index\n ")
+	fmt.Println("\nhttp://localhost:5666/index\n ")
 	server.ListenAndServe()
 }
 
