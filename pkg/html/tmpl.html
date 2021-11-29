@@ -58,14 +58,14 @@
     padding-left: 0.2rem;
   }
 
-  .mbLen {
+  .dictLen {
     padding-left: 1rem;
     font-size: 0.8em;
     color: lightslategray;
     white-space: nowrap;
   }
 
-  .mbLenValue {
+  .dictLenValue {
     font-size: 0.7em;
     font-weight: normal;
   }
@@ -162,13 +162,13 @@
     {{range .Results}}
     <div class="reportCard">
       <div class="cardBlock schemaInfo">
-        <div class="shcemaName">
+        <div class="dictName">
           {{.DictName}}
         </div>
-        <div class="mbLen">
+        <div class="dictLen">
           词条数：
         </div>
-        <div class="mbLenValue">
+        <div class="dictLenValue">
           {{.DictLen}}
         </div>
       </div>
