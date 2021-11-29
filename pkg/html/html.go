@@ -1,8 +1,9 @@
-package main
+package html
 
 import (
 	"fmt"
 	"html/template"
+	"io"
 	"os"
 	"strings"
 
@@ -44,6 +45,7 @@ func (d *TmplData) AddResult(so *smq.SmqOut) {
 
 	d.TextLen = so.TextLen
 	d.NotHanCount = so.NotHanCount
+	so.DictName = strings.TrimSuffix(so.DictName, "_赛码表")
 
 	tmp := Result{
 		SmqOut: so,
@@ -61,13 +63,17 @@ func (d *TmplData) OutputHTMLFile(fileName string) {
 	}
 	defer file.Close()
 
+	d.OutputHTML(file)
+}
+
+func (d *TmplData) OutputHTML(w io.Writer) {
 	funcMap := template.FuncMap{"toPer": toPercentage}
 	t := template.New("tmpl.html").Funcs(funcMap)
-	_, err = t.Parse(tmpl)
+	_, err := t.Parse(tmpl)
 	if err != nil {
 		panic(err)
 	}
-	t.Execute(file, d)
+	t.Execute(w, d)
 }
 
 // float64转换成百分数

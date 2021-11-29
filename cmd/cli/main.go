@@ -7,6 +7,8 @@ import (
 	"time"
 
 	smq "github.com/cxcn/gosmq"
+	"github.com/cxcn/gosmq/pkg/html"
+
 	"github.com/jessevdk/go-flags"
 )
 
@@ -52,7 +54,7 @@ func main() {
 		fmt.Println("main cost time = ", cost)
 	}()
 
-	h := NewHTML()
+	h := html.NewHTML()
 	for _, v := range opt.Fpd {
 		si := smq.SmqIn{
 			Fpd:  v,
