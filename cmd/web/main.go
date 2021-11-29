@@ -121,6 +121,5 @@ func getOptions(v url.Values) []*smq.SmqIn {
 }
 
 func getName(s string) string {
-	s = strings.TrimSuffix(s, ".txt")
-	return strings.TrimSuffix(s, "_赛码表")
+	return strings.TrimSuffix(s, ".txt")
 }

@@ -45,7 +45,8 @@ func (d *TmplData) AddResult(so *smq.SmqOut) {
 
 	d.TextLen = so.TextLen
 	d.NotHanCount = so.NotHanCount
-	so.DictName = strings.TrimSuffix(so.DictName, "_赛码表")
+	s := strings.TrimSuffix(so.DictName, "赛码表")
+	so.DictName = strings.TrimSuffix(s, "_")
 
 	tmp := Result{
 		SmqOut: so,
