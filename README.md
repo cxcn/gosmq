@@ -1,31 +1,11 @@
 # saimaqi
 
-go 写的赛码器
+go 写的赛码器，只是一个包，具体实现请看
 
-## 预览
+- <https://github.com/cxcn/gosmq/cmd/cli>
+- <https://github.com/cxcn/gosmq/cmd/web>
+- <https://github.com/cxcn/gosmq/cmd/web-server>
 
-![](./assets/preview-cli.png)
-![](./assets/preview-web.png)
-
-## 基本用法
-
-```shell
-smq-cli.exe [OPTIONS]
-
-Application Options:
-  /i, /input:    []string       码表路径，可设置多个
-  /d, /ding:     int    普通码表起顶码长，码长大于等于此数，首选不会追加空格
-  /s, /single    bool   是否只跑单字
-  /t, /text:     string 文本
-  /c:            string 自定义选重键(2重开始) (default: ";'")
-  /k             bool   空格是否互击
-  /o, /output    bool   是否输出结果
-  /v, /version   bool   查看版本信息
-
-Help Options:
-  /?             Show this help message
-  /h, /help      Show this help message
-```
 
 ## 码表
 
@@ -35,7 +15,7 @@ Help Options:
 ### rime 格式的码表
 
 只支持编码在后的格式  
-必须指定 `-d` 参数（起顶码长，码长大于等于此数，首选不会追加空格 `_`）  
+必须指定 `SmqIn.Ding` 字段（起顶码长，码长大于等于此数，首选不会追加空格 `_`）  
 
 ```
 # Rime dictionary
@@ -70,8 +50,6 @@ sort: original
 
 ### 极速赛码器格式
 
-> 注意：极速赛码器转换的格式编码为 utf-16，需要手动转为 utf-8 才能使用
-
 ```
 工	a_
 花	a2
@@ -86,23 +64,11 @@ sort: original
 ## 手感
 
 可选:  
-`-k` 空格是否互击  
-`-c` 自定义选重键(2 重开始) (default ";'")  
+`SmqIn.IsS` 空格是否互击  
+`SmqIn.Csk` 自定义选重键(2 重开始) 
 将编码中末尾数字替换，只支持 10 重以内
 
-## 例子
-
-赛码表：`-i mbpath -t textpath`
-
-普通码表：
-
-- 四码定长：`-i mbpath -d=4 [-w] -t textpath`
-- 二码顶功：`-i mbpath -d=2 [-w] -t textpath`
-- 不定长：`-i mbpath -d=99 [-w] -t textpath`
-
-多个码表同时测试：`-i mb1 -i mb2 -i mb3 -t textpath`
-
-## 性能
+## Benchmark
 
 > 配置：windows 10, r5 3600 4.2g, 8g\*2 2933Mhz c18
 
