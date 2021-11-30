@@ -2,9 +2,8 @@
 
 只是一个包，具体实现请看
 
-- <https://github.com/cxcn/gosmq/tree/main/cmd/cli>
-- <https://github.com/cxcn/gosmq/tree/main/cmd/web>
-- <https://github.com/cxcn/gosmq/tree/main/cmd/web-server>
+- <https://github.com/cxcn/gosmq/tree/main/cmd/client>
+- <https://github.com/cxcn/gosmq/tree/main/cmd/server>
 
 ## 码表
 
