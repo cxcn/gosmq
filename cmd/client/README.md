@@ -1,19 +1,31 @@
-# gosmq 的命令行程序
+# gosmq 的一个前端
 
-- 命令行输入
-- 命令行输出
-- html 文件输出
+直接双击打开或者不带参数的命令行为 web 模式，带参数的命令行为 cli 模式
 
-> `SmqIn.Isw`字段为`true`，即为普通码表时，会自动输出赛码表
+> `SmqIn.Ding`字段不为 0 时，会自动输出赛码表
 
-## 预览
+## web
+
+### 预览
+
+![](./assets/preview-web.png)
+
+### 用法
+
+1. 将文本放到程序运行目录下的 text 文件夹下
+2. 码表放到 dict 文件夹下
+3. 双击打开程序
+
+## cli
+
+### 预览
 
 ![](./assets/preview-cli.png)
 
-## 基本用法
+### 用法
 
 ```shell
-smq-cli.exe [OPTIONS]
+smq.exe [OPTIONS]
 
 Application Options:
   /i, /input:    []string       码表路径，可设置多个
@@ -30,14 +42,14 @@ Help Options:
   /h, /help      Show this help message
 ```
 
-## 例子
+### 例子
 
-赛码表：`-i mbpath -t textpath`
+赛码表：`-i dictpath -t textpath`
 
 普通码表：
 
-- 四码定长：`-i mbpath -d=4 -t textpath`
-- 二码顶功：`-i mbpath -d=2 -t textpath`
-- 不定长：`-i mbpath -d=99 -t textpath`
+- 四码定长：`-i dictpath -d=4 -t textpath`
+- 二码顶功：`-i dictpath -d=2 -t textpath`
+- 不定长：`-i dictpath -d=99 -t textpath`
 
-多个码表同时测试：`-i mb1 -i mb2 -i mb3 -t textpath`
+多个码表同时测试：`-i dict1 -i dict2 -i dict3 -t textpath`
