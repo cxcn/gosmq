@@ -1,15 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"runtime"
 	"time"
 
 	smq "github.com/cxcn/gosmq"
-	"github.com/cxcn/gosmq/pkg/html"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -32,8 +28,7 @@ func cli() {
 	var opt option
 	flags.Parse(&opt)
 	if opt.Ver {
-		fmt.Printf("smq-cli version 0.13 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
-		fmt.Println("repo address: https://github.com/cxcn/gosmq/")
+		printInfo()
 		return
 	}
 
@@ -48,7 +43,6 @@ func cli() {
 	}()
 
 	tn := smq.GetFileName(opt.Fpt)
-	h := html.NewHTML(tn)
 	for _, v := range opt.Fpd {
 
 		text, err := os.Open(opt.Fpt)
@@ -63,13 +57,15 @@ func cli() {
 		si := smq.SmqIn{
 			TextReader:     text,
 			DictReader:     dict,
-			IsOutputDict:   true,
 			IsOutputResult: opt.IsO,
 
 			BeginPush:       opt.Ding,
 			SelectKeys:      opt.Csk,
 			IsSingleOnly:    opt.IsS,
 			IsSpaceDiffHand: opt.AS,
+		}
+		if si.BeginPush > 0 {
+			si.IsOutputDict = true
 		}
 
 		so, _ := si.Smq()
@@ -80,34 +76,12 @@ func cli() {
 		dn := smq.GetFileName(v)
 		// 写入赛码表
 		if si.IsOutputResult {
-			_ = os.Mkdir("dict", 0666)
-			err := ioutil.WriteFile(".\\dict\\"+dn+"_赛码表.txt", so.DictBytes, 0666)
-			if err != nil {
-				fmt.Println("Error! 赛码表写入错误:", err)
-			} else {
-				fmt.Println("Success! 成功写入赛码表:", ".\\dict\\"+dn+"_赛码表.txt")
-			}
+			writeDict(dn, so.DictBytes)
 		}
 
 		if si.IsOutputResult {
-			var buf bytes.Buffer
-			for i, v := range so.WordSlice {
-				buf.WriteString(string(v))
-				buf.WriteByte('\t')
-				buf.WriteString(so.CodeSlice[i])
-				buf.WriteByte('\n')
-			}
-			_ = os.Mkdir("result", 0666)
-			err := ioutil.WriteFile(".\\result\\"+tn+"_"+dn+".txt", buf.Bytes(), 0666)
-			if err != nil {
-				fmt.Println("Error! 输出结果错误:", err)
-			} else {
-				fmt.Println("Suceess! 成功输出结果:", ".\\result\\"+tn+"_"+dn+".txt")
-			}
+			writeResult(tn, dn, so.WordSlice, so.CodeSlice)
 		}
-		h.AddResult(so, dn)
 		output(so)
 	}
-	h.OutputHTMLFile("result.html")
-
 }

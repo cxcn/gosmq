@@ -1,14 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
-	"runtime"
 	"strconv"
 
 	_ "embed"
@@ -28,19 +26,19 @@ type Result struct {
 
 func web() {
 
-	fmt.Printf("smq-web version 0.2 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
-	fmt.Println("repo address: https://github.com/cxcn/gosmq/")
-
 	type names struct {
 		DictNames []string
 		TextNames []string
 	}
 
+	printInfo()
+
 	theNames := new(names)
 	// 读取dict/目录中的所有文件和子目录
 	files, err := ioutil.ReadDir(`dict/`)
 	if err != nil {
-		panic(err)
+		fmt.Println("找不到 dict 文件夹", err)
+		return
 	}
 	fmt.Println("检测到以下赛码表：")
 	for _, file := range files {
@@ -51,7 +49,8 @@ func web() {
 	// 读取text/目录中的所有文件和子目录
 	files, err = ioutil.ReadDir(`text/`)
 	if err != nil {
-		panic(err)
+		fmt.Println("找不到 text 文件夹", err)
+		return
 	}
 	fmt.Println("检测到以下文本：")
 	for _, file := range files {
@@ -88,22 +87,12 @@ func web() {
 			if err != nil {
 				panic(err)
 			}
+			dn := v.DictName
 			if v.IsOutputResult {
-				dn := v.DictName
-				var buf bytes.Buffer
-				for i, v := range so.WordSlice {
-					buf.WriteString(string(v))
-					buf.WriteByte('\t')
-					buf.WriteString(so.CodeSlice[i])
-					buf.WriteByte('\n')
-				}
-				_ = os.Mkdir("result", 0666)
-				err := ioutil.WriteFile(".\\result\\"+tn+"_"+dn+".txt", buf.Bytes(), 0666)
-				if err != nil {
-					fmt.Println("Error! 输出结果错误:", err)
-				} else {
-					fmt.Println("Suceess! 成功输出结果:", ".\\result\\"+tn+"_"+dn+".txt")
-				}
+				writeDict(dn, so.DictBytes)
+			}
+			if v.IsOutputResult {
+				writeResult(tn, dn, so.WordSlice, so.CodeSlice)
 			}
 			h.AddResult(so, v.DictName)
 		}
@@ -144,6 +133,9 @@ func getOptions(v url.Values) []*Result {
 		if v.Get("iso") == "true" {
 			tmp.IsOutputResult = true
 		}
+		if tmp.BeginPush > 0 {
+			tmp.IsOutputDict = true
+		}
 		ret = append(ret, tmp)
 	}
 	if v.Get("fpd1") != "" {
@@ -172,6 +164,9 @@ func getOptions(v url.Values) []*Result {
 		}
 		if v.Get("iso1") == "true" {
 			tmp.IsOutputResult = true
+		}
+		if tmp.BeginPush > 0 {
+			tmp.IsOutputDict = true
 		}
 		ret = append(ret, tmp)
 	}

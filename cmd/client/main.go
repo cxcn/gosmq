@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"runtime"
 )
 
 func main() {
@@ -15,4 +17,9 @@ func main() {
 	}
 
 	// time.Sleep(5 * time.Second)
+}
+
+func printInfo() {
+	fmt.Printf("smq-client version 0.14 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
+	fmt.Println("repo address: https://github.com/cxcn/gosmq/")
 }
