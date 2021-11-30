@@ -10,9 +10,12 @@
 
 ```go
 si := new(smq.SmqIn)
-h := html.NewHTML()
-so := si.Smq()
-h.AddResult(so)
+h := html.NewHTML("文本名")
+so,err := si.Smq()
+if err != nil {
+    panic(err)
+}
+h.AddResult(so,"码表名")
 h.OutputHTMLFile("result.html")
 ```
 

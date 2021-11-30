@@ -1,6 +1,6 @@
-# saimaqi
+# go 语言写的赛码器
 
-go 写的赛码器，只是一个包，具体实现请看
+只是一个包，具体实现请看
 
 - <https://github.com/cxcn/gosmq/tree/main/cmd/cli>
 - <https://github.com/cxcn/gosmq/tree/main/cmd/web>
@@ -14,7 +14,7 @@ go 写的赛码器，只是一个包，具体实现请看
 ### rime 格式的码表
 
 只支持编码在后的格式  
-必须指定 `SmqIn.Ding` 字段（起顶码长，码长大于等于此数，首选不会追加空格 `_`）
+必须指定 `SmqIn.BeginPush` 字段（起顶码长，码长大于等于此数，首选不会追加空格 `_`）
 
 ```
 # Rime dictionary
@@ -63,8 +63,8 @@ sort: original
 ## 手感
 
 可选:  
-`SmqIn.IsS` 空格是否互击  
-`SmqIn.Csk` 自定义选重键(2 重开始)
+`SmqIn.IsSpaceDiffHand` 空格是否互击  
+`SmqIn.SelectKeys` 自定义选重键(2 重开始)
 将编码中末尾数字替换，只支持 10 重以内
 
 ## Benchmark

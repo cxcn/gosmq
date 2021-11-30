@@ -41,7 +41,7 @@ func main() {
 	var opt option
 	flags.Parse(&opt)
 	if opt.Ver {
-		fmt.Printf("smq-cli version 0.12 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
+		fmt.Printf("smq-cli version 0.13 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
 		fmt.Println("repo address: https://github.com/cxcn/gosmq/")
 		return
 	}

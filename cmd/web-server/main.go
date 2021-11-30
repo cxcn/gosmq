@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -18,6 +19,9 @@ import (
 var index []byte
 
 func main() {
+
+	fmt.Printf("smq-web-server version 0.1 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
+	fmt.Println("repo address: https://github.com/cxcn/gosmq/")
 
 	server := http.Server{
 		Addr: "localhost:5667",

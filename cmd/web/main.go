@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"strconv"
 
 	_ "embed"
@@ -27,13 +28,15 @@ type Result struct {
 
 func main() {
 
+	fmt.Printf("smq-web version 0.2 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
+	fmt.Println("repo address: https://github.com/cxcn/gosmq/")
+
 	type names struct {
 		DictNames []string
 		TextNames []string
 	}
 
 	theNames := new(names)
-
 	// 读取dict/目录中的所有文件和子目录
 	files, err := ioutil.ReadDir(`dict/`)
 	if err != nil {
