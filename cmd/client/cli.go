@@ -14,16 +14,7 @@ import (
 	"github.com/jessevdk/go-flags"
 )
 
-func main() {
-
-	// defer profile.Start().Stop()
-	// defer profile.Start(profile.MemProfile, profile.MemProfileRate(1)).Stop()
-
-	if len(os.Args) == 1 {
-		fmt.Println("请在命令行中运行此程序\n按Enter键退出...")
-		fmt.Scanln()
-		return
-	}
+func cli() {
 
 	type option struct {
 		Fpd  []string `short:"i" long:"input" description:"[]string\t码表路径，可设置多个"`
@@ -119,5 +110,4 @@ func main() {
 	}
 	h.OutputHTMLFile("result.html")
 
-	// time.Sleep(5 * time.Second)
 }

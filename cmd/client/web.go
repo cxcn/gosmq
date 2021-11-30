@@ -26,7 +26,7 @@ type Result struct {
 	DictName string
 }
 
-func main() {
+func web() {
 
 	fmt.Printf("smq-web version 0.2 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
 	fmt.Println("repo address: https://github.com/cxcn/gosmq/")
