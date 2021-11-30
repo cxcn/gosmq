@@ -20,6 +20,6 @@ func main() {
 }
 
 func printInfo() {
-	fmt.Printf("smq-client version 0.14 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
-	fmt.Println("repo address: https://github.com/cxcn/gosmq/")
+	fmt.Printf("smq-client version 0.14 %s/%s\n", runtime.GOOS, runtime.GOARCH)
+	fmt.Printf("repo address: https://github.com/cxcn/gosmq/\n\n")
 }

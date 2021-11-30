@@ -50,7 +50,7 @@ func (d *TmplData) AddResult(so *smq.SmqOut, s string) {
 
 	tmp := new(Result)
 	tmp.SmqOut = so
-	tmp.DictName = s
+	tmp.DictName = smq.GetDictName(s)
 
 	tmp.genKeyHeatMap()
 	tmp.genFinHeatMap()

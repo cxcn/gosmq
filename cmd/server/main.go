@@ -20,8 +20,8 @@ var index []byte
 
 func main() {
 
-	fmt.Printf("smq-web-server version 0.1 %s/%s\n\n", runtime.GOOS, runtime.GOARCH)
-	fmt.Println("repo address: https://github.com/cxcn/gosmq/")
+	fmt.Printf("smq-web-server version 0.1 %s/%s\n", runtime.GOOS, runtime.GOARCH)
+	fmt.Printf("repo address: https://github.com/cxcn/gosmq/\n\n")
 
 	server := http.Server{
 		Addr: "localhost:5667",
