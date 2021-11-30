@@ -1,84 +1,57 @@
 package smq
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strings"
 )
 
-func (si *SmqIn) Smq() *SmqOut {
+func (si *SmqIn) Smq() (*SmqOut, error) {
 
 	so := new(SmqOut)
-	so.DictName = GetFileName(si.Fpd)
 	// 读取码表
 	dict := new(trie)
-	f, rd, err := ReadFile(si.Fpd)
+	rd, err := ReadFile(si.DictReader)
 	if err != nil {
 		fmt.Println("Error! 码表读取错误:", err)
-		return so
+		return so, err
 	}
-	if si.Ding < 1 {
-		fmt.Println("Success! 检测到赛码表:", so.DictName)
-		so.DictLen = dict.read(rd, si.IsS)
+	if si.BeginPush < 1 {
+		fmt.Println("Success! 检测到赛码表:")
+		so.DictLen = dict.read(rd, si.IsSingleOnly)
 	} else {
-		fmt.Println("Success! 检测到普通码表:", so.DictName)
+		fmt.Println("Success! 检测到普通码表:")
 		var wb []byte
-		so.DictLen, wb = dict.readC(rd, si.IsS, si.Ding)
-		// 写入赛码表
-		if si.IsW {
-			_ = os.Mkdir("dict", 0666)
-			err := ioutil.WriteFile(".\\dict\\"+so.DictName+"_赛码表.txt", wb, 0666)
-			if err != nil {
-				fmt.Println("Error! 赛码表写入错误:", err)
-			} else {
-				fmt.Println("Success! 成功写入赛码表:", ".\\dict\\"+so.DictName+"_赛码表.txt")
-			}
-		}
+		so.DictLen, wb = dict.readC(rd, si.IsSingleOnly, si.IsOutputDict, si.BeginPush)
+		so.DictBytes = wb
 	}
-	f.Close()
 
-	if si.IsS {
+	if si.IsSingleOnly {
 		fmt.Println("Option: 只跑单字。。。")
 	}
 
-	so.TextName = GetFileName(si.Fpt)
 	so.RepeatStat = make(map[int]int)
 	so.CodeStat = make(map[int]int)
 	so.WordStat = make(map[int]int)
 	//读取文本
-	f, rd, err = ReadFile(si.Fpt)
+	rd, err = ReadFile(si.TextReader)
 	if err != nil {
 		fmt.Println("Error! 文本读取错误:", err)
-		return so
+		return so, err
 	}
-	fmt.Println("Success! 成功读取文本:", so.TextName)
-	so.calc(rd, dict, si.Csk, si.As, si.IsO)
-	f.Close()
+	fmt.Println("Success! 成功读取文本:")
+	so.calc(rd, dict, si.SelectKeys, si.IsSpaceDiffHand, si.IsOutputResult)
 
-	if si.IsO {
-		var wb bytes.Buffer
-		for i, v := range so.WordSlice {
-			wb.WriteString(string(v))
-			wb.WriteByte('\t')
-			wb.WriteString(so.CodeSlice[i])
-			wb.WriteByte('\n')
-		}
-		_ = os.Mkdir("result", 0666)
-		err := ioutil.WriteFile(".\\result\\"+so.TextName+"_"+so.DictName+".txt", wb.Bytes(), 0666)
-		if err != nil {
-			fmt.Println("Error! 输出结果错误:", err)
-		} else {
-			fmt.Println("Suceess! 成功输出结果:", ".\\result\\"+so.TextName+"_"+so.DictName+".txt")
-		}
-	}
-	return so
+	return so, nil
 }
 
 func GetFileName(fp string) string {
 	name := filepath.Base(fp)
 	ext := filepath.Ext(fp)
 	return strings.TrimSuffix(name, ext)
+}
+
+func GetDictName(s string) string {
+	s = strings.TrimSuffix(s, "赛码表")
+	return strings.TrimSuffix(s, "_")
 }

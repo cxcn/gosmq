@@ -18,6 +18,7 @@ var tmpl string
 // 赛码结果
 type Result struct {
 	*smq.SmqOut
+	DictName   string
 	KeyHeatMap [][]template.HTML
 	FinHeatMap [10]template.HTML
 }
@@ -30,30 +31,30 @@ type TmplData struct {
 	Results     []*Result
 }
 
-func NewHTML() *TmplData {
-	return new(TmplData)
+// 初始化，接收文本名
+func NewHTML(s string) *TmplData {
+	ret := new(TmplData)
+	if strings.ContainsRune(s, '《') {
+		ret.TextName = s
+	} else {
+		ret.TextName = "《" + s + "》"
+	}
+	return ret
 }
 
 // 添加一个结果
-func (d *TmplData) AddResult(so *smq.SmqOut) {
-
-	if !strings.ContainsRune(so.TextName, '《') {
-		d.TextName = "《" + so.TextName + "》"
-	} else {
-		d.TextName = so.TextName
-	}
+func (d *TmplData) AddResult(so *smq.SmqOut, s string) {
 
 	d.TextLen = so.TextLen
 	d.NotHanCount = so.NotHanCount
-	s := strings.TrimSuffix(so.DictName, "赛码表")
-	so.DictName = strings.TrimSuffix(s, "_")
 
-	tmp := Result{
-		SmqOut: so,
-	}
+	tmp := new(Result)
+	tmp.SmqOut = so
+	tmp.DictName = s
+
 	tmp.genKeyHeatMap()
 	tmp.genFinHeatMap()
-	d.Results = append(d.Results, &tmp)
+	d.Results = append(d.Results, tmp)
 }
 
 // 输出 html 文件

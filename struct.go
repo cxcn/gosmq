@@ -1,32 +1,36 @@
 package smq
 
-type SmqIn struct {
-	Fpd  string // 赛码表路径
-	Ding int    // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
-	IsS  bool   // 是否只跑单字
-	IsW  bool   // 是否输出赛码表
+import (
+	"io"
+)
 
-	Fpt string // 文本路径
-	Csk string // 自定义选重键(2重开始，默认为;')
-	As  bool   // 空格是否互击
-	IsO bool   // 是否输出编码
+type SmqIn struct {
+	TextReader     io.Reader // 文本
+	DictReader     io.Reader // 赛码表
+	IsOutputDict   bool      // 是否输出赛码表
+	IsOutputResult bool      // 是否输出赛码分词结果
+
+	BeginPush       int    // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
+	SelectKeys      string // 自定义选重键(2重开始，默认为;')
+	IsSingleOnly    bool   // 是否只跑单字
+	IsSpaceDiffHand bool   // 空格是否互击
 }
 
 type SmqOut struct {
-	TextName string //文本名
-	TextLen  int    //文本字数
-	DictName string //码表名
-	DictLen  int    //词条数
+	DictBytes []byte   //赛码表
+	WordSlice [][]rune //分词
+	CodeSlice []string //编码
 
-	WordSlice   [][]rune //分词
-	CodeSlice   []string //编码
-	NotHan      string   //非汉字
-	NotHanCount int      //非汉字数
-	Lack        string   //缺字
-	LackCount   int      //缺字数
-	UnitCount   int      //上屏数
-	CodeLen     int      //总键数
-	CodeAvg     float64  //码长
+	TextLen int //文本字数
+	DictLen int //词条数
+
+	NotHan      string  //非汉字
+	NotHanCount int     //非汉字数
+	Lack        string  //缺字
+	LackCount   int     //缺字数
+	UnitCount   int     //上屏数
+	CodeLen     int     //总键数
+	CodeAvg     float64 //码长
 
 	CodeStat   map[int]int //码长统计
 	WordStat   map[int]int //词长统计

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"runtime"
 	"time"
@@ -54,23 +56,65 @@ func main() {
 		fmt.Println("main cost time = ", cost)
 	}()
 
-	h := html.NewHTML()
+	tn := smq.GetFileName(opt.Fpt)
+	h := html.NewHTML(tn)
 	for _, v := range opt.Fpd {
-		si := smq.SmqIn{
-			Fpd:  v,
-			Ding: opt.Ding,
-			IsS:  opt.IsS,
-			IsW:  true,
-			Fpt:  opt.Fpt,
-			Csk:  opt.Csk,
-			As:   opt.AS,
-			IsO:  opt.IsO,
+
+		text, err := os.Open(opt.Fpt)
+		if err != nil {
+			panic(err)
 		}
-		so := si.Smq()
+		dict, err := os.Open(v)
+		if err != nil {
+			panic(err)
+		}
+
+		si := smq.SmqIn{
+			TextReader:     text,
+			DictReader:     dict,
+			IsOutputDict:   true,
+			IsOutputResult: opt.IsO,
+
+			BeginPush:       opt.Ding,
+			SelectKeys:      opt.Csk,
+			IsSingleOnly:    opt.IsS,
+			IsSpaceDiffHand: opt.AS,
+		}
+
+		so, _ := si.Smq()
 		if so.CodeLen == 0 {
 			continue
 		}
-		h.AddResult(so)
+
+		dn := smq.GetFileName(v)
+		// 写入赛码表
+		if si.IsOutputResult {
+			_ = os.Mkdir("dict", 0666)
+			err := ioutil.WriteFile(".\\dict\\"+dn+"_赛码表.txt", so.DictBytes, 0666)
+			if err != nil {
+				fmt.Println("Error! 赛码表写入错误:", err)
+			} else {
+				fmt.Println("Success! 成功写入赛码表:", ".\\dict\\"+dn+"_赛码表.txt")
+			}
+		}
+
+		if si.IsOutputResult {
+			var buf bytes.Buffer
+			for i, v := range so.WordSlice {
+				buf.WriteString(string(v))
+				buf.WriteByte('\t')
+				buf.WriteString(so.CodeSlice[i])
+				buf.WriteByte('\n')
+			}
+			_ = os.Mkdir("result", 0666)
+			err := ioutil.WriteFile(".\\result\\"+tn+"_"+dn+".txt", buf.Bytes(), 0666)
+			if err != nil {
+				fmt.Println("Error! 输出结果错误:", err)
+			} else {
+				fmt.Println("Suceess! 成功输出结果:", ".\\result\\"+tn+"_"+dn+".txt")
+			}
+		}
+		h.AddResult(so, dn)
 		output(so)
 	}
 	h.OutputHTMLFile("result.html")

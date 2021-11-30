@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (dict *trie) read(rd io.Reader, isS bool) int {
+func (dict *trie) read(rd io.Reader, iso bool) int {
 	dictLen := 0
 	scan := bufio.NewScanner(rd)
 	for scan.Scan() {
@@ -16,7 +16,7 @@ func (dict *trie) read(rd io.Reader, isS bool) int {
 		if len(wc) != 2 {
 			continue
 		}
-		if isS && len([]rune(wc[0])) != 1 {
+		if iso && len([]rune(wc[0])) != 1 {
 			continue
 		}
 		dict.insert(wc[0], wc[1])
@@ -26,7 +26,7 @@ func (dict *trie) read(rd io.Reader, isS bool) int {
 	return dictLen
 }
 
-func (dict *trie) readC(rd io.Reader, isS bool, ding int) (int, []byte) {
+func (dict *trie) readC(rd io.Reader, iso, iod bool, bp int) (int, []byte) {
 	dictLen := 0
 	scan := bufio.NewScanner(rd)
 	freq := make(map[string]int)
@@ -37,7 +37,7 @@ func (dict *trie) readC(rd io.Reader, isS bool, ding int) (int, []byte) {
 		if len(wc) != 2 {
 			continue
 		}
-		if isS && len([]rune(wc[0])) != 1 {
+		if iso && len([]rune(wc[0])) != 1 {
 			continue
 		}
 		c := wc[1]
@@ -48,16 +48,18 @@ func (dict *trie) readC(rd io.Reader, isS bool, ding int) (int, []byte) {
 		if rp != 1 {
 			suf = strconv.Itoa(rp)
 			c += suf
-		} else if ding > len(c) {
+		} else if bp > len(c) {
 			c += suf
 		}
 
 		// 生成赛码表
-		wb = append(wb, scan.Bytes()...)
-		if rp != 1 || ding > len(c) {
-			wb = append(wb, suf...)
+		if iod {
+			wb = append(wb, scan.Bytes()...)
+			if rp != 1 || bp > len(c) {
+				wb = append(wb, suf...)
+			}
+			wb = append(wb, '\n')
 		}
-		wb = append(wb, '\n')
 
 		dict.insert(wc[0], c)
 		dictLen++

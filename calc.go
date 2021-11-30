@@ -7,12 +7,12 @@ import (
 	"unicode"
 )
 
-func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as, isO bool) {
+func (so *SmqOut) calc(rd io.Reader, dict *trie, sk string, isdh, ior bool) {
 
 	buf := bufio.NewReader(rd)
 	var notHan []rune
 	var lack []rune
-	combMap := newCombMap(as)
+	combMap := newCombMap(isdh)
 
 	for {
 		// 逐行读取文本文件
@@ -56,7 +56,7 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as, isO bool) {
 				if isHan {
 					lack = append(lack, text[p])
 				}
-				if isO {
+				if ior {
 					so.WordSlice = append(so.WordSlice, text[p:p+1])
 					so.CodeSlice = append(so.CodeSlice, c)
 				} else {
@@ -72,7 +72,7 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as, isO bool) {
 				so.WordCount++
 				so.WordLen += i
 			}
-			c, rp := repeat(c, csk) // 选重
+			c, rp := repeat(c, sk) // 选重
 			so.RepeatStat[rp]++
 			if rp > 1 {
 				so.RepeatCount++
@@ -80,7 +80,7 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as, isO bool) {
 			}
 			so.CodeStat[len(c)]++ // 码长
 			so.CodeLen += len(c)
-			if isO {
+			if ior {
 				so.WordSlice = append(so.WordSlice, text[p:p+i])
 				so.CodeSlice = append(so.CodeSlice, c)
 			} else {
@@ -90,7 +90,7 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as, isO bool) {
 			p += i
 		}
 
-		if !isO {
+		if !ior {
 			so.feel(codeSlice, combMap)
 		}
 		if err != nil {
@@ -98,7 +98,7 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as, isO bool) {
 		}
 	}
 
-	if isO {
+	if ior {
 		so.feel(so.CodeSlice, combMap)
 	}
 	for _, v := range notHan {
@@ -114,7 +114,7 @@ func (so *SmqOut) calc(rd io.Reader, dict *trie, csk string, as, isO bool) {
 	so.stat()
 }
 
-func repeat(c, csk string) (string, int) {
+func repeat(c, sk string) (string, int) {
 
 	// ascii 转数字
 	btoi := func(d byte) int {
@@ -136,9 +136,9 @@ func repeat(c, csk string) (string, int) {
 	}
 	if rp > 1 {
 		// 替换选重键
-		if rp-2 <= len(csk)-1 {
+		if rp-2 <= len(sk)-1 {
 			tmp := []byte(c)
-			tmp[len(c)-1] = csk[rp-2]
+			tmp[len(c)-1] = sk[rp-2]
 			c = string(tmp)
 		}
 	} else {
