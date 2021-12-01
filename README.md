@@ -66,6 +66,33 @@ sort: original
 `SmqIn.SelectKeys` 自定义选重键(2 重开始)
 将编码中末尾数字替换，只支持 10 重以内
 
+## 输出 html
+
+`NewHTML()` 创建一个对象
+
+`.AddResult(*smq.SmqOut)` 添加一个结果
+
+`.OutputHTML(io.Writer)` 输出 html 到 io 流
+
+`.OutputHTMLFile(string)` 输出 html 到文件
+
+### 例子
+
+```go
+si := new(smq.SmqIn)
+h := smq.NewHTML("文本名")
+so,err := si.Smq()
+if err != nil {
+    panic(err)
+}
+h.AddResult(so,"码表名")
+h.OutputHTMLFile("result.html")
+```
+
+### 预览
+
+![](./assets/preview-html.png)
+
 ## Benchmark
 
 > 配置：windows 10, r5 3600 4.2g, 8g\*2 2933Mhz c18
