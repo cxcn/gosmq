@@ -1,4 +1,4 @@
-package html
+package smq
 
 import (
 	"fmt"
@@ -8,16 +8,14 @@ import (
 	"strings"
 
 	_ "embed"
-
-	smq "github.com/cxcn/gosmq"
 )
 
-//go:embed tmpl.html
+//go:embed assets/tmpl.html
 var tmpl string
 
 // 赛码结果
 type Result struct {
-	*smq.SmqOut
+	*SmqOut
 	DictName   string
 	KeyHeatMap [][]template.HTML
 	FinHeatMap [10]template.HTML
@@ -43,14 +41,14 @@ func NewHTML(s string) *TmplData {
 }
 
 // 添加一个结果
-func (d *TmplData) AddResult(so *smq.SmqOut, s string) {
+func (d *TmplData) AddResult(so *SmqOut, s string) {
 
 	d.TextLen = so.TextLen
 	d.NotHanCount = so.NotHanCount
 
 	tmp := new(Result)
 	tmp.SmqOut = so
-	tmp.DictName = smq.GetDictName(s)
+	tmp.DictName = GetDictName(s)
 
 	tmp.genKeyHeatMap()
 	tmp.genFinHeatMap()

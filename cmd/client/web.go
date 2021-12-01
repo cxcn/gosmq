@@ -12,8 +12,6 @@ import (
 	_ "embed"
 
 	smq "github.com/cxcn/gosmq"
-
-	"github.com/cxcn/gosmq/pkg/html"
 )
 
 //go:embed index.html
@@ -80,7 +78,7 @@ func web() {
 			return
 		}
 		tn := smq.GetFileName(r.PostForm.Get("fpt"))
-		h := html.NewHTML(tn)
+		h := smq.NewHTML(tn)
 		for _, v := range options {
 
 			so, err := v.SmqIn.Smq()

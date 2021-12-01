@@ -11,8 +11,6 @@ import (
 	_ "embed"
 
 	smq "github.com/cxcn/gosmq"
-
-	"github.com/cxcn/gosmq/pkg/html"
 )
 
 //go:embed index.html
@@ -44,7 +42,7 @@ func main() {
 			dn = v.Get("dictname")
 		}
 
-		h := html.NewHTML(tn)
+		h := smq.NewHTML(tn)
 		so, _ := si.Smq()
 		h.AddResult(so, dn)
 		h.OutputHTML(rw)
