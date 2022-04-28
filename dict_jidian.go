@@ -5,13 +5,11 @@ import (
 	"bytes"
 	"io/ioutil"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 )
 
 func (dict *Dict) fromJidian() {
-	t := new(trie)
 	scan := bufio.NewScanner(dict.reader)
 	var buf bytes.Buffer
 	// 生成字典
@@ -43,20 +41,12 @@ func (dict *Dict) fromJidian() {
 			buf.WriteByte('\t')
 			buf.WriteString(strconv.Itoa(int(order)))
 			buf.WriteByte('\n')
-
-			t.Insert(wc[i], wc[0], order)
-			dict.length++
 		}
 	}
-	// 添加符号
-	for _, v := range puncts.o {
-		t.Insert(v.word, v.code, v.order)
-	}
 	// 输出赛码表
-	_ = os.Mkdir("dict", 0666)
-	err := ioutil.WriteFile("dict/"+dict.Name+".txt", buf.Bytes(), 0666)
+	err := ioutil.WriteFile(dict.SavePath, buf.Bytes(), 0666)
 	if err != nil {
 		log.Println(err)
 	}
-	dict.Matcher = t
+	dict.reader = bytes.NewReader(buf.Bytes())
 }

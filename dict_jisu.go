@@ -5,14 +5,12 @@ import (
 	"bytes"
 	"io/ioutil"
 	"log"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
 func (dict *Dict) fromJisu() {
-	t := new(trie)
 	scan := bufio.NewScanner(dict.reader)
 	var buf bytes.Buffer
 	// 生成字典
@@ -25,42 +23,47 @@ func (dict *Dict) fromJisu() {
 			continue
 		}
 		c := wc[1]
+		code := ""
 		order := 0
-		for i := 0; i < len(dict.SelectKeys); i++ {
-			if c[len(c)-1] == dict.SelectKeys[i] {
-				order = i + 1
-				break
-			}
-		}
-		if order == 0 {
+		// a_ aa_
+		if len(c)-1 > 0 && c[len(c)-1] == '_' {
+			code = c[:len(c)-1]
+			order = 1
+		} else {
 			re := regexp.MustCompile(`\d+$`)
 			match := re.FindString(c)
+			// a1 aa3
 			if match != "" {
+				code = c[:len(c)-len(match)]
 				order, _ = strconv.Atoi(match)
-			} else {
-				order = 1
+			} else { // akdb ksdw
+				code = c
+				order = 0 // 和前面区分开
 			}
-		} else {
-			order = 1
 		}
 		// 生成赛码表
-		buf.WriteString(scan.Text())
+		buf.WriteString(wc[0])
 		buf.WriteByte('\t')
+		buf.WriteString(code)
+		// 自定义选重键
+		if order != 0 {
+			if order <= len(dict.SelectKeys) {
+				buf.WriteByte(dict.SelectKeys[order-1])
+			} else {
+				buf.WriteString(strconv.Itoa(order))
+			}
+		}
+		buf.WriteByte('\t')
+		if order == 0 {
+			order = 1
+		}
 		buf.WriteString(strconv.Itoa(order))
 		buf.WriteByte('\n')
-
-		t.Insert(wc[0], c, order)
-		dict.length++
-	}
-	// 添加符号
-	for _, v := range puncts.o {
-		t.Insert(v.word, v.code, v.order)
 	}
 	// 输出赛码表
-	_ = os.Mkdir("dict", 0666)
-	err := ioutil.WriteFile("dict/"+dict.Name+".txt", buf.Bytes(), 0666)
+	err := ioutil.WriteFile(dict.SavePath, buf.Bytes(), 0666)
 	if err != nil {
 		log.Println(err)
 	}
-	dict.Matcher = t
+	dict.reader = bytes.NewReader(buf.Bytes())
 }

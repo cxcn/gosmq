@@ -41,24 +41,20 @@ func (dict *Dict) init() {
 		dict.PushStart = 4
 	}
 	// 转换、输出赛码表
-	// 非本程序格式只支持前缀树算法
 	switch dict.Format {
 	case "jisu":
 		dict.fromJisu()
-		return
 	case "duoduo":
 		dict.fromDuoduo()
-		return
 	case "jidian":
 		dict.fromJidian()
-		return
 	}
-	// 本程序格式支持所有算法
 	// 外部算法
 	if dict.Matcher != nil {
 		dict.read()
 		return
 	}
+	// 匹配算法
 	switch dict.Algorithm {
 	case "order":
 		dict.Matcher = NewOrder()

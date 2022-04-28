@@ -18,12 +18,12 @@ type Dict struct {
 	Single bool   // 单字模式
 
 	Format string /* 码表格式
-	！非默认格式只支持 trie 算法
 	default:默认 本程序赛码表 词\t编码选重\t选重
 	jisu:极速赛码表 词\t编码选重
 	duoduo:多多格式码表 词\t编码
 	jidian:极点格式 编码\t词1 词2 词3
 	*/
+	SavePath   string // 保存路径，读取非默认码表格式时自动转换并保存
 	SelectKeys string // 普通码表自定义选重键(默认为_;')
 	PushStart  int    // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
 
