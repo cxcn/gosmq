@@ -2,69 +2,87 @@ package smq
 
 import (
 	"bufio"
-	"io"
+	"log"
 	"strconv"
 	"strings"
 )
 
-func (dict *trie) read(rd io.Reader, iso bool) int {
-	dictLen := 0
-	scan := bufio.NewScanner(rd)
-	for scan.Scan() {
-		wc := strings.Split(scan.Text(), "\t")
-		// fmt.Println(scan.Text())
-		if len(wc) != 2 {
-			continue
+func (dict *Dict) init() {
+	// 读取码表
+	if dict.Reader == nil {
+		if dict.String == "" {
+			if dict.Path == "" {
+				log.Println("没有输入码表")
+				dict.illegal = true
+				return
+			} else {
+				rd, err := readFromPath(dict.Path)
+				if err != nil {
+					log.Println("Warning! 从文件读取码表失败，路径：", dict.Path)
+					dict.illegal = true
+					return
+				}
+				dict.Reader = rd
+			}
+		} else {
+			dict.Reader = readFromString(dict.String)
 		}
-		if iso && len([]rune(wc[0])) != 1 {
-			continue
-		}
-		dict.insert(wc[0], wc[1])
-		dictLen++
 	}
-	dict.addPunct()
-	return dictLen
+	if dict.SelectKeys == "" {
+		dict.SelectKeys = "_;'"
+	}
+	// 转换、输出赛码表
+	// 非本程序格式只支持前缀树算法
+	switch dict.Format {
+	case "jisu":
+		dict.fromJisu()
+		return
+	case "duoduo":
+		dict.fromDuoduo()
+		return
+	case "jidian":
+		dict.fromJidian()
+		return
+	}
+	// 本程序格式支持所有算法
+	// 外部算法
+	if dict.Matcher != nil {
+		dict.read()
+		return
+	}
+	switch dict.Algorithm {
+	case "order":
+		dict.Matcher = NewOrder()
+	case "longest":
+		dict.Matcher = NewLongest()
+	default: // "trie"
+		dict.Matcher = NewTrie()
+	}
+	dict.read()
 }
 
-func (dict *trie) readC(rd io.Reader, iso, iod bool, bp int) (int, []byte) {
-	dictLen := 0
-	scan := bufio.NewScanner(rd)
-	freq := make(map[string]int)
-	var wb []byte
+func (dict *Dict) read() {
+	m := dict.Matcher
+	scan := bufio.NewScanner(dict.Reader)
 	// 生成字典
 	for scan.Scan() {
 		wc := strings.Split(scan.Text(), "\t")
-		if len(wc) != 2 {
+		if len(wc) != 3 {
 			continue
 		}
-		if iso && len([]rune(wc[0])) != 1 {
+		if dict.Single && len([]rune(wc[0])) != 1 {
 			continue
 		}
-		c := wc[1]
-		freq[c]++
-		rp := freq[c]
-
-		suf := "_"
-		if rp != 1 {
-			suf = strconv.Itoa(rp)
-			c += suf
-		} else if bp > len(c) {
-			c += suf
+		order, err := strconv.Atoi(wc[2])
+		if err != nil {
+			order = 1
 		}
-
-		// 生成赛码表
-		if iod {
-			wb = append(wb, scan.Bytes()...)
-			if rp != 1 || bp > len(c) {
-				wb = append(wb, suf...)
-			}
-			wb = append(wb, '\n')
-		}
-
-		dict.insert(wc[0], c)
-		dictLen++
+		m.Insert(wc[0], wc[1], order)
+		dict.length++
 	}
-	dict.addPunct()
-
-	return dictLen, wb
+	// 添加符号
+	for _, v := range puncts.o {
+		m.Insert(v.word, v.code, v.order)
+	}
+	m.Handle()
 }

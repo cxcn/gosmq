@@ -4,75 +4,137 @@ import (
 	"io"
 )
 
-type SmqIn struct {
-	TextReader     io.Reader // 文本
-	DictReader     io.Reader // 赛码表
-	IsOutputDict   bool      // 是否输出赛码表
-	IsOutputResult bool      // 是否输出赛码分词结果
-
-	BeginPush       int    // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
-	SelectKeys      string // 自定义选重键(2重开始，默认为;')
-	IsSingleOnly    bool   // 是否只跑单字
-	IsSpaceDiffHand bool   // 空格是否互击
+type Matcher interface {
+	// 插入一个词条 word code order
+	Insert(string, string, int)
+	// 读取完码表后的操作
+	Handle()
+	// 匹配下一个词
+	Match([]rune, int) (int, string, int)
 }
 
-type SmqOut struct {
-	DictBytes []byte   //赛码表
-	WordSlice [][]rune //分词
-	CodeSlice []string //编码
+type Dict struct {
+	// io 流 -> 字符串 -> 路径
+	Reader io.Reader // 赛码表 io 流
+	String string    // 赛码表 字符串形式
+	Path   string    // 赛码表 路径形式
+	Name   string    // 码表名
+	Single bool      // 单字模式
 
-	TextLen int //文本字数
-	DictLen int //词条数
+	// 转换赛码表，若不为 0，自动导出
+	Format string /* 码表格式
+	smq:默认 本程序赛码表 词\t编码选重\t选重
+	jisu:极速赛码表 词\t编码选重
+	duoduo:多多格式码表 词\t编码
+	jidian:极点格式 编码\t词1 词2 词3 */
+	SelectKeys string // 普通码表自定义选重键(默认为_;')
+	PushStart  int    // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
 
-	NotHan      string  //非汉字
-	NotHanCount int     //非汉字数
-	Lack        string  //缺字
-	LackCount   int     //缺字数
-	UnitCount   int     //上屏数
-	CodeLen     int     //总键数
-	CodeAvg     float64 //码长
+	// 初始化 Matcher
+	Algorithm string // 算法 trie:前缀树 order:顺序匹配（极速跟打器） longest:最长匹配
+	Matcher   Matcher
+	length    int  // 词条数
+	illegal   bool // 非法输入
 
-	CodeStat   map[int]int //码长统计
-	WordStat   map[int]int //词长统计
-	RepeatStat map[int]int //选重统计
+	PressSpaceBy   string // 空格按键方式 left|right|both
+	ReturnSegments bool   // 是否输出赛码分词结果
+}
 
-	WordCount   int     //打词数
-	WordLen     int     //打词字数
-	WordRate    float64 //打词率（上屏）
-	WordLenRate float64 //打词率（字数）
+type Result struct {
+	Name      string
+	Basic     basic
+	Words     words     // 打词
+	Collision collision // 选重
+	CodeLen   codeLen   // 码长
 
-	RepeatCount   int     //选重数
-	RepeatLen     int     //选重字数
-	RepeatRate    float64 //选重率（上屏）
-	RepeatLenRate float64 //选重率（字数）
+	Keys    keys  // 按键统计
+	Combs   combs // 按键组合
+	Fingers fingers
+	Hands   hands
 
-	// 下面是手感部分
+	Data export
 
-	eqSum     int // 总当量*10
-	skCount   int // 同键
-	xkpCount  int // 小跨排
-	dkpCount  int // 大跨排
-	csCount   int // 错手
-	lfdCount  int // 小指干扰
-	combLen   int // 按键组合数
-	keyCount  [128]int
-	finCount  [10]int
-	handCount [4]int // LR RL LL RR
+	toTalEq10 int // 总当量*10
+	mapNotHan map[rune]struct{}
+	mapLack   map[rune]struct{}
+	// codes     string
+}
 
-	KeyRate   [42]float64
-	FinRate   [10]float64
-	LeftHand  float64 // 左手
-	RightHand float64 // 右手
+// count and rate
+type CaR struct {
+	Count int
+	Rate  float64
+}
 
-	HandRate     [4]float64 // LR RL LL RR
-	DiffHandRate float64    // 异手
-	SameFinRate  float64    // 同指
-	DiffFinRate  float64    // 同手异指
+// 可能要导出的数据
+type export struct {
+	WordSlice [][]rune // 分词
+	CodeSlice []string // 编码
+}
 
-	Eq  float64 // 当量 equivalent
-	Sk  float64 // 同键 same key
-	Xkp float64 // 小跨排
-	Dkp float64 // 大跨排
-	Cs  float64 // 错手
-	Lfd float64 // 小指干扰 little finger disturb
+// 基础
+type basic struct {
+	DictLen int    // 词条数
+	TextLen int    // 文本字数
+	NotHan  string // 非汉字
+	NotHans int    // 非汉字数
+	Lack    string // 缺字
+	Lacks   int    // 缺字数
+	Commits int    // 上屏数
+}
+
+// 打词
+type words struct {
+	Commits CaR         // 打词数
+	Chars   CaR         // 打词字数
+	Dist    map[int]int // 词长分布统计
+}
+
+// 选重
+type collision struct {
+	Commits CaR         // 选重数
+	Chars   CaR         // 选重字数
+	Dist    map[int]int // 选重分布统计
+}
+
+// 码长
+type codeLen struct {
+	Total   int         // 全部码长
+	PerChar float64     // 字均码长
+	Dist    map[int]int // 码长分布统计
+}
+
+// 按键 左空格_，右空格+
+type keys map[byte]*CaR
+
+// 按键组合
+type combs struct {
+	Count      int     // 按键组合数
+	Equivalent float64 // 当量
+
+	DoubleHit  CaR // 同键双击
+	TribleHit  CaR // 同键三连击
+	SingleSpan CaR // 小跨排
+	MultiSpan  CaR // 大跨排
+
+	LongFingersDisturb   CaR // 错手
+	LittleFingersDisturb CaR // 小指干扰
+}
+
+type fingers struct {
+	Dist [11]*CaR // 手指分布，按键盘上的列，第11个是41键以外的
+	Same CaR      // 同指
+	Diff CaR      // 异指（同手）
+}
+
+type hands struct {
+	Left  CaR // 左手
+	Right CaR // 右手
+	Same  CaR // 同手
+	Diff  CaR // 异手
+
+	LL CaR `json:"LeftToLeft"`   // 左左
+	LR CaR `json:"LeftToRight"`  // 左右
+	RL CaR `json:"RightToLeft"`  // 右左
+	RR CaR `json:"RightToRight"` // 右右
 }

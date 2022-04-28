@@ -1,5 +1,9 @@
-cmd/smq-web/
-*.txt
-*.yaml
-*.exe
-result.html
+# .gitignore
+cmd/**/*.txt
+cmd/**/*.yaml
+cmd/**/*.json
+
+cmd/**/*.exe
+cmd/**/result.html
+
+cmd/test*/
