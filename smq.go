@@ -78,24 +78,37 @@ func (smq *Smq) Run() []*Result {
 		// fmt.Println(smq.Inputs[i])
 	}
 	brd := bufio.NewReader(smq.Text)
-	var wg sync.WaitGroup
-	// 逐行读取文本文件
-	for {
-		line, err := brd.ReadString('\n')
-		for i, v := range smq.Inputs {
-			wg.Add(1)
-			tmp := ret[i]
-			go func(arg *Dict) {
-				codes := tmp.match([]rune(line), arg.Matcher)
-				tmp.feel(codes, arg)
-				wg.Done()
-			}(v)
+	if smqLen == 1 {
+		for {
+			line, err := brd.ReadString('\n')
+			codes := ret[0].match([]rune(line), smq.Inputs[0].Matcher)
+			ret[0].feel(codes, smq.Inputs[0])
+			if err != nil {
+				break
+			}
 		}
-		wg.Wait()
-		if err != nil {
-			break
+	} else {
+		var wg sync.WaitGroup
+		// 逐行读取文本文件
+		for {
+			line, err := brd.ReadString('\n')
+			for i, v := range smq.Inputs {
+				wg.Add(1)
+				tmp := ret[i]
+				go func(arg *Dict) {
+					codes := tmp.match([]rune(line), arg.Matcher)
+					tmp.feel(codes, arg)
+					wg.Done()
+				}(v)
+			}
+			wg.Wait()
+
+			if err != nil {
+				break
+			}
 		}
 	}
+
 	for i, v := range ret {
 		v.stat(smq.Inputs[i])
 	}
