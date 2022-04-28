@@ -39,9 +39,9 @@ type Dict struct {
 	PressSpaceBy   string // 空格按键方式 left|right|both
 	ReturnSegments bool   // 是否输出赛码分词结果
 
-	reader  io.Reader // 赛码表 io 流
-	length  int       // 词条数
-	illegal bool      // 非法输入
+	reader io.Reader // 赛码表 io 流
+	length int       // 词条数
+	legal  bool      // 合法输入
 }
 
 type Result struct {

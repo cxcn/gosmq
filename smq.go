@@ -47,11 +47,11 @@ func NewFromPath(name, path string) Smq {
 // 添加一个码表
 func (smq *Smq) Add(dict *Dict) {
 	// 合法输入
-	if !dict.illegal {
+	if dict.legal {
+		dict.init()
 		smq.Inputs = append(smq.Inputs, dict)
 		fmt.Println("添加了一个码表：", dict.Name)
 	}
-	dict.init()
 }
 
 func newResult() *Result {
@@ -63,6 +63,9 @@ func newResult() *Result {
 	res.Collision.Dist = make(map[int]int)
 	res.CodeLen.Dist = make(map[int]int)
 	res.Keys = make(keys)
+	for _, v := range "1234567890qwertyuiopasdfghjkl;zxcvbnm,./" {
+		res.Keys[string(v)] = new(CaR)
+	}
 	return res
 }
 

@@ -14,11 +14,13 @@ import (
 // 从 io 流加载码表
 func (dict *Dict) Load(rd io.Reader) {
 	dict.reader = Tranformer(rd)
+	dict.legal = true
 }
 
 // 从字符串流加载码表
 func (dict *Dict) LoadFromString(s string) {
 	dict.reader = readFromString(s)
+	dict.legal = true
 }
 
 // 从文件加载码表
@@ -26,13 +28,13 @@ func (dict *Dict) LoadFromPath(path string) {
 	rd, err := readFromPath(path)
 	if err != nil {
 		log.Println("Warning! 从文件读取码表失败，路径：", path)
-		dict.illegal = true
 		return
 	}
 	if dict.Name == "" {
 		dict.Name = GetFileName(path)
 	}
 	dict.reader = rd
+	dict.legal = true
 }
 
 // 转换赛码表
