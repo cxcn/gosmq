@@ -8,23 +8,29 @@ type entry struct {
 
 // 顺序匹配
 type order struct {
-	o []entry
+	o []*entry
 }
 
 func NewOrder() *order {
-	return new(order)
+	o := new(order)
+	o.o = make([]*entry, 0, 9999)
+	return o
 }
 
 func (o *order) Insert(word, code string, order int) {
-	o.o = append(o.o, entry{word, code, order})
+	o.o = append(o.o, &entry{word, code, order})
 }
 
-func (o order) Handle() {}
+func (o *order) Handle() {
+}
 
 // 顺序匹配
-func (o order) Match(text []rune, p int) (int, string, int) {
+func (o *order) Match(text []rune, p int) (int, string, int) {
 	for _, v := range o.o {
-		if v.word == string(text[p:p+len(v.word)]) {
+		if p+len([]rune(v.word)) >= len(text) {
+			continue
+		}
+		if v.word == string(text[p:p+len([]rune(v.word))]) {
 			return len(v.word), v.code, v.order
 		}
 	}

@@ -19,7 +19,7 @@ type Dict struct {
 
 	// 转换赛码表，若不为 0，自动导出
 	Format string /* 码表格式
-	smq:默认 本程序赛码表 词\t编码选重\t选重
+	default:默认 本程序赛码表 词\t编码选重\t选重
 	jisu:极速赛码表 词\t编码选重
 	duoduo:多多格式码表 词\t编码
 	jidian:极点格式 编码\t词1 词2 词3 */

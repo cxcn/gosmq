@@ -37,10 +37,7 @@ func (res *Result) feel(codes string, dict *Dict) {
 		comb := combData[string([]byte{last.key, current})]
 		if comb == nil {
 			// log.Printf(`comb nil"%v"%v"%v`, last.key, current, comb)
-
-			last.key = currentData.key
-			last.fin = currentData.fin
-			last.lor = currentData.lor
+			*last = *currentData
 			continue
 		}
 		res.Combs.Count++
@@ -83,9 +80,7 @@ func (res *Result) feel(codes string, dict *Dict) {
 		if comb.lfd { // 小拇指干扰
 			res.Combs.LittleFingersDisturb.Count++
 		}
-		last.key = currentData.key
-		last.fin = currentData.fin
-		last.lor = currentData.lor
+		*last = *currentData
 	}
 
 }

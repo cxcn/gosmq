@@ -69,10 +69,10 @@ func (smq *Smq) Run() []*Result {
 		log.Println(smq.Inputs[i])
 	}
 	brd := bufio.NewReader(smq.Text)
+	var wg sync.WaitGroup
 	// 逐行读取文本文件
 	for {
 		line, err := brd.ReadString('\n')
-		var wg sync.WaitGroup
 		for i, v := range smq.Inputs {
 			wg.Add(1)
 			tmp := ret[i]
