@@ -109,8 +109,8 @@ func (dict *Dict) read() {
 		dict.length++
 	}
 	// 添加符号
-	for _, v := range puncts.o {
-		m.Insert(v.word, v.code, v.order)
+	for k, v := range puncts {
+		m.Insert(k, v, 1)
 	}
 	m.Handle()
 }

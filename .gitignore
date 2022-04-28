@@ -2,8 +2,10 @@
 cmd/**/*.txt
 cmd/**/*.yaml
 cmd/**/*.json
-
 cmd/**/*.exe
-cmd/**/result.html
+*.zip
 
+cmd/**/result.html
 cmd/test*/
+
+.vscode*

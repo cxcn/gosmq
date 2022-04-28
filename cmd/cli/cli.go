@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	smq "github.com/cxcn/gosmq"
 
 	"github.com/jessevdk/go-flags"
@@ -40,9 +43,21 @@ func cli() {
 	}
 	dict.LoadFromPath(opts.Dict)
 	s := smq.NewFromPath("", opts.Text)
+
+	start := time.Now()
 	s.Add(dict)
+	fmt.Printf("耗时：%v\n", time.Since(start))
+	fmt.Printf("比赛开始，一共 %d 个码表\n", len(s.Inputs))
+	mid := time.Now()
 	res := s.Run()
+	fmt.Printf("比赛结束，耗时：%v\n", time.Since(mid))
+	fmt.Printf("累计耗时：%v\n", time.Since(start))
 	for _, v := range res {
 		output(v)
+		// var buf strings.Builder
+		// for i := 0; i < len(v.Data.CodeSlice); i++ {
+		// 	buf.WriteString(fmt.Sprintf("%s\t%s\n", v.Data.CodeSlice[i], string(v.Data.WordSlice[i])))
+		// }
+		// ioutil.WriteFile("res2.txt", []byte(buf.String()), 0666)
 	}
 }

@@ -27,11 +27,12 @@ func (o *order) Handle() {
 // 顺序匹配
 func (o *order) Match(text []rune, p int) (int, string, int) {
 	for _, v := range o.o {
-		if p+len([]rune(v.word)) >= len(text) {
+		word := []rune(v.word)
+		if p+len(word) > len(text) {
 			continue
 		}
-		if v.word == string(text[p:p+len([]rune(v.word))]) {
-			return len(v.word), v.code, v.order
+		if v.word == string(text[p:p+len(word)]) {
+			return len(word), v.code, v.order
 		}
 	}
 	return 0, "", 1

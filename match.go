@@ -43,6 +43,8 @@ func (res *Result) match(text []rune, m Matcher) string {
 		res.Collision.Dist[order]++   // 选重分布
 		res.CodeLen.Dist[len(code)]++ // 码长分布
 
+		// res.Data.CodeSlice = append(res.Data.CodeSlice, code)
+		// res.Data.WordSlice = append(res.Data.WordSlice, text[p:p+i])
 		p += i
 	}
 	return sb.String()

@@ -22,7 +22,10 @@ func (l *longest) Insert(word, code string, order int) {
 	if l.m[length] == nil {
 		l.m[length] = make(map[string]code_order)
 	}
-	l.m[length][word] = code_order{code, order}
+	// 不替换原有的
+	if l.m[length][word].code == "" {
+		l.m[length][word] = code_order{code, order}
+	}
 }
 
 func (l *longest) Handle() {
@@ -41,7 +44,7 @@ func (l *longest) Handle() {
 // 最长匹配
 func (l *longest) Match(text []rune, p int) (int, string, int) {
 	max := l.max
-	if p+max >= len(text) {
+	if len(text)-p < max {
 		max = len(text) - p
 	}
 	for i := max; i > 0; i-- {

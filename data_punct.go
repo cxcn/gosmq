@@ -6,17 +6,17 @@ import (
 
 var puncts = genPuncts()
 
-func genPuncts() *order {
-	ret := NewOrder()
+func genPuncts() map[string]string {
+	ret := make(map[string]string)
 
 	// 一般的
 	en := "`-=[];',./"
 	cn := []rune(`·-=【】；‘，。、`)
 	for i, v := range en {
-		ret.Insert(string(v), string(v), 1)
-		ret.Insert(string(cn[i]), string(v), 1)
+		ret[string(v)] = string(v)
+		ret[string(cn[i])] = string(v)
 	}
-	ret.Insert("’", "'", 1)
+	ret["’"] = "'"
 
 	// shift =
 	shiftEN := `~_+{}:"<>?)!@#$%^&*(`
@@ -28,19 +28,24 @@ func genPuncts() *order {
 		} else {
 			key = string(en[i])
 		}
-		ret.Insert(string(v), "="+key, 1)
-		ret.Insert(string(shiftCN[i]), "="+key, 1)
+		ret[string(v)] = "=" + key
+		ret[string(shiftCN[i])] = "=" + key
 	}
 
 	// 其他的
-	ret.Insert("”", "='", 1)
-	ret.Insert("——", "=-", 1)
-	ret.Insert("……", "=6", 1)
+	ret["”"] = "='"
+	ret["——"] = "=-"
+	ret["……"] = "=6"
 
 	// 大小写字母
 	for i := 0; i < 26; i++ {
-		ret.Insert(string(byte(i+97)), string(byte(i+97)), 1)
-		ret.Insert(string(byte(i+65)), "="+string(byte(i+65)), 1)
+		ret[string(byte(i+97))] = string(byte(i + 97))
+		ret[string(byte(i+65))] = "=" + string(byte(i+65))
 	}
+	// 数字
+	for i := 0; i < 10; i++ {
+		ret[strconv.Itoa(i)] = strconv.Itoa(i)
+	}
+
 	return ret
 }

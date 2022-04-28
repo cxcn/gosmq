@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"sync"
-	"time"
 )
 
 type Smq struct {
@@ -66,15 +65,16 @@ func newResult() *Result {
 	for _, v := range "1234567890qwertyuiopasdfghjkl;zxcvbnm,./" {
 		res.Keys[string(v)] = new(CaR)
 	}
+	res.Fingers.Dist = make([]*CaR, 11, 11)
+	for i := 0; i < 11; i++ {
+		res.Fingers.Dist[i] = new(CaR)
+	}
 	return res
 }
 
 // 开始计算
 func (smq *Smq) Run() []*Result {
-	start := time.Now()
 	smqLen := len(smq.Inputs)
-	fmt.Printf("比赛开始，一共 %d 个码表\n", smqLen)
-
 	ret := make([]*Result, 0, smqLen)
 	for i := 0; i < len(smq.Inputs); i++ {
 		ret = append(ret, newResult())
@@ -115,7 +115,6 @@ func (smq *Smq) Run() []*Result {
 	for i, v := range ret {
 		v.stat(smq.Inputs[i])
 	}
-	fmt.Printf("比赛结束，耗时：%v\n", time.Since(start))
 	return ret
 }
 
