@@ -12,10 +12,10 @@ type comb struct {
 	lfd bool // 小指干扰 little finger disturb
 }
 
-//go:embed assets\\equivalent.txt
+//go:embed assets/equivalent.txt
 var equivalent string
 
-//go:embed assets\\fingering.txt
+//go:embed assets/fingering.txt
 var fingering string
 
 var combData = newCombData()
