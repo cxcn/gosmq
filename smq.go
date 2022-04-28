@@ -31,6 +31,9 @@ func NewFromPath(name, path string) Smq {
 	if err != nil {
 		log.Panicln("Error! 从文件初始化赛码器，文本名：", name)
 	}
+	if name == "" {
+		name = GetFileName(path)
+	}
 	log.Println("从文件初始化赛码器，文本名：", name)
 	return Smq{name, rd, []*Dict{}}
 }

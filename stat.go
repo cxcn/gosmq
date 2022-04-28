@@ -1,8 +1,7 @@
 package smq
 
 import (
-	"fmt"
-	"strconv"
+	"sort"
 )
 
 func (res *Result) stat(dict *Dict) {
@@ -13,6 +12,9 @@ func (res *Result) stat(dict *Dict) {
 	for k := range res.mapNotHan {
 		tmp1 = append(tmp1, k)
 	}
+	sort.Slice(tmp1, func(i, j int) bool {
+		return tmp1[i] < tmp1[j]
+	})
 	res.Basic.NotHans = len(tmp1)
 	res.Basic.NotHan = string(tmp1)
 
@@ -21,6 +23,9 @@ func (res *Result) stat(dict *Dict) {
 	for k := range res.mapLack {
 		tmp2 = append(tmp2, k)
 	}
+	sort.Slice(tmp2, func(i, j int) bool {
+		return tmp2[i] < tmp2[j]
+	})
 	res.Basic.Lacks = len(tmp2)
 	res.Basic.Lack = string(tmp2)
 	// 上屏数
@@ -106,9 +111,4 @@ func (res *Result) stat(dict *Dict) {
 	res.Hands.LR.Rate = div(res.Hands.LR.Count, res.Combs.Count)
 	res.Hands.RL.Rate = div(res.Hands.RL.Count, res.Combs.Count)
 	res.Hands.RR.Rate = div(res.Hands.RR.Count, res.Combs.Count)
-}
-
-func div(x, y int) float64 {
-	value, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", float64(x)/float64(y)), 64)
-	return value
 }
