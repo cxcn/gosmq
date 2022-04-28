@@ -8,7 +8,7 @@ import (
 
 func (dict *Dict) fromDuoduo() {
 	t := new(trie)
-	scan := bufio.NewScanner(dict.Reader)
+	scan := bufio.NewScanner(dict.reader)
 	mapOrder := make(map[string]int)
 	var wb []byte
 	// 生成字典

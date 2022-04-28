@@ -8,7 +8,7 @@ import (
 
 func (dict *Dict) fromJidian() {
 	t := new(trie)
-	scan := bufio.NewScanner(dict.Reader)
+	scan := bufio.NewScanner(dict.reader)
 	var wb []byte
 	// 生成字典
 	for scan.Scan() {

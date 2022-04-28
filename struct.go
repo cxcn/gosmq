@@ -14,12 +14,8 @@ type Matcher interface {
 }
 
 type Dict struct {
-	// io 流 -> 字符串 -> 路径
-	Reader io.Reader // 赛码表 io 流
-	String string    // 赛码表 字符串形式
-	Path   string    // 赛码表 路径形式
-	Name   string    // 码表名
-	Single bool      // 单字模式
+	Name   string // 码表名
+	Single bool   // 单字模式
 
 	// 转换赛码表，若不为 0，自动导出
 	Format string /* 码表格式
@@ -33,11 +29,13 @@ type Dict struct {
 	// 初始化 Matcher
 	Algorithm string // 算法 trie:前缀树 order:顺序匹配（极速跟打器） longest:最长匹配
 	Matcher   Matcher
-	length    int  // 词条数
-	illegal   bool // 非法输入
 
 	PressSpaceBy   string // 空格按键方式 left|right|both
 	ReturnSegments bool   // 是否输出赛码分词结果
+
+	reader  io.Reader // 赛码表 io 流
+	length  int       // 词条数
+	illegal bool      // 非法输入
 }
 
 type Result struct {

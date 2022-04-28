@@ -2,34 +2,43 @@ package smq
 
 import (
 	"bufio"
+	"io"
 	"log"
 	"strconv"
 	"strings"
 )
 
+// 从 io 流加载码表
+func (dict *Dict) Load(rd io.Reader) {
+	dict.reader = Tranformer(rd)
+}
+
+// 从字符串流加载码表
+func (dict *Dict) LoadFromString(s string) {
+	dict.reader = readFromString(s)
+}
+
+// 从文件加载码表
+func (dict *Dict) LoadFromPath(path string) {
+	rd, err := readFromPath(path)
+	if err != nil {
+		log.Println("Warning! 从文件读取码表失败，路径：", path)
+		dict.illegal = true
+		return
+	}
+	if dict.Name == "" {
+		dict.Name = GetFileName(path)
+	}
+	dict.reader = rd
+}
+
 func (dict *Dict) init() {
 	// 读取码表
-	if dict.Reader == nil {
-		if dict.String == "" {
-			if dict.Path == "" {
-				log.Println("没有输入码表")
-				dict.illegal = true
-				return
-			} else {
-				rd, err := readFromPath(dict.Path)
-				if err != nil {
-					log.Println("Warning! 从文件读取码表失败，路径：", dict.Path)
-					dict.illegal = true
-					return
-				}
-				dict.Reader = rd
-			}
-		} else {
-			dict.Reader = readFromString(dict.String)
-		}
-	}
 	if dict.SelectKeys == "" {
 		dict.SelectKeys = "_;'"
+	}
+	if dict.PushStart == 0 {
+		dict.PushStart = 4
 	}
 	// 转换、输出赛码表
 	// 非本程序格式只支持前缀树算法
@@ -63,7 +72,7 @@ func (dict *Dict) init() {
 
 func (dict *Dict) read() {
 	m := dict.Matcher
-	scan := bufio.NewScanner(dict.Reader)
+	scan := bufio.NewScanner(dict.reader)
 	// 生成字典
 	for scan.Scan() {
 		wc := strings.Split(scan.Text(), "\t")

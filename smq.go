@@ -40,13 +40,12 @@ func NewFromPath(name, path string) Smq {
 
 // 添加一个码表
 func (smq *Smq) Add(dict *Dict) {
-	dict.init()
 	// 合法输入
 	if !dict.illegal {
 		smq.Inputs = append(smq.Inputs, dict)
 		log.Println("添加了一个码表：", dict.Name)
 	}
-	log.Println("怎么回事")
+	dict.init()
 }
 
 func newResult() *Result {

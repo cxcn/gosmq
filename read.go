@@ -32,8 +32,8 @@ func readFromString(s string) io.Reader {
 	return rd
 }
 
-func readFromPath(s string) (io.Reader, error) {
-	f, err := os.Open(s)
+func readFromPath(path string) (io.Reader, error) {
+	f, err := os.Open(path)
 	if err != nil {
 		return f, err
 	}
