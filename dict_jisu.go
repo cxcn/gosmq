@@ -2,6 +2,10 @@ package smq
 
 import (
 	"bufio"
+	"bytes"
+	"io/ioutil"
+	"log"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -10,7 +14,7 @@ import (
 func (dict *Dict) fromJisu() {
 	t := new(trie)
 	scan := bufio.NewScanner(dict.reader)
-	var wb []byte
+	var buf bytes.Buffer
 	// 生成字典
 	for scan.Scan() {
 		wc := strings.Split(scan.Text(), "\t")
@@ -40,10 +44,10 @@ func (dict *Dict) fromJisu() {
 			order = 1
 		}
 		// 生成赛码表
-		wb = append(wb, scan.Bytes()...)
-		wb = append(wb, '\t')
-		wb = append(wb, []byte(strconv.Itoa(order))...)
-		wb = append(wb, '\n')
+		buf.WriteString(scan.Text())
+		buf.WriteByte('\t')
+		buf.WriteString(strconv.Itoa(order))
+		buf.WriteByte('\n')
 
 		t.Insert(wc[0], c, order)
 		dict.length++
@@ -51,6 +55,12 @@ func (dict *Dict) fromJisu() {
 	// 添加符号
 	for _, v := range puncts.o {
 		t.Insert(v.word, v.code, v.order)
+	}
+	// 输出赛码表
+	_ = os.Mkdir("dict", 0666)
+	err := ioutil.WriteFile("dict/"+dict.Name+".txt", buf.Bytes(), 0666)
+	if err != nil {
+		log.Println(err)
 	}
 	dict.Matcher = t
 }
