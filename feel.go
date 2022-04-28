@@ -5,9 +5,8 @@ func (res *Result) feel(codes string, dict *Dict) {
 		return
 	}
 	res.mapKeys[codes[0]]++
-	last := keyData[codes[0]]
-	if last == nil {
-		last = new(key)
+	last, ok := keyData[codes[0]]
+	if !ok {
 		last.key = codes[0]
 	}
 	for i := 1; i < len(codes); i++ {
@@ -31,17 +30,17 @@ func (res *Result) feel(codes string, dict *Dict) {
 		}
 		res.mapKeys[current]++
 
-		if keyData[current] == nil {
+		currentData, ok := keyData[current]
+		if !ok {
 			last.key = current
 			continue
 		}
-		currentData := keyData[current]
 
 		// for comb
 		comb := combData[string([]byte{last.key, current})]
 		if comb == nil {
 			// log.Printf(`comb nil"%v"%v"%v`, last.key, current, comb)
-			*last = *currentData
+			last = currentData
 			continue
 		}
 		res.Combs.Count++
@@ -84,7 +83,7 @@ func (res *Result) feel(codes string, dict *Dict) {
 		if comb.lfd { // 小拇指干扰
 			res.Combs.LittleFingersDisturb.Count++
 		}
-		*last = *currentData
+		last = currentData
 	}
 
 }

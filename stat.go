@@ -85,18 +85,11 @@ func (res *Result) stat(dict *Dict) {
 	res.Hands.Diff.Rate = div(res.Hands.Diff.Count, res.Combs.Count)
 	// fingers
 	for k, v := range res.mapKeys {
-		if keyData[k] == nil {
-			if res.Fingers.Dist[10] == nil {
-				res.Fingers.Dist[10] = new(CaR)
-			}
+		if _, ok := keyData[k]; !ok {
 			res.Fingers.Dist[10].Count += v
-			continue
+		} else {
+			res.Fingers.Dist[keyData[k].fin].Count += v
 		}
-		fin := keyData[k].fin
-		if res.Fingers.Dist[fin] == nil {
-			res.Fingers.Dist[fin] = new(CaR)
-		}
-		res.Fingers.Dist[fin].Count += v
 	}
 	for _, v := range res.Fingers.Dist {
 		if v == nil {

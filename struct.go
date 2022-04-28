@@ -129,9 +129,9 @@ type combs struct {
 }
 
 type fingers struct {
-	Dist []*CaR // 手指分布，按键盘上的列，第11个是41键以外的
-	Same CaR    // 同指
-	Diff CaR    // 异指（同手）
+	Dist [11]*CaR // 手指分布，按键盘上的列，第11个是41键以外的
+	Same CaR      // 同指
+	Diff CaR      // 异指（同手）
 }
 
 type hands struct {

@@ -65,7 +65,6 @@ func newResult() *Result {
 	for _, v := range "1234567890qwertyuiopasdfghjkl;zxcvbnm,./" {
 		res.Keys[string(v)] = new(CaR)
 	}
-	res.Fingers.Dist = make([]*CaR, 11, 11)
 	for i := 0; i < 11; i++ {
 		res.Fingers.Dist[i] = new(CaR)
 	}
