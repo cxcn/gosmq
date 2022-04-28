@@ -17,17 +17,18 @@ type Dict struct {
 	Name   string // 码表名
 	Single bool   // 单字模式
 
-	// 转换赛码表，若不为 0，自动导出
 	Format string /* 码表格式
+	！非默认格式只支持 trie 算法
 	default:默认 本程序赛码表 词\t编码选重\t选重
 	jisu:极速赛码表 词\t编码选重
 	duoduo:多多格式码表 词\t编码
-	jidian:极点格式 编码\t词1 词2 词3 */
+	jidian:极点格式 编码\t词1 词2 词3
+	*/
 	SelectKeys string // 普通码表自定义选重键(默认为_;')
 	PushStart  int    // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
 
 	// 初始化 Matcher
-	Algorithm string // 算法 trie:前缀树 order:顺序匹配（极速跟打器） longest:最长匹配
+	Algorithm string // 匹配算法 trie:前缀树 order:顺序匹配（极速跟打器） longest:最长匹配
 	Matcher   Matcher
 
 	PressSpaceBy   string // 空格按键方式 left|right|both

@@ -3,9 +3,11 @@ package smq
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"sync"
+	"time"
 )
 
 type Smq struct {
@@ -16,25 +18,29 @@ type Smq struct {
 
 // 初始化一个赛码器
 func New(name string, rd io.Reader) Smq {
-	log.Println("从字节流初始化赛码器，文本名：", name)
-	return Smq{name, rd, []*Dict{}}
+	fmt.Println("从字节流初始化赛码器...")
+	nrd := Tranformer(rd)
+	fmt.Println("文本名：", name)
+	return Smq{name, nrd, []*Dict{}}
 }
 
 func NewFromString(name, text string) Smq {
+	fmt.Println("从字符串初始化赛码器...")
 	rd := readFromString(text)
-	log.Println("从字符串初始化赛码器，文本名：", name)
+	fmt.Println("文本名：", name)
 	return Smq{name, rd, []*Dict{}}
 }
 
 func NewFromPath(name, path string) Smq {
+	fmt.Println("从文件初始化赛码器...")
 	rd, err := readFromPath(path)
 	if err != nil {
-		log.Panicln("Error! 从文件初始化赛码器，文本名：", name)
+		log.Panicln("Error! 从文件初始化赛码器，路径：", path)
 	}
 	if name == "" {
 		name = GetFileName(path)
 	}
-	log.Println("从文件初始化赛码器，文本名：", name)
+	fmt.Println("文本名：", name)
 	return Smq{name, rd, []*Dict{}}
 }
 
@@ -43,7 +49,7 @@ func (smq *Smq) Add(dict *Dict) {
 	// 合法输入
 	if !dict.illegal {
 		smq.Inputs = append(smq.Inputs, dict)
-		log.Println("添加了一个码表：", dict.Name)
+		fmt.Println("添加了一个码表：", dict.Name)
 	}
 	dict.init()
 }
@@ -62,11 +68,14 @@ func newResult() *Result {
 
 // 开始计算
 func (smq *Smq) Run() []*Result {
+	start := time.Now()
 	smqLen := len(smq.Inputs)
+	fmt.Printf("比赛开始，一共 %d 个码表\n", smqLen)
+
 	ret := make([]*Result, 0, smqLen)
 	for i := 0; i < len(smq.Inputs); i++ {
 		ret = append(ret, newResult())
-		log.Println(smq.Inputs[i])
+		// fmt.Println(smq.Inputs[i])
 	}
 	brd := bufio.NewReader(smq.Text)
 	var wg sync.WaitGroup
@@ -90,6 +99,7 @@ func (smq *Smq) Run() []*Result {
 	for i, v := range ret {
 		v.stat(smq.Inputs[i])
 	}
+	fmt.Printf("比赛结束，耗时：%v\n", time.Since(start))
 	return ret
 }
 
