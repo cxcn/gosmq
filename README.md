@@ -39,7 +39,10 @@ func main(){
     // 先定义一些基本参数
     dict := &smq.Dict{
 		Name:         "", // 码表名
-		Single:       false, // 单字模式
+		Single:       false, /* 单字模式
+		注意单字模式最好用多多格式的码表，
+		因为其他码表带有 order 信息，转换后可以用本格式码表
+		*/
 		Format:       "", /* 码表格式
 		default:默认 本程序赛码表 词\t编码选重\t选重
 		jisu:极速赛码表 词\t编码选重
