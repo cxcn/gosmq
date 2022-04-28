@@ -13,12 +13,15 @@ func (res *Result) stat(dict *Dict) {
 	for k := range res.mapNotHan {
 		tmp1 = append(tmp1, k)
 	}
+	res.Basic.NotHans = len(tmp1)
 	res.Basic.NotHan = string(tmp1)
+
 	// 缺字
 	tmp2 := make([]rune, 0, len(res.mapLack))
 	for k := range res.mapLack {
 		tmp2 = append(tmp2, k)
 	}
+	res.Basic.Lacks = len(tmp2)
 	res.Basic.Lack = string(tmp2)
 	// 上屏数
 	for _, v := range res.Words.Dist {
@@ -38,6 +41,26 @@ func (res *Result) stat(dict *Dict) {
 		res.CodeLen.Total += k * v
 	}
 	res.CodeLen.PerChar = div(res.CodeLen.Total, res.Basic.TextLen)
+
+	// keys
+	for k, v := range res.mapKeys {
+		key := ""
+		switch k {
+		case '_':
+			key = "left_space"
+		case '+':
+			key = "right_space"
+		default:
+			key = string(k)
+		}
+		if res.Keys[key] == nil {
+			res.Keys[key] = new(CaR)
+		}
+		res.Keys[key].Count += v
+	}
+	for _, v := range res.Keys {
+		v.Rate = div(v.Count, res.CodeLen.Total)
+	}
 	// combs
 	res.Combs.Equivalent = div(res.toTalEq10/10, res.Combs.Count)
 	res.Combs.DoubleHit.Rate = div(res.Combs.DoubleHit.Count, res.Combs.Count)
@@ -56,21 +79,24 @@ func (res *Result) stat(dict *Dict) {
 	res.Hands.Same.Rate = div(res.Hands.Same.Count, res.Combs.Count)
 	res.Hands.Diff.Rate = div(res.Hands.Diff.Count, res.Combs.Count)
 	// fingers
-	for k, v := range res.Keys {
+	for k, v := range res.mapKeys {
 		if keyData[k] == nil {
 			if res.Fingers.Dist[10] == nil {
 				res.Fingers.Dist[10] = new(CaR)
 			}
-			res.Fingers.Dist[10].Count += v.Count
+			res.Fingers.Dist[10].Count += v
 			continue
 		}
 		fin := keyData[k].fin
 		if res.Fingers.Dist[fin] == nil {
 			res.Fingers.Dist[fin] = new(CaR)
 		}
-		res.Fingers.Dist[fin].Count += v.Count
+		res.Fingers.Dist[fin].Count += v
 	}
 	for _, v := range res.Fingers.Dist {
+		if v == nil {
+			continue
+		}
 		v.Rate = div(v.Count, res.CodeLen.Total)
 	}
 	res.Fingers.Same.Rate = div(res.Fingers.Same.Count, res.Combs.Count)

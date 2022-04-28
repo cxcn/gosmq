@@ -4,11 +4,7 @@ func (res *Result) feel(codes string, dict *Dict) {
 	if len(codes) == 0 {
 		return
 	}
-	if res.Keys[codes[0]] != nil {
-		res.Keys[codes[0]].Count++
-	} else {
-		res.Keys[codes[0]] = new(CaR)
-	}
+	res.mapKeys[codes[0]]++
 	last := keyData[codes[0]]
 	if last == nil {
 		last = new(key)
@@ -29,11 +25,7 @@ func (res *Result) feel(codes string, dict *Dict) {
 				}
 			}
 		}
-		if res.Keys[current] != nil {
-			res.Keys[current].Count++
-		} else {
-			res.Keys[current] = new(CaR)
-		}
+		res.mapKeys[current]++
 
 		if keyData[current] == nil {
 			last.key = current

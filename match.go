@@ -19,7 +19,7 @@ func (res *Result) match(text []rune, m Matcher) string {
 		// 非汉字
 		isHan := unicode.Is(unicode.Han, text[p])
 		if !isHan {
-			res.Basic.NotHans++
+			res.Basic.NotHanCount++
 			res.mapNotHan[text[p]] = struct{}{}
 		}
 
@@ -27,7 +27,7 @@ func (res *Result) match(text []rune, m Matcher) string {
 		// 缺字
 		if i == 0 {
 			if isHan {
-				res.Basic.Lacks++
+				res.Basic.LackCount++
 				res.mapLack[text[p]] = struct{}{}
 			}
 			sb.WriteByte(' ')

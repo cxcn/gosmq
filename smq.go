@@ -48,6 +48,7 @@ func (smq *Smq) Add(dict *Dict) {
 
 func newResult() *Result {
 	res := new(Result)
+	res.mapKeys = make(map[byte]int)
 	res.mapLack = make(map[rune]struct{})
 	res.mapNotHan = make(map[rune]struct{})
 	res.Words.Dist = make(map[int]int)

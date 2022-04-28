@@ -55,6 +55,7 @@ type Result struct {
 	Data export
 
 	toTalEq10 int // 总当量*10
+	mapKeys   map[byte]int
 	mapNotHan map[rune]struct{}
 	mapLack   map[rune]struct{}
 	// codes     string
@@ -74,13 +75,15 @@ type export struct {
 
 // 基础
 type basic struct {
-	DictLen int    // 词条数
-	TextLen int    // 文本字数
-	NotHan  string // 非汉字
-	NotHans int    // 非汉字数
-	Lack    string // 缺字
-	Lacks   int    // 缺字数
-	Commits int    // 上屏数
+	DictLen     int    // 词条数
+	TextLen     int    // 文本字数
+	NotHan      string // 非汉字
+	NotHans     int    // 非汉字数（去重）
+	NotHanCount int    // 非汉字计数
+	Lack        string // 缺字
+	Lacks       int    // 缺字数（去重）
+	LackCount   int    // 缺字计数
+	Commits     int    // 上屏数
 }
 
 // 打词
@@ -105,7 +108,7 @@ type codeLen struct {
 }
 
 // 按键 左空格_，右空格+
-type keys map[byte]*CaR
+type keys map[string]*CaR
 
 // 按键组合
 type combs struct {
