@@ -4,6 +4,10 @@ import (
 	"io"
 )
 
+type Transfer interface {
+	Read(*Dict) []byte
+}
+
 type Matcher interface {
 	// 插入一个词条 word code order
 	Insert(string, string, int)
@@ -23,9 +27,10 @@ type Dict struct {
 	duoduo:多多格式码表 词\t编码
 	jidian:极点格式 编码\t词1 词2 词3
 	*/
-	SavePath   string // 读取非默认码表格式时自动转换并保存的路径，默认保存在 dict 目录下
-	SelectKeys string // 普通码表自定义选重键(默认为_;')
-	PushStart  int    // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
+	Transfer   Transfer // 自定义码表格式转换
+	SavePath   string   // 读取非默认码表格式时自动转换并保存的路径，默认保存在 dict 目录下
+	SelectKeys string   // 普通码表自定义选重键(默认为_;')
+	PushStart  int      // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
 
 	// 初始化 Matcher
 	Algorithm string // 匹配算法 trie:前缀树 order:顺序匹配（极速跟打器） longest:最长匹配

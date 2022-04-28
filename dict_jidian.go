@@ -3,17 +3,16 @@ package smq
 import (
 	"bufio"
 	"bytes"
-	"io/ioutil"
-	"log"
-	"os"
 	"strconv"
 	"strings"
 )
 
-func (dict *Dict) fromJidian() {
-	scan := bufio.NewScanner(dict.reader)
+type jidian struct{}
+
+func (j *jidian) Read(dict *Dict) []byte {
 	var buf bytes.Buffer
-	// 生成字典
+
+	scan := bufio.NewScanner(dict.reader)
 	for scan.Scan() {
 		wc := strings.Split(scan.Text(), " ")
 		if len(wc) < 2 {
@@ -44,15 +43,5 @@ func (dict *Dict) fromJidian() {
 			buf.WriteByte('\n')
 		}
 	}
-	// 输出赛码表
-	err := ioutil.WriteFile(dict.SavePath, buf.Bytes(), 0666)
-	if err != nil {
-		// SavePath 不对则保存在 dict 目录下
-		os.Mkdir("dict", 0666)
-		err = ioutil.WriteFile("./dict/"+dict.Name+".txt", buf.Bytes(), 0666)
-		if err != nil {
-			log.Println(err)
-		}
-	}
-	dict.reader = bytes.NewReader(buf.Bytes())
+	return buf.Bytes()
 }

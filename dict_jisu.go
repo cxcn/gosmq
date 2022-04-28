@@ -3,24 +3,20 @@ package smq
 import (
 	"bufio"
 	"bytes"
-	"io/ioutil"
-	"log"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
-func (dict *Dict) fromJisu() {
-	scan := bufio.NewScanner(dict.reader)
+type jisu struct{}
+
+func (j *jisu) Read(dict *Dict) []byte {
 	var buf bytes.Buffer
-	// 生成字典
+
+	scan := bufio.NewScanner(dict.reader)
 	for scan.Scan() {
 		wc := strings.Split(scan.Text(), "\t")
 		if len(wc) < 2 {
-			continue
-		}
-		if dict.Single && len([]rune(wc[0])) != 1 {
 			continue
 		}
 		c := wc[1]
@@ -61,15 +57,5 @@ func (dict *Dict) fromJisu() {
 		buf.WriteString(strconv.Itoa(order))
 		buf.WriteByte('\n')
 	}
-	// 输出赛码表
-	err := ioutil.WriteFile(dict.SavePath, buf.Bytes(), 0666)
-	if err != nil {
-		// SavePath 不对则保存在 dict 目录下
-		os.Mkdir("dict", 0666)
-		err = ioutil.WriteFile("./dict/"+dict.Name+".txt", buf.Bytes(), 0666)
-		if err != nil {
-			log.Println(err)
-		}
-	}
-	dict.reader = bytes.NewReader(buf.Bytes())
+	return buf.Bytes()
 }

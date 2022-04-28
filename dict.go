@@ -2,8 +2,11 @@ package smq
 
 import (
 	"bufio"
+	"bytes"
 	"io"
+	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -32,6 +35,35 @@ func (dict *Dict) LoadFromPath(path string) {
 	dict.reader = rd
 }
 
+// 转换赛码表
+func (dict *Dict) Convert() {
+	// 转换赛码表
+	if dict.Transfer == nil {
+		switch dict.Format {
+		case "jisu":
+			dict.Transfer = new(jisu)
+		case "duoduo":
+			dict.Transfer = new(duoduo)
+		case "jidian":
+			dict.Transfer = new(jidian)
+		}
+	}
+	// 输出赛码表
+	if dict.Transfer != nil {
+		newBytes := dict.Transfer.Read(dict)
+		err := ioutil.WriteFile(dict.SavePath, newBytes, 0666)
+		if err != nil {
+			// SavePath 不对则保存在 dict 目录下
+			os.Mkdir("dict", 0666)
+			err = ioutil.WriteFile("./dict/"+dict.Name+".txt", newBytes, 0666)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+		dict.reader = bytes.NewReader(newBytes)
+	}
+}
+
 func (dict *Dict) init() {
 	// 读取码表
 	if dict.SelectKeys == "" {
@@ -40,36 +72,25 @@ func (dict *Dict) init() {
 	if dict.PushStart == 0 {
 		dict.PushStart = 4
 	}
-	// 转换、输出赛码表
-	switch dict.Format {
-	case "jisu":
-		dict.fromJisu()
-	case "duoduo":
-		dict.fromDuoduo()
-	case "jidian":
-		dict.fromJidian()
-	}
-	// 外部算法
-	if dict.Matcher != nil {
-		dict.read()
-		return
-	}
+	dict.Convert()
 	// 匹配算法
-	switch dict.Algorithm {
-	case "order":
-		dict.Matcher = NewOrder()
-	case "longest":
-		dict.Matcher = NewLongest()
-	default: // "trie"
-		dict.Matcher = NewTrie()
+	if dict.Matcher == nil {
+		switch dict.Algorithm {
+		case "order":
+			dict.Matcher = NewOrder()
+		case "longest":
+			dict.Matcher = NewLongest()
+		default: // "trie"
+			dict.Matcher = NewTrie()
+		}
 	}
 	dict.read()
 }
 
 func (dict *Dict) read() {
 	m := dict.Matcher
+
 	scan := bufio.NewScanner(dict.reader)
-	// 生成字典
 	for scan.Scan() {
 		wc := strings.Split(scan.Text(), "\t")
 		if len(wc) != 3 {

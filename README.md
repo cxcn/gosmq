@@ -2,7 +2,7 @@
 
 一个高性能的赛码器库，多码表支持，多种码表格式支持，多匹配算法支持，还可自定义匹配算法。
 
-## 导入
+## 开始之前
 
 下载：`go get -u github.com/cxcn/gosmq`  
 导入：
@@ -46,6 +46,7 @@ func main(){
         duoduo:多多格式码表 词\t编码
         jidian:极点格式 编码\t词1 词2 词3
         */
+        Transfer   Transfer // 自定义码表格式转换
 	    SavePath   string // 读取非默认码表格式时自动转换并保存的路径，默认保存在 dict 目录下
 		SelectKeys:   "", // 普通码表自定义选重键(默认为_;')
 		PushStart:    4, // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
@@ -64,6 +65,11 @@ func main(){
     dict.LoadFromPath("这里填写路径")
 }
 ```
+### 仅转换码表
+
+`dict.Convert()` 这会将其它格式转换为本编码格式，并输出保存
+> 如果你还要进行后续操作，则不需要手动转换
+
 ### 添加码表到赛码器
 
 `smq.Add(dict)`
@@ -83,6 +89,31 @@ func main() {
     s.ToJson()
 }
 
+```
+## 自定义码表转换
+
+```go
+// 需要从 dict 生成本赛码器格式码表的字节数组
+type Transfer interface {
+	Read(*Dict) []byte
+}
+```
+
+一个例子：
+```go
+type newFormat struct {}
+
+func (n *newFormat) Read(dict *Dict) []byte {
+    // 推荐使用 bytes.Buffer
+	var buf bytes.Buffer
+    // 逐行读取
+    scan := bufio.NewScanner(dict.reader)
+    for scan.Scan() {
+        // 把每一行的格式转为
+        // 本赛码器格式 word\tcode\torder
+    }
+    return buf.Bytes()
+}
 ```
 
 ## 自定义匹配算法

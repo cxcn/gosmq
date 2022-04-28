@@ -3,27 +3,22 @@ package smq
 import (
 	"bufio"
 	"bytes"
-	"io/ioutil"
-	"log"
-	"os"
 	"strconv"
 	"strings"
 )
 
-func (dict *Dict) fromDuoduo() {
-	scan := bufio.NewScanner(dict.reader)
-	mapOrder := make(map[string]int)
+type duoduo struct{}
+
+func (j *duoduo) Read(dict *Dict) []byte {
 	var buf bytes.Buffer
-	// 生成字典
+	mapOrder := make(map[string]int)
+
+	scan := bufio.NewScanner(dict.reader)
 	for scan.Scan() {
 		wc := strings.Split(scan.Text(), "\t")
 		if len(wc) < 2 {
 			continue
 		}
-		if dict.Single && len([]rune(wc[0])) != 1 {
-			continue
-		}
-
 		mapOrder[wc[1]]++
 		order := mapOrder[wc[1]]
 		// 生成赛码表
@@ -40,15 +35,5 @@ func (dict *Dict) fromDuoduo() {
 		buf.WriteString(strconv.Itoa(order))
 		buf.WriteByte('\n')
 	}
-	// 输出赛码表
-	err := ioutil.WriteFile(dict.SavePath, buf.Bytes(), 0666)
-	if err != nil {
-		// SavePath 不对则保存在 dict 目录下
-		os.Mkdir("dict", 0666)
-		err = ioutil.WriteFile("./dict/"+dict.Name+".txt", buf.Bytes(), 0666)
-		if err != nil {
-			log.Println(err)
-		}
-	}
-	dict.reader = bytes.NewReader(buf.Bytes())
+	return buf.Bytes()
 }
