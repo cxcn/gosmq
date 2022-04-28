@@ -23,7 +23,7 @@ type Dict struct {
 	duoduo:多多格式码表 词\t编码
 	jidian:极点格式 编码\t词1 词2 词3
 	*/
-	SavePath   string // 保存路径，读取非默认码表格式时自动转换并保存
+	SavePath   string // 读取非默认码表格式时自动转换并保存的路径，默认保存在 dict 目录下
 	SelectKeys string // 普通码表自定义选重键(默认为_;')
 	PushStart  int    // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
 

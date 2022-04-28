@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"log"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -16,7 +17,7 @@ func (dict *Dict) fromJisu() {
 	// 生成字典
 	for scan.Scan() {
 		wc := strings.Split(scan.Text(), "\t")
-		if len(wc) != 2 {
+		if len(wc) < 2 {
 			continue
 		}
 		if dict.Single && len([]rune(wc[0])) != 1 {
@@ -63,7 +64,12 @@ func (dict *Dict) fromJisu() {
 	// 输出赛码表
 	err := ioutil.WriteFile(dict.SavePath, buf.Bytes(), 0666)
 	if err != nil {
-		log.Println(err)
+		// SavePath 不对则保存在 dict 目录下
+		os.Mkdir("dict", 0666)
+		err = ioutil.WriteFile("./dict/"+dict.Name+".txt", buf.Bytes(), 0666)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 	dict.reader = bytes.NewReader(buf.Bytes())
 }

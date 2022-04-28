@@ -13,6 +13,10 @@ func (res *Result) feel(codes string, dict *Dict) {
 	for i := 1; i < len(codes); i++ {
 		current := codes[i]
 		// for key
+		// 转小写
+		if 65 <= current && current <= 90 {
+			current += 22
+		}
 		if current == '_' {
 			switch dict.PressSpaceBy {
 			case "left":
