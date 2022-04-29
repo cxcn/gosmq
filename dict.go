@@ -55,6 +55,12 @@ func (dict *Dict) Convert() {
 	// 输出赛码表
 	if dict.Transfer != nil {
 		newBytes := dict.Transfer.Read(dict)
+		// 删除 BOM 文件头
+		if string(newBytes[:3]) == string([]byte{239, 187, 191}) {
+			newBytes[0] = 'g'
+			newBytes[1] = 'o'
+			newBytes[2] = '\n'
+		}
 		err := ioutil.WriteFile(dict.SavePath, newBytes, 0666)
 		if err != nil {
 			// SavePath 不对则保存在 dict 目录下

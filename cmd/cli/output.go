@@ -28,13 +28,13 @@ func output(res *smq.Result) {
 	out += "\n"
 
 	t1 := table.NewWriter()
-	t1.AppendHeader(table.Row{"总键数", "码长", "十击速度", "非汉字数", "缺字数", "非汉字计数", "缺字计数"})
+	t1.AppendHeader(table.Row{"总键数", "码长", "十击速度", "非汉字数", "非汉字计数", "缺字数", "缺字计数"})
 	t1.AppendRow([]interface{}{
 		res.CodeLen.Total,
 		fmt.Sprintf("%.4f", res.CodeLen.PerChar),
 		fmt.Sprintf("%.2f", 600/res.CodeLen.PerChar),
-		res.Basic.NotHans, res.Basic.Lacks,
-		res.Basic.NotHanCount, res.Basic.LackCount,
+		res.Basic.NotHans, res.Basic.NotHanCount,
+		res.Basic.Lacks, res.Basic.LackCount,
 	})
 	t1.SetStyle(table.StyleColoredBright)
 	out += fmt.Sprintln(t1.Render())

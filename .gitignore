@@ -7,5 +7,8 @@ cmd/**/*.exe
 
 cmd/**/result.html
 cmd/test*/
+cmd/cli/build.ps1
+cmd/cli/cli-linux
+cmd/cli/cli-darwin
 
 .vscode*
