@@ -78,10 +78,14 @@ func (dict *Dict) init() {
 	// 匹配算法
 	if dict.Matcher == nil {
 		switch dict.Algorithm {
-		case "order":
-			dict.Matcher = NewOrder()
-		case "longest":
+		case "order", "o":
+			dict.Matcher = NewOTrie()
+		case "longest", "l":
 			dict.Matcher = NewLongest()
+		case "old_order", "oo":
+			dict.Matcher = NewOrder()
+		case "trie", "t":
+			dict.Matcher = NewTrie()
 		default: // "trie"
 			dict.Matcher = NewTrie()
 		}
