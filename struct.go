@@ -96,6 +96,8 @@ type words struct {
 	Commits CaR         // 打词数
 	Chars   CaR         // 打词字数
 	Dist    map[int]int // 词长分布统计
+
+	FirstCount int // 首选词
 }
 
 // 选重

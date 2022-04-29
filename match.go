@@ -38,6 +38,9 @@ func (res *Result) match(text []rune, m Matcher) string {
 		sb.WriteString(code)
 		res.Words.Dist[i]++ // 词长分布
 		if order != 1 {
+			if i != 1 {
+				res.Words.FirstCount++
+			}
 			res.Collision.Chars.Count += i // 选重字数
 		}
 		res.Collision.Dist[order]++   // 选重分布

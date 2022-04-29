@@ -76,8 +76,7 @@ func main(){
 
 ### 添加码表到赛码器
 
-`smq.Add(dict)`
-> `smq` 为赛码器的具体变量名
+`s.Add(dict)`
 
 ### 开始比赛
 
@@ -136,6 +135,7 @@ type Matcher interface {
 
 ## Benchmark
 
+> 这是老版本的 Benchmark，新版要慢一点，不会差太多
 > 配置：windows 10, r5 3600 4.2g, 8g\*2 2933Mhz c18
 
 | 文本         | 文本字数 |             码表 | 码表词条数 |  耗时 |

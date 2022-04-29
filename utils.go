@@ -26,6 +26,13 @@ func Tranformer(f io.Reader) io.Reader {
 	if cs.Confidence != 100 && cs.Charset != "UTF-8" {
 		cs.Charset = "GB18030"
 	}
+	// 删除 UTF-8 BOM 文件头
+	if cs.Charset == "UTF-8" {
+		bom, _ := brd.Peek(3)
+		if string(bom) == string(rune(65279)) {
+			brd.ReadRune()
+		}
+	}
 	rd, _ := charset.NewReaderLabel(cs.Charset, brd) // 转换字节流
 	return rd
 }
