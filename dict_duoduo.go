@@ -7,7 +7,9 @@ import (
 	"strings"
 )
 
-type duoduo struct{}
+type duoduo struct {
+	reverse bool
+}
 
 func (j *duoduo) Read(dict *Dict) []byte {
 	var buf bytes.Buffer
@@ -19,11 +21,20 @@ func (j *duoduo) Read(dict *Dict) []byte {
 		if len(wc) < 2 {
 			continue
 		}
-		mapOrder[wc[1]]++
-		order := mapOrder[wc[1]]
+		var w, c string
+		if j.reverse {
+			w, c = wc[1], wc[0]
+		} else {
+			w, c = wc[0], wc[1]
+		}
+
+		mapOrder[c]++
+		order := mapOrder[c]
 		// 生成赛码表
-		buf.WriteString(scan.Text())
-		if len(wc[1]) >= dict.PushStart && order == 1 {
+		buf.WriteString(w)
+		buf.WriteByte('\t')
+		buf.WriteString(c)
+		if len(c) >= dict.PushStart && order == 1 {
 		} else {
 			if order <= len(dict.SelectKeys) {
 				buf.WriteByte(dict.SelectKeys[order-1])
@@ -35,5 +46,6 @@ func (j *duoduo) Read(dict *Dict) []byte {
 		buf.WriteString(strconv.Itoa(order))
 		buf.WriteByte('\n')
 	}
+	// fmt.Println(string(buf.Bytes()))
 	return buf.Bytes()
 }

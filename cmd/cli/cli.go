@@ -15,10 +15,10 @@ func cli() {
 		Text         string `short:"t" long:"text" description:"string\t文本路径"`
 		Dict         string `short:"i" long:"input" description:"string\t码表路径"`
 		Single       bool   `short:"s" long:"single" description:"bool\t单字模式"`
-		Format       string `short:"f" long:"format" description:"string\t码表格式 default|jisu|duoduo|jidian"`
+		Format       string `short:"f" long:"format" description:"string\t码表格式 default|jisu,js|duoduo,dd|jidian,jd|bingling,bl"`
 		SelectKeys   string `long:"select" description:"string\t自定义选重键"`
 		PushStart    int    `short:"p" long:"push" description:"int\t普通码表起顶码长，码长大于等于此数，首选不会追加空格"`
-		Algorithm    string `short:"a" long:"alg" description:"string\t匹配算法 trie|order|longest"`
+		Algorithm    string `short:"a" long:"alg" description:"string\t匹配算法 trie,t|order,o|longest,l"`
 		PressSpaceBy string `short:"k" long:"space" description:"string\t空格按键方式 left|right|both"`
 
 		Ver bool `short:"v" long:"version" description:"bool\t查看版本信息"`

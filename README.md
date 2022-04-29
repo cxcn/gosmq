@@ -44,11 +44,12 @@ func main(){
 		因为其他码表带有 order 信息，转换后可以用本格式码表
 		*/
 		Format:       "", /* 码表格式
-		default:默认 本程序赛码表 词\t编码选重\t选重
-		jisu:极速赛码表 词\t编码选重
-		duoduo:多多格式码表 词\t编码
-		jidian:极点格式 编码\t词1 词2 词3
-		*/
+	    default: 默认 本程序赛码表 词\t编码选重\t选重
+	    jisu:js 极速赛码表 词\t编码选重
+	    duoduo:dd 多多格式码表 词\t编码
+	    jidian:jd 极点格式 编码\t词1 词2 词3
+	    bingling:bl 冰凌格式码表 编码\t词
+	    */
 		Transfer   Transfer // 自定义码表格式转换
 		SavePath   string // 读取非默认码表格式时自动转换并保存的路径，默认保存在 dict 目录下
 		SelectKeys:   "", // 普通码表自定义选重键(默认为_;')

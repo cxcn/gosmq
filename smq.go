@@ -62,8 +62,10 @@ func newResult() *Result {
 	res.Collision.Dist = make(map[int]int)
 	res.CodeLen.Dist = make(map[int]int)
 	res.Keys = make(keys)
-	for _, v := range "1234567890qwertyuiopasdfghjkl;zxcvbnm,./" {
-		res.Keys[string(v)] = new(CaR)
+	const ALL_KEYS = "1234567890qwertyuiopasdfghjkl;'zxcvbnm,./"
+	for i := 0; i < len(ALL_KEYS); i++ {
+		res.Keys[string(ALL_KEYS[i])] = new(CaR)
+		res.mapKeys[ALL_KEYS[i]] = 0
 	}
 	for i := 0; i < 11; i++ {
 		res.Fingers.Dist[i] = new(CaR)

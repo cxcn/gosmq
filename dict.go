@@ -42,12 +42,14 @@ func (dict *Dict) Convert() {
 	// 转换赛码表
 	if dict.Transfer == nil {
 		switch dict.Format {
-		case "jisu":
-			dict.Transfer = new(jisu)
-		case "duoduo":
-			dict.Transfer = new(duoduo)
-		case "jidian":
-			dict.Transfer = new(jidian)
+		case "jisu", "js":
+			dict.Transfer = &jisu{}
+		case "duoduo", "dd":
+			dict.Transfer = &duoduo{}
+		case "jidian", "jd":
+			dict.Transfer = &jidian{}
+		case "bingling", "bl":
+			dict.Transfer = &duoduo{true}
 		}
 	}
 	// 输出赛码表
