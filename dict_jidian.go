@@ -30,7 +30,7 @@ func (j *jidian) Read(dict *Dict) []byte {
 			buf.WriteString(wc[i])
 			buf.WriteByte('\t')
 			buf.WriteString(wc[0])
-			if len(wc[1]) >= dict.PushStart && order == 1 {
+			if len(wc[0]) >= dict.PushStart && order == 1 {
 			} else {
 				if int(order) <= len(dict.SelectKeys) {
 					buf.WriteByte(dict.SelectKeys[order-1])
