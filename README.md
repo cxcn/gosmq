@@ -38,26 +38,26 @@ func main(){
 func main(){
     // 先定义一些基本参数
     dict := &smq.Dict{
-		Name:         "", // 码表名
-		Single:       false, /* 单字模式
-		注意单字模式最好用多多格式的码表，
-		因为其他码表带有 order 信息，转换后可以用本格式码表
-		*/
-		Format:       "", /* 码表格式
-		default: 默认 本程序赛码表 词\t编码选重\t选重
-		jisu:js 极速赛码表 词\t编码选重
-		duoduo:dd 多多格式码表 词\t编码
-		jidian:jd 极点格式 编码\t词1 词2 词3
-		bingling:bl 冰凌格式码表 编码\t词
-		*/
-		Transfer   Transfer // 自定义码表格式转换
-		SavePath   string // 读取非默认码表格式时自动转换并保存的路径，默认保存在 dict 目录下
-		SelectKeys:   "", // 普通码表自定义选重键(默认为_;')
-		PushStart:    4, // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
-		Algorithm:    "longest", // 匹配算法 trie:前缀树 order:顺序匹配（极速跟打器） longest:最长匹配
-		Matcher:      nil, // 自定义匹配算法
-		PressSpaceBy: "both", // 空格按键方式 left|right|both
-	}
+        Name:         "", // 码表名
+        Single:       false, /* 单字模式
+        注意单字模式最好用多多格式的码表，
+        因为其他码表带有 order 信息，转换后可以用本格式码表
+        */
+        Format:       "", /* 码表格式
+        default: 默认 本程序赛码表 词\t编码选重\t选重
+        jisu:js 极速赛码表 词\t编码选重
+        duoduo:dd 多多格式码表 词\t编码
+        jidian:jd 极点格式 编码\t词1 词2 词3
+        bingling:bl 冰凌格式码表 编码\t词
+        */
+        Transfer   Transfer // 自定义码表格式转换
+        SavePath   string // 读取非默认码表格式时自动转换并保存的路径，默认保存在 dict 目录下
+        SelectKeys:   "", // 普通码表自定义选重键(默认为_;')
+        PushStart:    4, // 普通码表起顶码长(码长大于等于此数，首选不会追加空格)
+        Algorithm:    "longest", // 匹配算法 trie:前缀树 order:顺序匹配（极速跟打器） longest:最长匹配
+        Matcher:      nil, // 自定义匹配算法
+        PressSpaceBy: "both", // 空格按键方式 left|right|both
+    }
 
     // 载入码表，同样提供 3 种方式
     // 从字节流
@@ -69,9 +69,11 @@ func main(){
     dict.LoadFromPath("这里填写路径")
 }
 ```
+
 ### 仅转换码表
 
 `dict.Convert()` 这会将其它格式转换为本编码格式，并输出保存
+
 > 如果你还要进行后续操作，则不需要手动转换
 
 ### 添加码表到赛码器
@@ -86,30 +88,32 @@ func main() {
     dict := &smq.Dict{...}
     s.Add(dict)
     res := s.Run() // 他返回一个 []*smq.Result 结构体指针数组，具体定义可查看 struct.go 文件
-    // 你可以输出为 json 
+    // 你可以输出为 json
     s.ResToJson(res)
     // 如果你不需要结构体
     s.ToJson()
 }
 
 ```
+
 ## 自定义码表转换
 
 ```go
 // 需要从 dict 生成本赛码器格式码表的字节数组
 type Transfer interface {
-	Read(*Dict) []byte
+    Read(*Dict) []byte
 }
 ```
 
 一个例子：
+
 ```go
 type newFormat struct {}
 
 func (n *newFormat) Read(dict *Dict) []byte {
     // 推荐使用 bytes.Buffer
-	var buf bytes.Buffer
-	buf.Grow(1e6)
+    var buf bytes.Buffer
+    buf.Grow(1e6)
     // 逐行读取
     scan := bufio.NewScanner(dict.reader)
     for scan.Scan() {
@@ -123,14 +127,15 @@ func (n *newFormat) Read(dict *Dict) []byte {
 ## 自定义匹配算法
 
 程序定义了一个接口，在创建 `smq.Dict` 时传入 `Matcher`，这时 `Algorithm` 失效
+
 ```go
 type Matcher interface {
-	// 插入一个词条 word code order
-	Insert(string, string, int)
-	// 读取完码表后的操作
-	Handle()
-	// 匹配下一个词 text point -> 匹配到的词长，code，order
-	Match([]rune, int) (int, string, int)
+    // 插入一个词条 word code order
+    Insert(string, string, int)
+    // 读取完码表后的操作
+    Handle()
+    // 匹配下一个词 text point -> 匹配到的词长，code，order
+    Match([]rune, int) (int, string, int)
 }
 ```
 
