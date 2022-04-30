@@ -135,7 +135,7 @@ func output(data []*smq.Result) {
 	out += t.Render() + "\n\n"
 
 	t = table.NewWriter()
-	t.AppendHeader(table.Row{"小指", "无名指", "中指", "食指", "左大拇指", "右大拇指", "食指", "中指", "无名指", "小指"})
+	t.AppendHeader(table.Row{"小指", "无名指", "中指", "食指", "左拇指", "右拇指", "食指", "中指", "无名指", "小指"})
 	for _, res := range data {
 		newRow := []interface{}{}
 		for i := 1; i < 10; i++ {

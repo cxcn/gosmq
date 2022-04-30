@@ -36,8 +36,11 @@ func cli() {
 	var s smq.Smq
 	start := time.Now()
 	// 不输入文本，直接转换码表
+	isEmpty := false
 	if opts.Text == "" {
 		s = smq.NewFromString("none", "none")
+		fmt.Println("没有输入文本，仅转换码表")
+		isEmpty = true
 	} else {
 		s = smq.NewFromPath("", opts.Text)
 	}
@@ -60,7 +63,7 @@ func cli() {
 	res := s.Run()
 	fmt.Printf("比赛结束，耗时：%v\n", time.Since(mid))
 	fmt.Printf("累计耗时：%v\n", time.Since(start))
-	if len(res) > 0 {
+	if len(res) > 0 && !isEmpty {
 		output(res)
 	}
 	// for _, v := range res {
