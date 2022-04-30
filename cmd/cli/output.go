@@ -53,66 +53,44 @@ func output(data []*smq.Result) {
 		out += "\n"
 	}
 
-	t := table.NewWriter()
-	row := table.Row{" #"}
-	for i := 1; i < 10; i++ {
-		row = append(row, i)
-	}
-	t.AppendHeader(row)
-
 	for i, res := range data {
 		if len(data) == 1 {
-			row = table.Row{"码长"}
+			out += "码长："
 		} else {
-			row = table.Row{fmt.Sprintf("%d %s", i+1, "码长")}
+			out += fmt.Sprintf("%d %s：", i+1, "码长")
 		}
 		for j := 1; j < len(res.CodeLen.Dist); j++ {
-			if j < 10 {
-				row = append(row, res.CodeLen.Dist[j])
-				continue
-			}
 			if res.CodeLen.Dist[j] != 0 {
-				row = append(row, fmt.Sprintf("%d:%d", j, res.CodeLen.Dist[j]))
+				out += fmt.Sprintf("%d:%d  ", j, res.CodeLen.Dist[j])
 			}
 		}
-		t.AppendRow(row)
+		out += "\n"
 		if len(data) == 1 {
-			row = table.Row{"词长"}
+			out += "词长："
 		} else {
-			row = table.Row{fmt.Sprintf("%d %s", i+1, "词长")}
+			out += fmt.Sprintf("%d %s：", i+1, "词长")
 		}
 		for j := 1; j < len(res.Words.Dist); j++ {
-			if j < 10 {
-				row = append(row, res.Words.Dist[j])
-				continue
-			}
 			if res.Words.Dist[j] != 0 {
-				row = append(row, fmt.Sprintf("%d:%d", j, res.Words.Dist[j]))
+				out += fmt.Sprintf("%d:%d  ", j, res.Words.Dist[j])
 			}
 		}
-		t.AppendRow(row)
+		out += "\n"
 		if len(data) == 1 {
-			row = table.Row{"选重"}
+			out += "选重："
 		} else {
-			row = table.Row{fmt.Sprintf("%d %s", i+1, "选重")}
+			out += fmt.Sprintf("%d %s：", i+1, "选重")
 		}
 		for j := 1; j < len(res.Collision.Dist); j++ {
-			if j < 10 {
-				row = append(row, res.Collision.Dist[j])
-				continue
-			}
 			if res.Collision.Dist[j] != 0 {
-				row = append(row, fmt.Sprintf("%d:%d", j, res.Collision.Dist[j]))
+				out += fmt.Sprintf("%d:%d  ", j, res.Collision.Dist[j])
 			}
 		}
-		t.AppendRow(row)
-		t.AppendRow(table.Row{""})
+		out += "\n\n"
 	}
-	t.SetStyle(noColor)
-	out += t.Render() + "\n"
 
-	t = table.NewWriter()
-	t.AppendHeader(table.Row{"总键数", "码长", "十击速度", "非汉字数", "非汉字计数", "缺字数", "缺字计数"})
+	t := table.NewWriter()
+	t.AppendHeader(table.Row{"总键数", "码长", "十击速度", "非汉字数", "计数", "缺字数", "计数"})
 	for _, res := range data {
 		t.AppendRow([]interface{}{
 			res.CodeLen.Total,
