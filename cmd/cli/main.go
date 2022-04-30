@@ -18,6 +18,6 @@ func main() {
 }
 
 func printInfo() {
-	fmt.Printf("gosmq-cli v0.23 %s/%s\n", runtime.GOOS, runtime.GOARCH)
+	fmt.Printf("gosmq-cli v0.24 %s/%s\n", runtime.GOOS, runtime.GOARCH)
 	fmt.Printf("https://github.com/cxcn/gosmq/\n")
 }
