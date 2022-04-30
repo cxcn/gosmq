@@ -5,7 +5,7 @@ import (
 	"unicode"
 )
 
-func (res *Result) match(text []rune, m Matcher) string {
+func (res *Result) match(text []rune, dict *Dict) string {
 	var sb strings.Builder
 	sb.Grow(len(text))
 	res.Basic.TextLen += len(text)
@@ -24,7 +24,7 @@ func (res *Result) match(text []rune, m Matcher) string {
 			res.mapNotHan[text[p]] = struct{}{}
 		}
 
-		i, code, order := m.Match(text, p)
+		i, code, order := dict.Matcher.Match(text, p)
 		// 缺字
 		if i == 0 {
 			if isHan {
@@ -46,8 +46,15 @@ func (res *Result) match(text []rune, m Matcher) string {
 		res.collDist.AddTo(order)     // 选重分布
 		res.codeDist.AddTo(len(code)) // 码长分布
 
-		// res.Data.CodeSlice = append(res.Data.CodeSlice, code)
-		// res.Data.WordSlice = append(res.Data.WordSlice, text[p:p+i])
+		if dict.Details {
+			word := string(text[p : p+i])
+			res.Data.WordSlice = append(res.Data.WordSlice, word)
+			res.Data.CodeSlice = append(res.Data.CodeSlice, code)
+			if _, ok := res.Data.Details[word]; !ok {
+				res.Data.Details[word] = &CoC{Code: code, Order: i}
+			}
+			res.Data.Details[word].Count++
+		}
 		p += i
 	}
 	return sb.String()

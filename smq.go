@@ -61,6 +61,9 @@ func newResult() *Result {
 	res.wordsDist = newAutoSlice()
 	res.collDist = newAutoSlice()
 	res.codeDist = newAutoSlice()
+	res.Data.WordSlice = make([]string, 0, 1024)
+	res.Data.CodeSlice = make([]string, 0, 1024)
+	res.Data.Details = make(map[string]*CoC)
 	res.Keys = make(keys)
 	const ALL_KEYS = "1234567890qwertyuiopasdfghjkl;'zxcvbnm,./"
 	for i := 0; i < len(ALL_KEYS); i++ {
@@ -85,7 +88,7 @@ func (smq *Smq) Run() []*Result {
 	if smqLen == 1 {
 		for {
 			line, err := brd.ReadString('\n')
-			codes := ret[0].match([]rune(line), smq.Inputs[0].Matcher)
+			codes := ret[0].match([]rune(line), smq.Inputs[0])
 			ret[0].feel(codes, smq.Inputs[0])
 			if err != nil {
 				break
@@ -100,7 +103,7 @@ func (smq *Smq) Run() []*Result {
 				wg.Add(1)
 				tmp := ret[i]
 				go func(arg *Dict) {
-					codes := tmp.match([]rune(line), arg.Matcher)
+					codes := tmp.match([]rune(line), arg)
 					tmp.feel(codes, arg)
 					wg.Done()
 				}(v)

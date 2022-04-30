@@ -57,6 +57,7 @@ func main(){
         Algorithm:    "longest", // 匹配算法 trie:前缀树 order:顺序匹配（极速跟打器） longest:最长匹配
         Matcher:      nil, // 自定义匹配算法
         PressSpaceBy: "both", // 空格按键方式 left|right|both
+        Details      bool,   // 输出详细数据
     }
 
     // 载入码表，同样提供 3 种方式

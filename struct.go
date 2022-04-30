@@ -37,8 +37,8 @@ type Dict struct {
 	Algorithm string // 匹配算法 trie:前缀树 order:顺序匹配（极速跟打器） longest:最长匹配
 	Matcher   Matcher
 
-	PressSpaceBy   string // 空格按键方式 left|right|both
-	ReturnSegments bool   // 是否输出赛码分词结果
+	PressSpaceBy string // 空格按键方式 left|right|both
+	Details      bool   // 输出详细数据
 
 	reader io.Reader // 赛码表 io 流
 	length int       // 词条数
@@ -75,10 +75,17 @@ type CaR struct {
 	Rate  float64
 }
 
+type CoC struct {
+	Code  string
+	Order int
+	Count int
+}
+
 // 可能要导出的数据
 type export struct {
-	WordSlice [][]rune // 分词
+	WordSlice []string // 分词
 	CodeSlice []string // 编码
+	Details   map[string]*CoC
 }
 
 // 基础
