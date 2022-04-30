@@ -11,6 +11,7 @@ type jidian struct{}
 
 func (j *jidian) Read(dict *Dict) []byte {
 	var buf bytes.Buffer
+	buf.Grow(1e6)
 
 	scan := bufio.NewScanner(dict.reader)
 	for scan.Scan() {

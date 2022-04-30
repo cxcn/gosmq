@@ -13,7 +13,7 @@ func cli() {
 
 	var opts struct {
 		Text         string   `short:"t" long:"text" description:"string\t文本路径"`
-		Dict         []string `short:"i" long:"input" description:"[]string\t码表路径"`
+		Dict         []string `short:"i" long:"input" description:"[]string 码表路径"`
 		Single       bool     `short:"s" long:"single" description:"bool\t单字模式"`
 		Format       string   `short:"f" long:"format" description:"string\t码表格式 default|jisu,js|duoduo,dd|jidian,jd|bingling,bl"`
 		SelectKeys   string   `long:"select" description:"string\t自定义选重键"`
@@ -38,8 +38,7 @@ func cli() {
 	// 不输入文本，直接转换码表
 	isEmpty := false
 	if opts.Text == "" {
-		s = smq.NewFromString("none", "none")
-		fmt.Println("没有输入文本，仅转换码表")
+		s = smq.NewFromString("没有输入文本，仅转换码表", "none")
 		isEmpty = true
 	} else {
 		s = smq.NewFromPath("", opts.Text)

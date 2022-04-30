@@ -63,6 +63,9 @@ type Result struct {
 	mapKeys   map[byte]int
 	mapNotHan map[rune]struct{}
 	mapLack   map[rune]struct{}
+	wordsDist *autoSlice
+	collDist  *autoSlice
+	codeDist  *autoSlice
 	// codes     string
 }
 
@@ -93,25 +96,25 @@ type basic struct {
 
 // 打词
 type words struct {
-	Commits CaR         // 打词数
-	Chars   CaR         // 打词字数
-	Dist    map[int]int // 词长分布统计
+	Commits CaR   // 打词数
+	Chars   CaR   // 打词字数
+	Dist    []int // 词长分布统计
 
 	FirstCount int // 首选词
 }
 
 // 选重
 type collision struct {
-	Commits CaR         // 选重数
-	Chars   CaR         // 选重字数
-	Dist    map[int]int // 选重分布统计
+	Commits CaR   // 选重数
+	Chars   CaR   // 选重字数
+	Dist    []int // 选重分布统计
 }
 
 // 码长
 type codeLen struct {
-	Total   int         // 全部码长
-	PerChar float64     // 字均码长
-	Dist    map[int]int // 码长分布统计
+	Total   int     // 全部码长
+	PerChar float64 // 字均码长
+	Dist    []int   // 码长分布统计
 }
 
 // 按键 左空格_，右空格+

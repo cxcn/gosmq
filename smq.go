@@ -58,9 +58,9 @@ func newResult() *Result {
 	res.mapKeys = make(map[byte]int)
 	res.mapLack = make(map[rune]struct{})
 	res.mapNotHan = make(map[rune]struct{})
-	res.Words.Dist = make(map[int]int)
-	res.Collision.Dist = make(map[int]int)
-	res.CodeLen.Dist = make(map[int]int)
+	res.wordsDist = newAutoSlice()
+	res.collDist = newAutoSlice()
+	res.codeDist = newAutoSlice()
 	res.Keys = make(keys)
 	const ALL_KEYS = "1234567890qwertyuiopasdfghjkl;'zxcvbnm,./"
 	for i := 0; i < len(ALL_KEYS); i++ {

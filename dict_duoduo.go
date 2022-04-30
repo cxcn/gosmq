@@ -13,6 +13,7 @@ type duoduo struct {
 
 func (j *duoduo) Read(dict *Dict) []byte {
 	var buf bytes.Buffer
+	buf.Grow(1e6)
 	mapOrder := make(map[string]int)
 
 	scan := bufio.NewScanner(dict.reader)

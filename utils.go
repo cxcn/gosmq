@@ -60,3 +60,19 @@ func div(x, y int) float64 {
 	value, _ := strconv.ParseFloat(fmt.Sprintf("%.4f", float64(x)/float64(y)), 64)
 	return value
 }
+
+type autoSlice struct {
+	a []int
+}
+
+func newAutoSlice() *autoSlice {
+	sli := make([]int, 0, 15)
+	return &autoSlice{sli}
+}
+
+func (a *autoSlice) AddTo(i int) {
+	for i > len(a.a)-1 {
+		a.a = append(a.a, 0)
+	}
+	a.a[i]++
+}

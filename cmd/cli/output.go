@@ -28,9 +28,6 @@ func output(data []*smq.Result) {
 			out += fmt.Sprintf("缺字：\t%s \n", res.Basic.Lack)
 		}
 		out += "\n"
-		out += fmt.Sprintf("码长分布：%v\n", res.CodeLen.Dist)
-		out += fmt.Sprintf("词长分布：%v\n", res.Words.Dist)
-		out += fmt.Sprintf("选重分布：%v\n", res.Collision.Dist)
 	} else {
 		t := table.NewWriter()
 		tmpRow := table.Row{" #"}
@@ -47,28 +44,74 @@ func output(data []*smq.Result) {
 		out += t.Render() + "\n\n"
 
 		for i, res := range data {
-			out += fmt.Sprintf("非汉字%d：%v \n", i+1, res.Basic.NotHan)
+			out += fmt.Sprintf("%d 非汉字：%v \n", i+1, res.Basic.NotHan)
 		}
 		out += "\n"
 		for i, res := range data {
-			out += fmt.Sprintf("缺字%d：\t%s \n", i+1, res.Basic.Lack)
+			out += fmt.Sprintf("%d 缺字：  %s \n", i+1, res.Basic.Lack)
 		}
 		out += "\n"
-		for i, res := range data {
-			out += fmt.Sprintf("码长分布%d：%v \n", i+1, res.CodeLen.Dist)
-		}
-		out += "\n"
-		for i, res := range data {
-			out += fmt.Sprintf("词长分布%d：%v \n", i+1, res.Words.Dist)
-		}
-		out += "\n"
-		for i, res := range data {
-			out += fmt.Sprintf("选重分布%d：%v \n", i+1, res.Collision.Dist)
-		}
 	}
 
-	out += "\n"
 	t := table.NewWriter()
+	row := table.Row{" #"}
+	for i := 1; i < 10; i++ {
+		row = append(row, i)
+	}
+	t.AppendHeader(row)
+
+	for i, res := range data {
+		if len(data) == 1 {
+			row = table.Row{"码长"}
+		} else {
+			row = table.Row{fmt.Sprintf("%d %s", i+1, "码长")}
+		}
+		for j := 1; j < len(res.CodeLen.Dist); j++ {
+			if j < 10 {
+				row = append(row, res.CodeLen.Dist[j])
+				continue
+			}
+			if res.CodeLen.Dist[j] != 0 {
+				row = append(row, fmt.Sprintf("%d:%d", j, res.CodeLen.Dist[j]))
+			}
+		}
+		t.AppendRow(row)
+		if len(data) == 1 {
+			row = table.Row{"词长"}
+		} else {
+			row = table.Row{fmt.Sprintf("%d %s", i+1, "词长")}
+		}
+		for j := 1; j < len(res.Words.Dist); j++ {
+			if j < 10 {
+				row = append(row, res.Words.Dist[j])
+				continue
+			}
+			if res.Words.Dist[j] != 0 {
+				row = append(row, fmt.Sprintf("%d:%d", j, res.Words.Dist[j]))
+			}
+		}
+		t.AppendRow(row)
+		if len(data) == 1 {
+			row = table.Row{"选重"}
+		} else {
+			row = table.Row{fmt.Sprintf("%d %s", i+1, "选重")}
+		}
+		for j := 1; j < len(res.Collision.Dist); j++ {
+			if j < 10 {
+				row = append(row, res.Collision.Dist[j])
+				continue
+			}
+			if res.Collision.Dist[j] != 0 {
+				row = append(row, fmt.Sprintf("%d:%d", j, res.Collision.Dist[j]))
+			}
+		}
+		t.AppendRow(row)
+		t.AppendRow(table.Row{""})
+	}
+	t.SetStyle(noColor)
+	out += t.Render() + "\n"
+
+	t = table.NewWriter()
 	t.AppendHeader(table.Row{"总键数", "码长", "十击速度", "非汉字数", "非汉字计数", "缺字数", "缺字计数"})
 	for _, res := range data {
 		t.AppendRow([]interface{}{

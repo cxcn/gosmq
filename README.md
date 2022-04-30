@@ -109,6 +109,7 @@ type newFormat struct {}
 func (n *newFormat) Read(dict *Dict) []byte {
     // 推荐使用 bytes.Buffer
 	var buf bytes.Buffer
+	buf.Grow(1e6)
     // 逐行读取
     scan := bufio.NewScanner(dict.reader)
     for scan.Scan() {
