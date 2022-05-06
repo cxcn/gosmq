@@ -75,6 +75,9 @@ func cli() {
 	}
 	output(res)
 
+	if !opts.Details {
+		return
+	}
 	for _, v := range res {
 		// 创建文件夹
 		os.Mkdir("result", 0666)
