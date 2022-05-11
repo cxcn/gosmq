@@ -23,6 +23,8 @@ var combData = newCombData()
 func newCombData() map[string]*comb {
 
 	var ret = make(map[string]*comb, 1800)
+	equivalent = strings.ReplaceAll(equivalent, "\r\n", "\n")
+	fingering = strings.ReplaceAll(fingering, "\r\n", "\n")
 
 	// 当量
 	for _, v := range strings.Split(equivalent, "\n") {
