@@ -8,9 +8,9 @@ func (res *Result) stat(dict *Dict) {
 	// 内部数据
 	res.Name = dict.Name
 	res.Basic.DictLen = dict.length
-	res.Words.Dist = res.wordsDist.a
-	res.Collision.Dist = res.collDist.a
-	res.CodeLen.Dist = res.codeDist.a
+	res.Words.Dist = res.wordsDist
+	res.Collision.Dist = res.collDist
+	res.CodeLen.Dist = res.codeDist
 	// 非汉字
 	tmp1 := make([]rune, 0, len(res.mapNotHan))
 	for k := range res.mapNotHan {

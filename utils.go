@@ -61,18 +61,9 @@ func div(x, y int) float64 {
 	return value
 }
 
-type autoSlice struct {
-	a []int
-}
-
-func newAutoSlice() *autoSlice {
-	sli := make([]int, 0, 15)
-	return &autoSlice{sli}
-}
-
-func (a *autoSlice) AddTo(i int) {
-	for i > len(a.a)-1 {
-		a.a = append(a.a, 0)
+func AddTo(sli *[]int, pos int) {
+	for pos > len(*sli)-1 {
+		*sli = append(*sli, 0)
 	}
-	a.a[i]++
+	(*sli)[pos]++
 }

@@ -63,9 +63,9 @@ type Result struct {
 	mapKeys   map[byte]int
 	mapNotHan map[rune]struct{}
 	mapLack   map[rune]struct{}
-	wordsDist *autoSlice
-	collDist  *autoSlice
-	codeDist  *autoSlice
+	wordsDist []int
+	collDist  []int
+	codeDist  []int
 	// codes     string
 }
 
