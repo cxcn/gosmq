@@ -45,3 +45,43 @@ jobs:
         with:
           name: cli.zip
           path: ./cmd/cli/bin/
+
+  build-web:
+    runs-on: ubuntu-latest
+    steps:
+      # 拉取代码
+      - name: Checkout
+        uses: actions/checkout@v3
+      # 安装 go
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ">=1.18.0"
+          check-latest: true
+      # 编译
+      - name: Build
+        run: |
+          cd ./cmd/web
+          go mod tidy
+          go env -w GOARCH=amd64
+          echo "正在编译 linux 版本"
+          go build -ldflags="-s -w" -o ./bin/web-linux
+          echo "正在编译 windows 版本"
+          go env -w GOOS=windows
+          go build -ldflags="-s -w" -o ./bin/web.exe
+          echo "正在编译 mac 版本"
+          go env -w GOOS=darwin
+          go build -ldflags="-s -w" -o ./bin/web-darwin
+
+      # 使用 upx 压缩可执行文件
+      - name: Run UPX
+        uses: crazy-max/ghaction-upx@v1
+        with:
+          version: latest
+          files: |
+            ./cmd/web/bin/*
+          args: -fq
+      # 上传到 Artifact
+      - uses: actions/upload-artifact@v3
+        with:
+          name: web.zip
+          path: ./cmd/web/bin/
